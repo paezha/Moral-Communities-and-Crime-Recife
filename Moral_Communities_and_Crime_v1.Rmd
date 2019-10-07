@@ -1,0 +1,63 @@
+---
+title: Do moral communities have a spatial dimension? A spatial exploratory analysis of places of worship and violent crime in the city of Recife, Brazil
+subtitle: 
+titlerunning: Moral communities and crime
+authorrunning: 
+thanks: | 
+    Grants or other notes about the article that should go on the front 
+    page should be placed here. General acknowledgments should be placed at the
+    end of the article.
+
+authors: 
+- name: Äüthör 1
+  address: Department of YYY, University of XXX
+  email: abc@def
+  
+- name: Âuthóř 2
+  address: Department of ZZZ, University of WWW
+  email: djf@wef
+
+keywords:
+- Moral communities
+- Crime
+- Places of worship
+- Point pattern analysis
+- Intensity
+
+#PACS: 
+#- PAC1
+#- superPAC
+    
+MSC:
+- MSC code 1
+- MSC code 2    
+
+abstract: |
+  A wealth of research exists to suggest that environmental attributes can facilitate or deter criminal activities, as for instance the presence of alcohol outlets or the design of defensible spaces. In this article we present an exploratory spatial analysis of the relationship between violent crime and places of worship in Recife, Brazil. This analysis aims to explore whether there is a spatial dimension to “moral communities” around places of worship. Use of a cluster detection methodology, the results suggest the presence of a strong geographical association between churches and crime. The evidence obtained for the year 2010 indicates a process of clustering of homicide events in the vicinity of places of worship. In addition, it was also possible to verify a pattern of concentration between evangelical churches and violent crimes.
+
+bibliography: bibliography.bib
+output: rticles::springer_article
+---
+
+# Introduction {#intro}
+
+Your text comes here. Separate text sections with
+
+# Section title {#sec:1}
+
+Text with citations by @Galyardt14mmm, [@Mislevy06Cog].
+
+## Subsection title {#sec:2}
+
+as required. Don't forget to give each section
+and subsection a unique label (see Sect. \ref{sec:1}).
+
+#### Paragraph headings 
+
+Use paragraph headings as needed.
+
+\begin{align}
+a^2+b^2=c^2
+\end{align}
+
+# References
