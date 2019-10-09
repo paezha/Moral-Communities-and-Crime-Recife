@@ -24,14 +24,6 @@ keywords:
 - Point pattern analysis
 - Intensity
 
-#PACS: 
-#- PAC1
-#- superPAC
-    
-MSC:
-- MSC code 1
-- MSC code 2    
-
 abstract: |
   A wealth of research exists to suggest that environmental attributes can facilitate or deter criminal activities, as for instance the presence of alcohol outlets or the design of defensible spaces. In this article we present an exploratory spatial analysis of the relationship between violent crime and places of worship in Recife, Brazil. This analysis aims to explore whether there is a spatial dimension to “moral communities” around places of worship. Use of a cluster detection methodology, the results suggest the presence of a strong geographical association between churches and crime. The evidence obtained for the year 2010 indicates a process of clustering of homicide events in the vicinity of places of worship. In addition, it was also possible to verify a pattern of concentration between evangelical churches and violent crimes.
 
@@ -39,25 +31,455 @@ bibliography: bibliography.bib
 output: rticles::springer_article
 ---
 
+<!-- This paper is an R markdown document that includes self-contained, reproducible analysis. To reproduce the paper the following file is needed: `Moral_Communities_and_Crime.RData`. For reference: this data file was created using R notebook `00. Data Preprocessing.Rmd`. The initial analysis was done in R notebook `01. Analysis.Rmd`. Neither of these two files are needed for this document. -->
+
+```{r load-packages, include=FALSE}
+
+# Load packages used in this document
+
+library(tidyverse)
+library(kableExtra)
+library(sf)
+library(spatstat)
+library(maptools)
+library(ggthemes)
+library(raster)
+library(fasterize)
+```
+
+```{r load-data, include=FALSE}
+
+# To run this notebook, a file `Moral_Communities_and_Crime.RData` is needed. This file contains the following objects:
+# 
+# - events_recife.sf: a simple features object with points for violent crimes, churches (Catholic, Evangelical, Spiritist) and commercial establishments (ice cream shops, pharmacies, supermarkets) in the city of Recife.
+# 
+# - recife.sf: a simple features object with the boundaries of the city of Recife
+# 
+# - setores.sf: a simple features object with setores (census tracts) and selected socio-economic and demographic information for the city of Recife, including:
+#   - Population density in persons per sq.km
+#   - Median income in setor
+#   - Proportion of population in setor who are unemployed
+#   - Proportion of households with a single mother
+#   - Proportion of households with a young single mother, a woman between the ages of 15 and 25
+#   - Proportion of population in poverty
+# 
+# Read the RData file:
+
+load("Moral_Communities_and_Crime.RData")
+```
+
+```{r data-preparation, include=FALSE, cache=TRUE}
+
+# In preparation for doing point pattern analysis, convert the `recife.sf` object to an `owin` object for use in `spatstat`:
+
+recife.owin <- recife.sf %>% as("Spatial") %>% as("owin")
+plot(recife.owin)
+
+# Convert the events to a `ppp` object:
+
+events_recife.ppp <- events_recife.sf %>% 
+  st_coordinates() %>% 
+  data.frame() %>%
+  mutate(Type = events_recife.sf$Type) %>%
+  as.ppp(W = recife.owin)
+
+#Split the point pattern into each type of event: crime, Catholic place of worship, Evangelical place of worship, Spiritist place of worship, ice cream shop, pharmacy, and supermarket
+
+events_recife_list <- split(events_recife.ppp)
+```
+
+```{r socio-economic-deprivation, include=FALSE, cache=TRUE}
+
+# Here an indicator of socio-economic deprivation is obtained using principal component analysis
+
+# PCA is implemented in R as `prcomp`:
+setores.pca <- setores.sf %>% 
+  st_drop_geometry() %>%
+  dplyr::select(median_income, prop_unemployed, prop_single_mother, prop_young_single_mother, prop_poverty) %>%
+  prcomp(center = TRUE, scale = TRUE)
+
+# The loadings of the pca are as follows:
+setores.pca$rotation
+
+# Socio-economic deprivation is a combination of high poverty, high proportion of single mothers, especially young women between the ages of 15-25, high proportion of unemployed people, and low median income.
+
+# Various diagnostics of the results are possible, such as the variance:
+
+std_dev <- setores.pca$sdev
+
+# Compute variance
+
+pr_var <- std_dev^2
+
+# Check variance of the components
+
+pr_var[1:5]
+
+# And the proportion of the variance:
+
+pr_var/sum(pr_var)
+
+# Once that there is principal component (call it SED for socio-economic deprivation), it can be joined to the `sf` object before it can be rasterized and converted to an `im` object:
+
+setores.sf$SED <- setores.pca$x[,1]
+
+# Normalize the SDE factor (with the addition of a small correction; the `rhohat` function does not like values <= 0):
+
+setores.sf <- setores.sf %>% mutate(SED = (SED - min(SED) + 0.1)/(max(SED) + 0.1 - min(SED)))
+```
+
 # Introduction {#intro}
 
-Your text comes here. Separate text sections with
+Violent crime is a widespread phenomenon with negative impacts on many spheres of life and society. Although the rate of homicides worldwide has grown at a slower rate than the population, the number of people killed in homicides still increased from 362,000 in 1990 to 464,000 in 2017 [@Unodc2019executive]. Variations in violent crime also tend to be extremely uneven. The Americas, with a population of approximately 793.8 million people in 2019 (or about 10.3% of the world population), accounted for approximately 173,000 homicides in 2017, or approximately 37.3% of all homicides in the world. Within the Americas, Brazil (along with Venezuela, Colombia, and Mexico) is one of the largest countries in the region with high homicide rates. The relevance of variations in the prevalence of violent crime is in fact recognized by the United Nations Office on Drug and Crime  [-@Unodc2019executive] as being key to achieving policy goals:
 
-# Section title {#sec:1}
+>> High levels of homicidal violence are concentrated in geographic and demographic “pockets”, so
+achieving target 16.1 of the Sustainable Development Goals requires interventions within the specific
+regions, countries, communities and population groups that are most at risk (p. 35)
 
-Text with citations by @Galyardt14mmm, [@Mislevy06Cog].
+The endemic malady of violent crime  represents in fact an important factor that threatens to derail sustainable development goals. Violent crime, furthermore, tends to be more accute in those regions most in need of development. On the one hand, violent crime represents an economic and social drag [@Becker2017analise] that affects people's well-being, either through the loss of human life, mental health, limitations in the right to public spaces [@Doran2011putting], or through disturbances in schooling and academic achievement [@Unodc2019development]. In turn, these negative effects combine to create the unfortunate conditions that exacerbate criminal behavior, thus creating a vicious cycle of economic disadvantage and crime [@Unodc2019development]. Added to this scenario, social control institutions in Brazil, which in practice should inhibit criminal practice, have deep deficiencies that end up reducing the deterrent power of the criminal justice system. Among these serious problems are the inefficiency of the police, the lack of national legislation, the glacial pace of judicial processes. and the weak situation of the prison system in the country [@Menezes2013spatial]. It is not surprising, given the above, that researchers have joined calls for more research to increase our understanding of the patterns of violent crime in Low and Middle Income Countries [LMIC; @Murray2013crime]. 
 
-## Subsection title {#sec:2}
+In order to counteract any criminological factors, it is important to identify empirical regularities. Criminological factors include concrete elements, such as the presence of arms or drugs, as well as environmental factors, such as the built environment, in addition to figurative factors, which include the moral costs of deviant behavior as well as family supervision. Accordingly, a number of studies have investigated various aspects of the environment and neighborhood design [e.g., @Foster2010neighbourhood; @He2017built; @Loukaitou2001measuring], whereas other studies have focused on exposure to environmental attributes that signal weakened norms, such as liquor and tobacco outlets associated with geographical hotspots of crime [@Brower2007spatial; @Deryol2016crime; @Lipton2008spatial; @Quick2017influence]. Yet another fruitful avenue for research, and one that has only recently begun to attract attention, is the presence of environmental attributes that can help reinforce moral norms, such as schools and churches [e.g., @Abdullah2018amenities; @Davignon2015christian; @Furr2010metric; @Traunmuller2011moral]. It is thus that in a recent paper, Warner and Konkel [-@Warner2019neighborhood] note that the role of places of worship, as distinct entities from the members of the congregations, have received less attention in empirical and theoretical research for their potential to prevent crime. The role of these institutions might be particularly important in places where the State lacks the means or the will to enforce norms - as is the case in Brazil.
 
-as required. Don't forget to give each section
-and subsection a unique label (see Sect. \ref{sec:1}).
+With the above considerations in mind, the objective of this paper is to investigate whether moral communities have a spatial dimension discernible from the presence of places of worship. The case study is the city of Recife, in the state of Pernambuco in Brazil's Northeast. Recife is a large metropolitan area in a historically poor region, and afflicted by high levels of violent crime. The empirical strategy is to use spatial analysis to explore the potential geographical relationships between violent criminal events, on the one hand, and places of worship and a selection of commercial establishments, on the other. Dissagregated data allows us to analyze the phenomena of interest at a very high level of resolution as spatial point patterns. 
 
-#### Paragraph headings 
+After this introductory section, the rest of this paper is structured as follows: Sect. \ref{background} reviews the literature on religion and crime; then Sect. \ref{methods} presents the empirical strategy used in the work. Sect. \ref{case} presents the context as well as the data used ub the study; Sect. \ref{results} systematizes and discusses the main results; and finally, the conclusions are presented in section \ref{conclusions}.
 
-Use paragraph headings as needed.
+# Background: Theoretical Perspectives {#background}
 
-\begin{align}
-a^2+b^2=c^2
-\end{align}
+Words go here.
+
+# Empirical Strategy {#methods}
+
+Two different techniques are deployed in this paper to study the spatial distribution of criminal events, and their possible relationship to the location of places of worship. Firstly, the F-function is a nearest neighbor technique that is used to summarize the distance between a set of points and their nearest events. This technique has found extensive use in spatial epidemiology (see Gatrell et al., 1996) and has also been used in spatial criminology (see, inter alia, Craglia et al., 2000; Kiani et al., 2015; Levine, 2006; and Rogerson and Sun, 2001). The second technique is the scan statistic. This method has also been extensively used in spatial epidemiology (e.g., Hjalmars et al., 1996) and has found use in spatial criminology as well (see He et al., 2017a; Nakaya and Yano, 2010; Malleson and Andresen, 2015; and Shiode, 2011). Use of these two techniques is meant to provide insights with respect to 1) the location of violent criminal events with respect to various types of facilities; and 2) geographically identify places of worship associated with clusters of criminal events.
+These two techniques are briefly reviewed next.
+
+## Quadrat Analysis
+
+Words go here.
+
+## Relative Intensity
+
+Words go here.
+
+# Case Study {#case}
+
+## Context {#context}
+
+The study is of the city of Recife, the capital of the state of Pernambuco in the Northeast region of Brazil. With a population of 1,550,390 million inhabitants in 2010, and with an area of 7,133.2 km2, Recife is one of the main Brazilian metropolises, exerting a great economic influence in neighboring regions. However, the city experiences a serious problem with violent crime, and has the dubious honor of being one of the five capital cities in Brazil with the highest homicide rates in the period under study [@Menezes2013spatial].
+
+In the current context, the term "violent crime" is an umbrella for several forms of infractions to the penal code. Following recommendations of the National Secretariat of Public Security of the Ministry of Justice of 2006, these are Violent Lethal and Intentional Crimes (CLVI; which includes intentional homicide), theft followed by death (robbery), and corporal injury followed by death. The data on CVLI were extracted from the Police Information System of the Secretariat of Social Defense of Pernambuco (INFOPOL / SDS-PE), which is the most reliable, detailed, and comprehensive information on violent deaths in the region. 
+
+```{r descriptive-statistics, echo=FALSE}
+descriptive_stats <- data.frame(Attribute = c("Man",
+                                              "Woman",
+                                              "Murder",
+                                              "Robbery",
+                                              "Body injury followed by death",
+                                              "Black and White",
+                                              "Yellow and White",
+                                              "Not Reported",
+                                              "1 to 12 years",
+                                              "13 to 17 years",
+                                              "18 to 30 years",
+                                              "31 to 65 years",
+                                              "65 years and older",
+                                              "Not Reported",
+                                              "Firearm",
+                                              "Other"),
+                                Percentage = c(91.35,
+                                               8.65,
+                                               97.82,
+                                               2.00,
+                                               0.18,
+                                               95.11,
+                                               1.27,
+                                               3.62,
+                                               0.18,
+                                               11.31,
+                                               61.70,
+                                               25.84,
+                                               0.73,
+                                               0.24,
+                                               87.51,
+                                               12.49))
+
+kable(descriptive_stats, 
+      "latex", 
+      booktabs = TRUE,
+      digits = 3,
+      caption = "\\label{tab:descriptive-statistics}Characteristics of Violent Crime in Recife, July, 2008 - June, 2009",
+      col.names = c("", "Percentage")) %>%
+  kable_styling() %>%
+  pack_rows("Gender of Victim", 1, 2) %>%
+  pack_rows("Type of Crime", 3, 5) %>%
+  pack_rows("Ethnicity of Victim", 6, 8) %>%
+  pack_rows("Age of Victim", 9, 14) %>%
+  pack_rows("Weapon Used", 15, 16)
+```
+
+## Data {#data}
+
+The data are organized at the individual level and it is possible to obtain information about the location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of CVLI in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms.
+Information about places of interest was obtained from the National Register of Addresses for Statistical Purposes (CNEFE - Census 2010), which lists 78,056,411 urban and rural addresses, distributed among the 316,574 census tracts. This is the first database of its kind produced by IBGE, and the first version was produced at the time of the 2000 Census. The way addresses are described in the National Register is very rich, and it is possible to identify the names of the places of worship including their denomination. Georeferencing was used to geolocate each place of worship. In this way, a total of 1,719 places of worship were geolocated in the city of Recife.
+Figure 1 (Panel a) shows the spatial distribution of the 1,657 CVLI crimes that occurred in the city of Recife between 2008.2 and 2010.1. Panel b) of the figure shows the spatial distribution of places of worship in the region.
+
+```{r plot-crime, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-crime}Lethal and Intentional Violent Crime in Recife"}
+
+#We can experiment with plotting the events:
+
+ggplot(data = events_recife.sf %>% filter(Type == "Violent Crime")) + 
+  geom_sf(color = "red") +
+  geom_sf(data = recife.sf, fill = NA) + 
+  theme_tufte()
+```
+
+In addition to places of worship, the National Register of Addresses for Statistical Purposes was queried to extract facilities other than places of worship. As discussed above, the idea is to identify points of reference that can be used as controls, having a neutral morality profile. For the sake of the present study, we selected pharmacies, ice cream shops, and bakeries to construct our control group. These three types of establishments comply with the criteria of being morally neutral and having a spatial distribution commensurate with places of worship.
+Figure 2 shows the spatial distribution of the control establishments, namely pharmacies, bakeries, and ice cream shops in the city of Recife. Note the similarity between the maps. As expected, there are differences in the number of points, but the locations of cases and controls are quite similar.
+
+```{r plot-events, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-events}Places of Worship and Commercial Establishments in Recife"}
+
+#We can experiment with plotting the events:
+
+ggplot(data = events_recife.sf %>% filter(Type != "Violent Crime")) + 
+  geom_sf(aes(color = Type, fill = Type)) +
+  geom_sf(data = recife.sf, fill = NA) + 
+  facet_wrap(~ Type, nrow = 2) +
+  scale_fill_viridis_d(option = "viridis", direction = 1) +
+  scale_color_viridis_d(option = "viridis", direction = 1) +
+  theme_tufte()  +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+```{r summary-point-patterns, include=FALSE}
+
+# Extract the intensity of each point pattern for the study area
+
+summary_crime <- summary(events_recife_list$`Violent Crime`)
+summary_catholic <- summary(events_recife_list$Catholic)
+summary_evangelic <- summary(events_recife_list$Evangelical)
+summary_spiritist <- summary(events_recife_list$Spiritist)
+summary_ice_cream <- summary(events_recife_list$`Ice Cream Shop`)
+summary_pharmacy <- summary(events_recife_list$Pharmacy)
+summary_supermarket <- summary(events_recife_list$Supermarket)
+```
+
+```{r plot-sed, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-sed}Socio-Economic Deprivation in Recife"}
+ggplot(data = setores.sf) + 
+  geom_sf(aes(fill = SED),
+          color = NA) +
+  scale_fill_viridis_c(option = "plasma", direction = 1, values = c(0, 0.05, 0.2, 0.3, 0.4, 1)) +
+  theme_tufte()
+```
+
+# Analysis and results {#results}
+
+## Quadrat Analysis
+
+```{r rasterize-sed, include=FALSE}
+
+# Rasterize and convert to image:
+
+# First, we need a base raster; this will be the boundaries of the study area. After some trial and error with different values of number of rows and columns, these values create pixels that are as close to squares as possible, while also being relatively small
+
+recife.r <- raster(recife.sf, nrows = 400, ncols = 276)
+
+# The raster `recife.r` is the template for rasterizing other items, in this case socio-economic deprivation. Use package `fasterize` to rasterize an `sf` object.
+
+sed.r <- fasterize(setores.sf, recife.r, field = "SED")
+
+# Once that the object is a raster, it can be converted to a `spatstat` `img` class object:
+sed.img <- as.im(sed.r)
+```
+
+```{r quadrat-analysis-preliminaries, include=FALSE}
+
+# To do quadrat analysis by different levels of SED we need the quintiles of this variable (other criteria could be used to slice the distribution, e.g., standard deviations, but this one is intuitive and simple)
+
+sed5 <- quantile(sed.img, c(0, 0.2, 0.4, 0.6, 0.8, 1))
+
+# Next we can cut the `sed.im` using the quintiles:
+
+sed_cut5.img <- cut(sed.img, breaks = sed5, include.lowest = TRUE, labels = c(1:5))
+```
+
+```{r tesselate-sed5, include=FALSE}
+
+# To do quadrat analysis we need to tesellate the cut image: 
+
+V <- tess(image = sed_cut5.img)
+
+# This object is used for the analysis, but it is not very neat for plotting purposes. Lets convert instead to an `sf` object. First, extract and expand the coordinates:
+
+coords_V <- expand.grid(X = V$image$xcol, Y = V$image$yrow)
+
+# Next, extract the values of the cells and convert to a vector:
+
+sed5_V <- as.vector(t(V$image$v))
+
+# Join the coordinates with the values in a dataframe and drop all NAs, before converting to `sf` and adding coordinate referencing system information (crs) to ensure that its projection information is there and compatible with the rest of `sf` objects (i.e., recife.sf, setores.sf, events_recife.sf):
+
+sed5.sf <- data.frame(coords_V, sed5_V) %>% 
+  drop_na() %>% transmute(X, Y, SED = factor(sed5_V, 
+                                              levels = c(1:5),
+                                              labels = c("Low", 
+                                                         "Medium Low", 
+                                                         "Medium", 
+                                                         "Medium High", 
+                                                         "High"))) %>%
+  st_as_sf(coords = c("X", "Y")) %>%
+  st_set_crs(value = st_crs(recife.sf))
+```
+
+```{r plot-sed-as-quintiles, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-sed-as-quintiles}Socio-Economic Deprivation as Quintiles" }
+ggplot(data = sed5.sf) + 
+  geom_sf(aes(fill = SED, color = SED)) +
+  geom_sf(data = recife.sf, fill = NA) +
+  scale_fill_viridis_d(option = "plasma", direction = 1) +
+  scale_color_viridis_d(option = "plasma", direction = 1) +
+  guides(fill = guide_legend(reverse = TRUE),
+         color = guide_legend(reverse = TRUE)) +
+  theme_tufte()
+```
+
+Calculate the intensity of other ppp by quadrat:
+```{r quadrat-analysis, include=FALSE}
+
+# Calculate the intensity of the various point patterns by quadrat:
+
+# Crime
+
+crime5 <- quadratcount(events_recife_list$`Violent Crime`, tess = V)
+crime5_intensity <- intensity(crime5)
+
+# Catholic
+
+catholic5 <- quadratcount(events_recife_list$Catholic, tess = V)
+catholic5_intensity <- intensity(catholic5)
+
+# Evangelical
+
+evangelic5 <- quadratcount(events_recife_list$Evangelical, tess = V)
+evangelic5_intensity <- intensity(evangelic5)
+
+# Spiritist
+
+spiritist5 <- quadratcount(events_recife_list$Spiritist, tess = V)
+spiritist5_intensity <- intensity(spiritist5)
+
+# Ice cream
+
+ice_cream5 <- quadratcount(events_recife_list$`Ice Cream Shop`, tess = V)
+ice_cream5_intensity <- intensity(ice_cream5)
+
+# Pharmacies
+
+pharmacies5 <- quadratcount(events_recife_list$Pharmacy, tess = V)
+pharmacies5_intensity <- intensity(pharmacies5)
+
+# Supermarkets
+
+super_markets5 <- quadratcount(events_recife_list$Supermarket, tess = V)
+supermarkets5_intensity <- intensity(super_markets5)
+```
+
+
+```{r instensity-dataframe, include=FALSE}
+
+# Collect in a data.frame for convenience of plotting:
+
+intensity_all <- data.frame(SED = rep(c("Low", 
+                                        "Middle Low", 
+                                        "Middle", 
+                                        "Middle High", 
+                                        "High"), 
+                                      times = 7),
+                            Type = rep(c("Violent Crime", 
+                                         "Catholic",
+                                         "Evangelical",
+                                         "Spiritist",
+                                         "Ice Cream",
+                                         "Pharmacies",
+                                         "Super Markets"), 
+                                       each = 5),
+                            Intensity = c(crime5_intensity,
+                                          catholic5_intensity,
+                                          evangelic5_intensity,
+                                          spiritist5_intensity,
+                                          ice_cream5_intensity,
+                                          pharmacies5_intensity,
+                                          supermarkets5_intensity),
+                            Global_Intensity = rep(c(summary_crime$intensity,
+                                                     summary_catholic$intensity,
+                                                     summary_evangelic$intensity,
+                                                     summary_spiritist$intensity,
+                                                     summary_ice_cream$intensity,
+                                                     summary_pharmacy$intensity,
+                                                     summary_supermarket$intensity),
+                                                   each = 5)) %>%
+  mutate(SED = factor(SED, levels = c("Low", 
+                                        "Middle Low", 
+                                        "Middle", 
+                                        "Middle High", 
+                                        "High"),
+                      ordered = TRUE),
+         Type = factor(Type, levels = c("Violent Crime", 
+                                        "Catholic",
+                                        "Evangelical",
+                                        "Spiritist",
+                                        "Ice Cream",
+                                        "Pharmacies",
+                                        "Super Markets")))
+```
+
+```{r plot-crime-quadrat, echo=FALSE, fig.width=3, fig.asp=1 , cache = TRUE, fig.cap="\\label{fig:plot-crime-quadrat}Intensity of crime by level of Socio-Economic Deprivation; the dotted line indicates the global intensity of crime"}
+
+#Plot the intensity of crime:
+
+ggplot(data = intensity_all %>% filter(Type == "Violent Crime"), 
+       aes(x = SED, y = Intensity, fill = Type)) + 
+  geom_col(fill = "red") +
+  xlab("Socio-Economic Deprivation") +
+  geom_hline(aes(yintercept = Global_Intensity), linetype = "dotted", size = 1) +
+  #facet_wrap(Type ~.) +
+  theme_tufte() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+```{r plot-events-quadrat, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-events-quadrat}Intensity of places of worship and commercial establishments by level of Socio-Economic Deprivation; the dotted lines indicates the respective global intensities"}
+
+#Plot the intensity of point patterns:
+
+ggplot(data = intensity_all %>% filter(Type != "Violent Crime"), 
+       aes(x = SED, y = Intensity, fill = Type)) + 
+  geom_col() +
+  xlab("Socio-Economic Deprivation") +
+  geom_hline(aes(yintercept = Global_Intensity), linetype = "dotted", size = 1) +
+  scale_fill_viridis_d(option = "viridis", direction = 1) +
+  scale_color_viridis_d(option = "viridis", direction = 1) +
+  facet_wrap(Type ~.) +
+  theme_tufte() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+## Relative Intensity
+
+```{r distance-functions, include=FALSE, cache = TRUE}
+
+# Estimation of the relative intensity (see Baddeley et al. (2015) Spatial Point Pattern, pp. 179-183).
+
+# This needs that we convert the point patterns for places of worship to distance functions. This way, the covariates for the relative distribution estimate are distance estimates to places of worship. The function `distfun` is used for this:
+
+z_catholic <- distfun(events_recife_list$Catholic)
+z_evangelical <- distfun(events_recife_list$Evangelical)
+z_spiritist <- distfun(events_recife_list$Spiritist)
+z_ice_cream <- distfun(events_recife_list$`Ice Cream Shop`)
+z_pharmacies <- distfun(events_recife_list$Pharmacy)
+z_super_markets <- distfun(events_recife_list$Supermarket)
+```
+
+# Conclusions {#conclusions}
+
+Words go here.
 
 # References
