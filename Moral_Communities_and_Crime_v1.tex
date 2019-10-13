@@ -57,18 +57,28 @@ end of the article.} }
 
     \titlerunning{Moral communities and crime}
 
-\author{  Äüthör 1 \and  Âuthóř 2 \and  }
+\author{  Aye B. Cee \and  Dee E. Eff \and  Gee H. Eye \and  Jay K. Elle \and  }
 
 
 \institute{
-        Äüthör 1 \at
-     Department of YYY, University of XXX \\
-     \email{\href{mailto:abc@def}{\nolinkurl{abc@def}}}  %  \\
+        Aye B. Cee \at
+     A Department, University of XXX \\
+     \email{\href{mailto:abc@example.edu}{\nolinkurl{abc@example.edu}}}  %  \\
 %             \emph{Present address:} of F. Author  %  if needed
     \and
-        Âuthóř 2 \at
-     Department of ZZZ, University of WWW \\
-     \email{\href{mailto:djf@wef}{\nolinkurl{djf@wef}}}  %  \\
+        Dee E. Eff \at
+     A Department, University of XXX \\
+     \email{\href{mailto:def@example.edu}{\nolinkurl{def@example.edu}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+        Gee H. Eye \at
+     A Department, University of XXX \\
+     \email{\href{mailto:ghi@example.edu}{\nolinkurl{ghi@example.edu}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+        Jay K. Elle \at
+     Some School, University of WWW \\
+     \email{\href{mailto:jkl@school.edu}{\nolinkurl{jkl@school.edu}}}  %  \\
 %             \emph{Present address:} of F. Author  %  if needed
     \and
     }
@@ -80,19 +90,28 @@ end of the article.} }
 \maketitle
 
 \begin{abstract}
-A wealth of research exists to suggest that environmental attributes can
-facilitate or deter criminal activities, as for instance the presence of
-alcohol outlets or the design of defensible spaces. In this article we
-present an exploratory spatial analysis of the relationship between
-violent crime and places of worship in Recife, Brazil. This analysis
-aims to explore whether there is a spatial dimension to ``moral
-communities'' around places of worship. Use of a cluster detection
-methodology, the results suggest the presence of a strong geographical
-association between churches and crime. The evidence obtained for the
-year 2010 indicates a process of clustering of homicide events in the
-vicinity of places of worship. In addition, it was also possible to
-verify a pattern of concentration between evangelical churches and
-violent crimes.
+Religious tenets of the type ``thou shalt not kill'' and their
+equivalents in many world religions have functioned as \emph{de facto}
+social policy for determining appropriate and acceptable behavior over
+the centuries. With the advent of the scientific study of religion,
+there has been a growth of interest in the role of religions to operate
+as moral communities. Moral communities, a concept closely related to
+informal social controls, are of interest in countries and regions where
+formal controls are weak and ineffective. The objective of this paper is
+to present a spatial analysis of Violent and Intentional Crime in the
+city of Recife in Brazil, with a focus on the possible interactions
+between criminal events and places of worship. Previous research into
+moral communities has advocated the need for analysis at different
+scales, and this analysis contributes to the literature by using
+micro-level data and appropriate spatial analytical tools for spatial
+point patterns. Analysis is condcuted using three different types of
+places of worship (Catholic, Evangelical, and Spiritist) and three types
+of business establishments as controls (ice cream shops, pharmacies, and
+supermarkets). The results suggest that Catholic and Spiritist places of
+worship do not project moral communities geographically more than, say,
+ice cream shops. The intensity of criminal events in the proximity of
+Evangelical places of worship, in contrast, is markedly higher than for
+any of our other referential events.
 \\
 \keywords{
         Moral communities \and
@@ -115,18 +134,19 @@ violent crimes.
 
 Violent crime is a widespread phenomenon with negative impacts on many
 spheres of life and society. Although the rate of homicides worldwide
-has grown at a slower rate than the population, the number of people
-killed in homicides still increased from 362,000 in 1990 to 464,000 in
-2017 (United Nations Office on Drugs and Crime 2019a). Variations in
-violent crime also tend to be extremely uneven. The Americas, with a
-population of approximately 793.8 million people in 2019 (or about
-10.3\% of the world population), accounted for approximately 173,000
-homicides in 2017, or approximately 37.3\% of all homicides in the
-world. Within the Americas, Brazil (along with Venezuela, Colombia, and
-Mexico) is one of the largest countries in the region with high homicide
-rates. The relevance of variations in the prevalence of violent crime is
-in fact recognized by the United Nations Office on Drug and Crime
-(2019a) as being key to achieving policy goals:
+has grown at a slower rate than the population in the past few decades,
+the number of people killed in homicides still increased from 362,000 in
+1990 to 464,000 in 2017 (United Nations Office on Drugs and Crime
+2019a). Furthermore, variations in the prevalence of violent crime tend
+to be extremely uneven. The Americas, with a population of approximately
+793.8 million people in 2019 (or about 10.3\% of the world population),
+accounted for approximately 173,000 homicides in 2017, or approximately
+37.3\% of all homicides in the world. Within the Americas, Brazil (along
+with Venezuela, Colombia, and Mexico) is one of the largest countries in
+the region with high homicide rates. And there are notable variations at
+the sub-national and intra-metropolitan levels as well. In fact,
+understanding the variations in the prevalence of violent crime is
+recognized as key to achieving policy goals:
 
 \begin{quote}
 \begin{quote}
@@ -134,82 +154,186 @@ High levels of homicidal violence are concentrated in geographic and
 demographic ``pockets'', so achieving target 16.1 of the Sustainable
 Development Goals requires interventions within the specific regions,
 countries, communities and population groups that are most at risk
-(p.~35)
+(United Nations Office on Drugs and Crime 2019a, 35)
 \end{quote}
 \end{quote}
 
-The endemic malady of violent crime represents in fact an important
-factor that threatens to derail sustainable development goals. Violent
-crime, furthermore, tends to be more accute in those regions most in
-need of development. On the one hand, violent crime represents an
-economic and social drag (Becker and Kassouf 2017) that affects people's
-well-being, either through the loss of human life, mental health,
-limitations in the right to public spaces (Doran and Burgess 2011), or
-through disturbances in schooling and academic achievement (United
-Nations Office on Drugs and Crime 2019b). In turn, these negative
-effects combine to create the unfortunate conditions that exacerbate
-criminal behavior, thus creating a vicious cycle of economic
-disadvantage and crime (United Nations Office on Drugs and Crime 2019b).
-Added to this scenario, social control institutions in Brazil, which in
-practice should inhibit criminal practice, have deep deficiencies that
-end up reducing the deterrent power of the criminal justice system.
-Among these serious problems are the inefficiency of the police, the
-lack of national legislation, the glacial pace of judicial processes.
-and the weak situation of the prison system in the country (Menezes et
-al. 2013). It is not surprising, given the above, that researchers have
-joined calls for more research to increase our understanding of the
-patterns of violent crime in Low and Middle Income Countries (LMIC;
-Murray, Cerqueira, and Kahn 2013).
+This concern is not iddle: the endemic malady of violent crime
+represents an important factor that threatens to derail sustainable
+development goals. Violent crime, furthermore, tends to be more accute
+in those regions most in need of development. On the one hand, violent
+crime represents an economic and social drag (Becker and Kassouf 2017).
+The impacts are multifaceted, since they affect people's well-being,
+either through the loss of human life, mental health, and limitations in
+the right to public spaces (Doran and Burgess 2011), or through
+disturbances in schooling and academic achievement (United Nations
+Office on Drugs and Crime 2019b). In turn, these negative effects
+combine to create the unfortunate conditions that tend to breed criminal
+behavior, thus creating a vicious cycle of economic disadvantage and
+violence (United Nations Office on Drugs and Crime 2019b). It is not
+surprising, given these pecularities, that researchers have joined calls
+for increased attention to the study of the patterns of violent crime in
+Low and Middle Income Countries (LMIC; Murray, Cerqueira, and Kahn
+2013).
 
-In order to counteract any criminological factors, it is important to
-identify empirical regularities. Criminological factors include concrete
-elements, such as the presence of arms or drugs, as well as
-environmental factors, such as the built environment, in addition to
-figurative factors, which include the moral costs of deviant behavior as
-well as family supervision. Accordingly, a number of studies have
-investigated various aspects of the environment and neighborhood design
-(e.g., Foster, Giles-Corti, and Knuiman 2010; He, Páez, and Liu 2017;
-Loukaitou-Sideris et al. 2001), whereas other studies have focused on
-exposure to environmental attributes that signal weakened norms, such as
-liquor and tobacco outlets associated with geographical hotspots of
-crime (Brower and Carroll 2007; Deryol et al. 2016; Lipton et al. 2008;
-Quick, Law, and Luan 2017). Yet another fruitful avenue for research,
-and one that has only recently begun to attract attention, is the
-presence of environmental attributes that can help reinforce moral
-norms, such as schools and churches (e.g., Abdullah et al. 2018;
-Davignon and Thomson 2015; Furr-Holden et al. 2010; Traunmuller 2011).
-It is thus that in a recent paper, Warner and Konkel (n.d.) note that
-the role of places of worship, as distinct entities from the members of
-the congregations, have received less attention in empirical and
-theoretical research for their potential to prevent crime. The role of
-these institutions might be particularly important in places where the
-State lacks the means or the will to enforce norms - as is the case in
-Brazil.
+Added to the scenario, formal social control institutions in countries
+like Brazil leave something (or much) to be desired: while in practice
+they should inhibit criminal behavior, they suffer from deep
+deficiencies that end up reducing the deterrent power of the justice
+system. Serious institutional problems include the inefficiency of the
+police, the lack of national legislation, the glacial pace of judicial
+processes, and the weak situation of the prison system in the country
+(Menezes et al. 2013). This makes it even more urgent to understand the
+role of \emph{informal social controls}, i.e., the ability of community
+organizations such as schools, clubs, and neighborbood associations to
+suppress crime by strengthening the capabilities of neighbors to control
+inappropriate behavior (Groff 2015).
+
+In order to understand the factors that can potentially help to deter
+crime, beyond formal control, it is important to identify empirical
+regularities. Criminological factors include concrete elements (such as
+te presence of arms or drugs, or elements of the built environment), and
+also figurative factors, which include the soci costs of deviant
+behavior as well as family supervision. Accordingly, a number of studies
+have investigated various aspects of the environment and neighborhood
+design (e.g., Foster, Giles-Corti, and Knuiman 2010; He, Páez, and Liu
+2017; Loukaitou-Sideris et al. 2001), whereas other studies have focused
+on exposure to environmental attributes that signal weakened norms, such
+as liquor and tobacco outlets (e.g., Brower and Carroll 2007; Deryol et
+al. 2016; Lipton et al. 2008; Quick, Law, and Luan 2017).
+
+Yet another fruitful avenue for research, and one that has only recently
+begun to be explored, is the presence of environmental attributes that
+can help to reinforce moral norms, such as schools and churches (e.g.,
+Abdullah et al. 2018; Davignon and Thomson 2015; Furr-Holden et al.
+2010; Traunmuller 2011). It is thus that in a recent paper, Warner and
+Konkel (2019) note that the role of places of worship, as distinct
+entities from the members of the congregations, have received less
+attention in empirical and theoretical research for their deterrence
+potential. The role of these institutions might be particularly
+important in places where formal state institutions lack the means or
+the will to enforce norms - as is the case in Brazil.
 
 With the above considerations in mind, the objective of this paper is to
-investigate whether moral communities have a spatial dimension
-discernible from the presence of places of worship. The case study is
-the city of Recife, in the state of Pernambuco in Brazil's Northeast.
-Recife is a large metropolitan area in a historically poor region, and
-afflicted by high levels of violent crime. The empirical strategy is to
-use spatial analysis to explore the potential geographical relationships
-between violent criminal events, on the one hand, and places of worship
-and a selection of commercial establishments, on the other.
-Dissagregated data allows us to analyze the phenomena of interest at a
-very high level of resolution as spatial point patterns.
+investigate whether and how places of workship correlate spatially with
+criminal events, or in other words, to investigate whether their signals
+as moral communities have a discernible spatial dimension. The case
+study is the city of Recife in the state of Pernambuco, in Brazil's
+Northeast. Recife is a large and important metropolitan area in a
+historically poor region, and afflicted by high levels of violent crime,
+having the dubious honor of being one of five state capitals with the
+highest rates of homicide in the period under study (Menezes et al.
+2013). The empirical strategy is to use spatial analysis to explore the
+potential geographical relationships between violent criminal events, on
+the one hand, and places of worship and a selection of commercial
+establishments that serve as controls, on the other. Dissagregated data
+allows us to analyze the relevant point patterns at a very high level of
+resolution.
 
 After this introductory section, the rest of this paper is structured as
-follows: Sect. \ref{background} reviews the literature on religion and
-crime; then Sect. \ref{methods} presents the empirical strategy used in
-the work. Sect. \ref{case} presents the context as well as the data used
-ub the study; Sect. \ref{results} systematizes and discusses the main
-results; and finally, the conclusions are presented in section
-\ref{conclusions}.
+follows: Section \ref{background} reviews some relevant theoretical
+perspectives on religion and crime; then Section \ref{methods} presents
+the empirical strategy used in the work. Section \ref{case} presents the
+context as well as the data used in the study; Section \ref{results}
+presents the analysis, whereas the results are discussed in Section
+\ref{discussion}. Finally, some concluding remarks are offered in
+Section \ref{conclusions}.
 
 \hypertarget{background}{%
-\section{Background: Theoretical Perspectives}\label{background}}
+\section{Background: Theoretical Perspectives on Religion and
+Crime}\label{background}}
 
-Words go here.
+Why do humans behave morally? For millennia, it has been the role of
+religion to provide the basic tenets of morally acceptable behavior:
+thou shalt not kill et al., and their equivalent in many world religions
+(e.g., Donovan 1986). Enforcement of such tenets implies different
+mechanisms, including \emph{sin}, \emph{haram}, \emph{karma}, and
+\emph{tapu}, with punishment delivered by hellfire and exile to
+\emph{Jahannam} or \emph{Gehenna}, to mention just some choice places of
+torment. In addition to acting as \emph{de facto} social policy for much
+of history, many of these religious tenets still have the force of law
+in many cultures and regions - and even where they do not, they are held
+by some researchers and policy experts to be helpful complements to
+reduce crime in any case (e.g., Durrant and Poppelwell 2017; Johnson
+2011). The hypothesis that religion can act as a factor that deters and
+reduces criminal behavior, therefore, has prompted the scientific study
+of the effectiveness of religion on moral behavior (Hoffmann 2015).
+
+An early effort to theorize the effect of religion on criminal behavior
+was the \emph{hellfire hypothesis} of Hirschi and Stark (1969). The
+focus of this hypothesis is the threat of extratemporal (and possibly
+eternal) punishment, and how this threat can deter believers from
+commandment-breaking (also see Pascal's wager). Accordingly, Hirsch and
+Stark (1969) posit that negative correlations between crime and religion
+are a consequence of a sense of commitment with normative values, a
+commitment that is ritually reinforced in a regular fashion (e.g., the
+liturgical rite of peace in Catholic Mass). Rohrbaugh and Jessor (1975),
+for instance, note that by attributing to divinity (or some other
+supra-terrenal entity) the supreme force of punishment, religion helps
+to build a sense of obduracy, or ``hardening'' against temptation.
+
+Despite its intuitive appeal, research has not provided much direct
+evidence for the hypothesis of hellfire (Hoffmann 2015, 1). In a bizarre
+twist, even mainstream doctrines (such as absolution) may in fact
+encourage beliefs that neutralize the fear of \emph{terrenal}
+punishment, and thus turn out to be criminogenic (e.g., Topalli,
+Brezina, and Bernhardt 2013). More deviant cases can even recast
+criminal behavior as a form of spiritual insurgency (Chesnut 2017).
+Counterexamples like this notwithstanding, researchers remain open to
+the possibility that ``religion may still serve as a social control
+mechanism by encouraging conventional beliefs, monitoring behaviors,
+enhancing family attachments, or providing conventional activities''
+(Hoffmann 2015, 1). In this way, the hypothesis of \emph{moral
+communities} (Stark 1996) recognizes that social integration is
+essential for increasing social control, thus reducing the practice of
+behavior that is not in accordance with current norms. Rohrbaugh and
+Jessor (1975) also emphasize that religion acts as social control since
+it defines what is an appropriate attitude according to moral values,
+thus making moral communities a close relative of the concept of
+\emph{informal social control}, defined as ``the ability of social
+groups or institutions to make norms or rules effective'' (Reiss 1951,
+196; cited in Groff 2015, 91).
+
+The hypothesis of moral communities has over the years been used to
+examine a variety of outcomes of interest. Recent examples include
+Stroope and Baker's (2018) exploration of religiosity and self-rated
+health; Davignon and Thomson (2015) with their research on institutional
+context and the religiosity of students; and the study of religion as a
+source of trust of Traunmuller (2011). This is in addition, of course,
+to numerous studies on criminal behavior such as Eitle (2011), an author
+who explored the deterrence power of religion on gambling; Lee and
+Bartkowski's (2004) investigation of juvenile homicide in rural areas;
+and the research of Regnerus (2003) on adolescent delinquency. The
+hypothesis of moral communities as a form of informal social control, on
+the other hand, has been less studied from a geographical perspective,
+and it is only recently that has attracted the attention of researchers.
+Groff (2015), for instance, discusses informal social control as a
+phenomenon that can plaussibly operate at different geographical scales,
+from the level of the home and family, through the street block and
+neighborhood, possibly to other scales such as the county. In this way,
+Nie and Yang (2019) remark on a recent paper on the lack of research
+conducted to study how the religious context of a geographical area
+(e.g., a county) may influence (youth smoking) behavior (p.~2). This
+point is echoed by Warner and Konkel (2019), who moreover recommend the
+use of even smaller units of analysis (e.g., Census Block Groups), in an
+effort to reduce aggregation bias (see Hipp 2007), but more importantly
+because the processes defined by social disorganization theory are
+thought to occur at relatively small geographical scales.
+
+The preceding review makes clear the need for research at various
+geographical scales. From a theoretical perspective, the social
+mechanisms that underpin the hypothesis of moral communities and
+informal social control can happen at various geographical scales, some
+of which previous research has already addressed: the work of Nie and
+Yang (2019), for one, highlights the role of processes detectable at a
+relatively high level of aggregation, whereas Warner and Konkel (2019),
+looking specifically at the effect of places of worship, bring the study
+closer to the level of the neighborhood. In what follows, we propose to
+adopt a much more disaggregated approach by considering the intensity of
+criminal events with respect to places of worship. This requires
+micro-level data both of crimes and places of worship, and the use of
+appropriate spatial analytical tools for point patterns, as discussed
+next.
 
 \hypertarget{methods}{%
 \section{Empirical Strategy}\label{methods}}
@@ -261,7 +385,7 @@ In the current context, the term ``violent crime'' is an umbrella for
 several forms of infractions to the penal code. Following
 recommendations of the National Secretariat of Public Security of the
 Ministry of Justice of 2006, these are Violent Lethal and Intentional
-Crimes (CLVI; which includes intentional homicide), theft followed by
+Crimes (VLIC; which includes intentional homicide), theft followed by
 death (robbery), and corporal injury followed by death. The data on CVLI
 were extracted from the Police Information System of the Secretariat of
 Social Defense of Pernambuco (INFOPOL / SDS-PE), which is the most
@@ -403,10 +527,40 @@ the dotted lines indicates the respective global intensities}
 \hypertarget{relative-intensity-1}{%
 \subsection{Relative Intensity}\label{relative-intensity-1}}
 
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+An opposing viewpoint is offered by the theory of conservative
+Protestants (Ellison, Burr, and McCall 2003). This theory argues that
+religion is not always beneficial in order to guarantee social order,
+and consequently to result in lower crime rates. This theory suggested
+that, conservative Protestants are more tolerate with violent behavior
+when associated with defense of honor, family, property, or woman.
+However, high rates are not expected for all types of crimes in densely
+populated areas of conservative Protestants. But what justifies this
+behavior? Ellison et al.~(2003) argue that this tolerance stems from a
+religious view of the world. More clearly, punishment is seen as a
+legitimate form of retribution whose explanation can be attributed to
+the literal interpretation of the Bible. In the specific context of
+Brazil, it is important to consider that the interpretations and
+meanings attributed to urban violence during the last two decades in
+Brazil often had religious figures as protagonists (Birman and Machado
+2012).
+
 \hypertarget{conclusions}{%
 \section{Conclusions}\label{conclusions}}
 
-Words go here.
+The theory of conservative Protestants, argues that conservative
+Protestants are more likely to tolerate violent behavior of a defensive
+or punitive character, especially when associated to defense of honor,
+family, property, or woman. Our objective in the study is to explore the
+question whether moral communities have a spatial dimension. To this end
+we deploy an array of spatial analytical tools to investigate potential
+patterns of clustering of violent crime and places of worship, using as
+well other kinds of urban facilities to act as controls. The case study
+is the city of Recife, in the northeast of Brazil, and analysis is based
+on geographically detailed datasets of criminal events as well as
+several types of urban facilities.
 
 \hypertarget{references}{%
 \section*{References}\label{references}}
@@ -425,11 +579,20 @@ Becker, Kalinca Léia, and Ana Lúcia Kassouf. 2017. ``Uma análise Do
 Efeito Dos Gastos Públicos Em Educação Sobre a Criminalidade No
 Brasil.'' \emph{Economia E Sociedade} 26 (1): 215--42.
 
+\leavevmode\hypertarget{ref-Birman2012violencia}{}%
+Birman, Patricia, and Carly Machado. 2012. ``A Violencia Dos Justos:
+Evangelicos, Midia E Periferias Da Metropole.'' \emph{Revista Brasileira
+de Ciências Sociais} 27 (80): 55--69.
+
 \leavevmode\hypertarget{ref-Brower2007spatial}{}%
 Brower, A. M., and L. Carroll. 2007. ``Spatial and Temporal Aspects of
 Alcohol-Related Crime in a College Town.'' Journal Article.
 \emph{Journal of American College Health} 55 (5): 267--75.
 \url{https://doi.org/10.3200/jach.55.5.267-276}.
+
+\leavevmode\hypertarget{ref-Chesnut2017devoted}{}%
+Chesnut, R Andrew. 2017. \emph{Devoted to Death: Santa Muerte, the
+Skeleton Saint}. Oxford University Press.
 
 \leavevmode\hypertarget{ref-Davignon2015christian}{}%
 Davignon, P., and R. A. Thomson. 2015. ``Christian Colleges and
@@ -445,10 +608,30 @@ Development.'' Journal Article. \emph{Journal of Quantitative
 Criminology} 32 (2): 305--25.
 \url{https://doi.org/10.1007/s10940-015-9278-1}.
 
+\leavevmode\hypertarget{ref-Donovan1986different}{}%
+Donovan, Peter. 1986. ``Do Different Religions Share Moral Common
+Ground?'' Journal Article. \emph{Religious Studies} 22 (3/4): 367--75.
+\url{http://www.jstor.org.libaccess.lib.mcmaster.ca/stable/20006295}.
+
 \leavevmode\hypertarget{ref-Doran2011putting}{}%
 Doran, Bruce J, and Melissa B Burgess. 2011. \emph{Putting Fear of Crime
 on the Map: Investigating Perceptions of Crime Using Geographic
 Information Systems}. Springer Science \& Business Media.
+
+\leavevmode\hypertarget{ref-Durrant2017religion}{}%
+Durrant, Russil, and Zoe Poppelwell. 2017. ``Why Religion Matters.'' In
+\emph{Religion, Crime and Punishment}, 1--17. Springer.
+
+\leavevmode\hypertarget{ref-Eitle2011religion}{}%
+Eitle, D. 2011. ``Religion and Gambling Among Young Adults in the United
+States: Moral Communities and the Deterrence Hypothesis.'' Journal
+Article. \emph{Journal for the Scientific Study of Religion} 50 (1):
+61--81. \url{https://doi.org/10.1111/j.1468-5906.2010.01552.x}.
+
+\leavevmode\hypertarget{ref-Ellison2003enduring}{}%
+Ellison, Christopher G, Jeffrey A Burr, and Patricia L McCall. 2003.
+``The Enduring Puzzle of Southern Homicide: Is Regional Religious
+Culture the Missing Piece?'' \emph{Homicide Studies} 7 (4): 326--52.
 
 \leavevmode\hypertarget{ref-Foster2010neighbourhood}{}%
 Foster, S., B. Giles-Corti, and M. Knuiman. 2010. ``Neighbourhood Design
@@ -466,12 +649,41 @@ Alcohol, Tobacco, and Other Drug Exposures.'' Journal Article.
 \emph{Evaluation Review} 34 (3): 159--84.
 \url{https://doi.org/10.1177/0193841x10368493}.
 
+\leavevmode\hypertarget{ref-Groff2015informal}{}%
+Groff, E. R. 2015. ``Informal Social Control and Crime Events.'' Journal
+Article. \emph{Journal of Contemporary Criminal Justice} 31 (1):
+90--106. \url{https://doi.org/10.1177/1043986214552619}.
+
 \leavevmode\hypertarget{ref-He2017built}{}%
 He, Li, Antonio Páez, and Desheng Liu. 2017. ``Built Environment and
 Violent Crime: An Environmental Audit Approach Using Google Street
 View.'' Journal Article. \emph{Computers, Environment and Urban Systems}
 66: 83--95.
 \url{https://doi.org/http://dx.doi.org/10.1016/j.compenvurbsys.2017.08.001}.
+
+\leavevmode\hypertarget{ref-Hipp2007block}{}%
+Hipp, J. R. 2007. ``Block, Tract, and Levels of Aggregation:
+Neighborhood Structure and Crime and Disorder as a Case in Point.''
+Journal Article. \emph{American Sociological Review} 72 (5): 659--80.
+\url{https://doi.org/10.1177/000312240707200501}.
+
+\leavevmode\hypertarget{ref-Hirschi1969hellfire}{}%
+Hirschi, Travis, and Rodney Stark. 1969. ``Hellfire and Delinquency.''
+\emph{Social Problems} 17 (2): 202--13.
+
+\leavevmode\hypertarget{ref-Hoffmann2015religion}{}%
+Hoffmann, John P. 2015. ``Religion and Crime.'' \emph{The Encyclopedia
+of Crime and Punishment}, 1--5.
+
+\leavevmode\hypertarget{ref-Johnson2011more}{}%
+Johnson, Byron. 2011. \emph{More God, Less Crime: Why Faith Matters and
+How It Could Matter More}. Templeton Foundation Press.
+
+\leavevmode\hypertarget{ref-Lee2004love}{}%
+Lee, M. R., and J. P. Bartkowski. 2004. ``Love Thy Neighbor? Moral
+Communities, Civic Engagement, and Juvenile Homicide in Rural Areas.''
+Journal Article. \emph{Social Forces} 82 (3): 1001--35.
+\url{https://doi.org/10.1353/sof.2004.0044}.
 
 \leavevmode\hypertarget{ref-Lipton2008spatial}{}%
 Lipton, R., A. Banerjee, D. Levy, N. Manzanilla, and M. Cochrane. 2008.
@@ -497,6 +709,11 @@ in Brazil: Systematic Review of Time Trends, Prevalence Rates and Risk
 Factors.'' Journal Article. \emph{Aggression and Violent Behavior} 18
 (5): 471--83. \url{https://doi.org/10.1016/j.avb.2013.07.003}.
 
+\leavevmode\hypertarget{ref-Nie2019smoking}{}%
+Nie, F. H., and X. Z. Y. Yang. 2019. ``Smoking in the Temple of the Holy
+Spirit? Geographic Location Matters.'' Journal Article. \emph{Health \&
+Place} 58. \url{https://doi.org/10.1016/j.healthplace.2019.05.017}.
+
 \leavevmode\hypertarget{ref-Quick2017influence}{}%
 Quick, M., J. Law, and H. Luan. 2017. ``The Influence of on-Premise and
 Off-Premise Alcohol Outlets on Reported Violent Crime in the Region of
@@ -504,6 +721,41 @@ Waterloo, Ontario: Applying Bayesian Spatial Modeling to Inform Land Use
 Planning and Policy.'' Journal Article. \emph{Applied Spatial Analysis
 and Policy} 10 (3): 435--54.
 \url{https://doi.org/10.1007/s12061-016-9191-5}.
+
+\leavevmode\hypertarget{ref-Regnerus2003moral}{}%
+Regnerus, M. D. 2003. ``Moral Communities and Adolescent Delinquency:
+Religious Contexts and Community Social Control.'' Journal Article.
+\emph{Sociological Quarterly} 44 (4): 523--54.
+\href{\%3CGo\%20to\%20ISI\%3E://WOS:000188319800001}{\textless{}Go to ISI\textgreater{}://WOS:000188319800001}.
+
+\leavevmode\hypertarget{ref-Reiss1951delinquency}{}%
+Reiss, Albert J. 1951. ``Delinquency as the Failure of Personal and
+Social Controls.'' Journal Article. \emph{American Sociological Review}
+16 (2): 196--207. \url{https://doi.org/10.2307/2087693}.
+
+\leavevmode\hypertarget{ref-Rohrbaugh1975religiosity}{}%
+Rohrbaugh, John, and Richard Jessor. 1975. ``Religiosity in Youth: A
+Personal Control Against Deviant Behavior.'' \emph{Journal of
+Personality} 43 (1): 136--55.
+
+\leavevmode\hypertarget{ref-Stark1996religion}{}%
+Stark, R. 1996. ``Religion as Context: Hellfire and Delinquency One More
+Time.'' Journal Article. \emph{Sociology of Religion} 57 (2): 163--73.
+\url{https://doi.org/10.2307/3711948}.
+
+\leavevmode\hypertarget{ref-Stroope2018moral}{}%
+Stroope, S., and J. O. Baker. 2018. ``Whose Moral Community?
+Religiosity, Secularity, and Self-Rated Health Across Communal Religious
+Contexts.'' Journal Article. \emph{Journal of Health and Social
+Behavior} 59 (2): 185--99.
+\url{https://doi.org/10.1177/0022146518755698}.
+
+\leavevmode\hypertarget{ref-Topalli2013god}{}%
+Topalli, V., T. Brezina, and M. Bernhardt. 2013. ``With God on My Side:
+The Paradoxical Relationship Between Religious Belief and Criminality
+Among Hardcore Street Offenders.'' Journal Article. \emph{Theoretical
+Criminology} 17 (1): 49--69.
+\url{https://doi.org/10.1177/1362480612463114}.
 
 \leavevmode\hypertarget{ref-Traunmuller2011moral}{}%
 Traunmuller, R. 2011. ``Moral Communities? Religion as a Source of
@@ -520,7 +772,7 @@ Homicide 2019: Executive Summary.'' UNODC Vienna.
 and the Sustainable Development Goals.'' UNODC Vienna.
 
 \leavevmode\hypertarget{ref-Warner2019neighborhood}{}%
-Warner, B. D., and R. H. Konkel. n.d. ``Neighborhood Churches and Their
+Warner, B. D., and R. H. Konkel. 2019. ``Neighborhood Churches and Their
 Relationship to Neighborhood Processes Important for Crime Prevention.''
 Journal Article. \emph{Journal of Urban Affairs}.
 \url{https://doi.org/10.1080/07352166.2019.1581030}.
