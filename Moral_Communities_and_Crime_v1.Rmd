@@ -73,7 +73,7 @@ library(fasterize)
 # 
 # Read the RData file:
 
-load("Moral_Communities_and_Crime.RData")
+load("Moral_Communities_and_Crime_Recife.RData")
 ```
 
 ```{r data-preparation, include=FALSE, cache=TRUE}
@@ -166,30 +166,81 @@ Despite its intuitive appeal, research has not provided much direct evidence for
 
 The hypothesis of moral communities has over the years been used to examine a variety of outcomes of interest. Recent examples include Stroope and Baker's [-@Stroope2018moral] exploration of religiosity and self-rated health; Davignon and Thomson [-@Davignon2015christian] with their research on institutional context and the religiosity of students; and the study of religion as a source of trust of Traunmuller [-@Traunmuller2011moral]. This is in addition, of course, to numerous studies on criminal behavior such as Eitle [-@Eitle2011religion], an author who explored the deterrence power of religion on gambling; Lee and Bartkowski's [-@Lee2004love] investigation of juvenile homicide in rural areas; and the research of Regnerus [-@Regnerus2003moral] on adolescent delinquency. The hypothesis of moral communities as a form of informal social control, on the other hand, has been less studied from a geographical perspective, and it is only recently that has attracted the attention of researchers. Groff [-@Groff2015informal], for instance, discusses informal social control as a phenomenon that can plaussibly operate at different geographical scales, from the level of the home and family, through the street block and neighborhood, possibly to other scales such as the county. In this way, Nie and Yang [-@Nie2019smoking] remark on a recent paper on the lack of research conducted to study how the religious context of a geographical area (e.g., a county) may influence (youth smoking) behavior (p. 2). This point is echoed by Warner and Konkel [-@Warner2019neighborhood], who moreover recommend the use of even smaller units of analysis (e.g., Census Block Groups), in an effort to reduce aggregation bias [see @Hipp2007block], but more importantly because the processes defined by social disorganization theory are thought to occur at relatively small geographical scales.
 
-The preceding review makes clear the need for research at various geographical scales. From a theoretical perspective, the social mechanisms that underpin the hypothesis of moral communities and informal social control can happen at various geographical scales, some of which previous research has already addressed: the work of Nie and Yang [-@Nie2019smoking], for one, highlights the role of processes detectable at a relatively high level of aggregation, whereas Warner and Konkel [-@Warner2019neighborhood], looking specifically at the effect of places of worship, bring the study closer to the level of the neighborhood. In what follows, we propose to adopt a much more disaggregated approach by considering the intensity of criminal events with respect to places of worship. This requires micro-level data both of crimes and places of worship, and the use of appropriate spatial analytical tools for point patterns, as discussed next.
+The preceding review, as well as other research [-@Malleson2019identifying], makes clear the need for research at various geographical scales. From a theoretical perspective, the social mechanisms that underpin the hypothesis of moral communities and informal social control can happen at various geographical scales, some of which previous research has already addressed: the work of Nie and Yang [-@Nie2019smoking], for one, highlights the role of processes detectable at a relatively high level of aggregation, whereas Warner and Konkel [-@Warner2019neighborhood], looking specifically at the effect of places of worship, bring the study closer to the level of the neighborhood. In what follows, we propose to adopt a much more disaggregated approach by considering the intensity of criminal events with respect to places of worship. This requires micro-level data both of crimes and places of worship, and the use of appropriate spatial analytical tools for point patterns, as discussed next.
 
 # Empirical Strategy {#methods}
 
-Two different techniques are deployed in this paper to study the spatial distribution of criminal events, and their possible relationship to the location of places of worship. Firstly, the F-function is a nearest neighbor technique that is used to summarize the distance between a set of points and their nearest events. This technique has found extensive use in spatial epidemiology (see Gatrell et al., 1996) and has also been used in spatial criminology (see, inter alia, Craglia et al., 2000; Kiani et al., 2015; Levine, 2006; and Rogerson and Sun, 2001). The second technique is the scan statistic. This method has also been extensively used in spatial epidemiology (e.g., Hjalmars et al., 1996) and has found use in spatial criminology as well (see He et al., 2017a; Nakaya and Yano, 2010; Malleson and Andresen, 2015; and Shiode, 2011). Use of these two techniques is meant to provide insights with respect to 1) the location of violent criminal events with respect to various types of facilities; and 2) geographically identify places of worship associated with clusters of criminal events.
-These two techniques are briefly reviewed next.
+As noted above, previous research that has investigated the presence of churches from a geographical perspective has used data aggregated at different scales. In the case of Nie and Yang [-@Nie2019smoking], the unit of analysis was the county, whereas Warner and Konkel [-@Warner2019neighborhood] used Census Block Groups, a much smaller unit of analysis. Research in spatial criminology, on the other hand, has studied criminal events as point patterns since at least the work of Levine et al. [-@Levine1986crime] investigated the concentration of criminal events in the proximity of bus stops. Since then, many other works have applied tools of spatial point pattern analysis to investigate the empirical properties of the distribution of crime. This includes Craglia et al. [-@Craglia2000comparative] who used the Ripley's K-function [@Ripley1976second] to investigate clustering processes, and Rogerson and Sun [-@Rogerson2001spatial] who applied nearest neighbor techniques to the study of arson. More recent studies of crime as point patterns are Nakaya and Yano [-@Nakaya2010visualizing], Kiani et al. [-@Kiani2015analysis], and Malleson and Andresen [-@Malleson2015spatio].
 
-## Quadrat Analysis
+Readers interested in point pattern analysis techniques are urged to consult the still valuable Bailey and Gatrell [-@Bailey1995interactive] or for an up-to-date and in-depth coverage of the topic, the excellent text by Baddeley et al. [-@Baddeley2015spatial]. In this paper we will concentrate on one property of point processes, namely the intensity. Suppose that the outcome of interest is the number of events per unit area $Y(\mathcal{A})$. This could be, for instance, the number of criminal events observed in an arbitrary area. The intensity of a point pattern then is as follows:
+$$
+\lambda(s)=\lim_{\text{d}s \to 0}\frac{E[Y(\text{d}s)]}{\text{d}s}
+$$
 
-Words go here.
+where $\lambda(s)$ is the intensity of the process at point $s$, given by the expected number of events in a small area $\text{d}s$ around $s$, as the area becomes arbitrarily small. If the process is homogeneous (i.e., the intensity is a constant over space), an apt estimator of the intensity is the global intensity, simply the number of events divided by the area of the region under analysis:
+$$
+\hat{\lambda} = \frac{n}{|\mathcal{A}|}
+$$
 
-## Relative Intensity
+When the process is not homogeneous, other estimators are more appropriate. In the analysis to follow we use two estimators of intensity: conditional quadrat counts and relative distribution estimate. These techniques are briefly discussed next.
 
-Words go here.
+## Conditional Quadrat Counts
 
-# Case Study {#case}
+Quadrat counts is a relatively simple technique to analyze spatial variations in the intensity of a point process. It operates by partitioning the region under study $\mathcal{A}$ into subregions $\mathcal{A}_1,\cdots,\mathcal{A}_m$. These subregions are mutually exclusive, and their union is identical to $\mathcal{A}$. In the simplest case, the subregions have equal area. The number of events within each subregion (i.e., $n_{\mathcal{A}}$) divided by the area of the subregion (i.e., $|\mathcal{A}|$) is a local estimate of the intensity:
+$$
+\lambda(\mathcal{A}_i)=\frac{n_{\mathcal{A}_i}}{|\mathcal{A}_i|}
+$$
 
-## Context {#context}
+A test for homogeneity consists of assessing whether the intensity of the point process at the quadrats is uniform:
+$$
+\lambda(\mathcal{A}_1)=\cdots=\lambda(\mathcal{A}_m)
+$$
 
-The study is of the city of Recife, the capital of the state of Pernambuco in the Northeast region of Brazil. With a population of 1,550,390 million inhabitants in 2010, and with an area of 7,133.2 km2, Recife is one of the main Brazilian metropolises, exerting a great economic influence in neighboring regions. However, the city experiences a serious problem with violent crime, and has the dubious honor of being one of the five capital cities in Brazil with the highest homicide rates in the period under study [@Menezes2013spatial].
+Using quadrats of equal size is a convenient simplication, but in principle the areas could be different - in which case the count of events would be proportional to the area of the quadrat under homogeneity. An interesting variation of this technique is conditional quadrat counts, whereby the partition of regions $\mathcal{A}_1,\cdots,\mathcal{A}_m$ is done to reflect an underlying covariate of interest, say $Z$. By introducing a covariate as a partitioning criterion, it becomes possible to calculate estimators of the intensity of quadrats at different levels of the value of the covariate. For exploratory purposes, we can plot average intensity by quadrat, and compare to the global intensity.
 
-In the current context, the term "violent crime" is an umbrella for several forms of infractions to the penal code. Following recommendations of the National Secretariat of Public Security of the Ministry of Justice of 2006, these are Violent Lethal and Intentional Crimes (VLIC; which includes intentional homicide), theft followed by death (robbery), and corporal injury followed by death. The data on CVLI were extracted from the Police Information System of the Secretariat of Social Defense of Pernambuco (INFOPOL / SDS-PE), which is the most reliable, detailed, and comprehensive information on violent deaths in the region. 
+## Relative Distribution Estimate
 
-```{r descriptive-statistics, echo=FALSE}
+Conditional quadrat counts allow us to explore whether the intensity of the process depends on a covariate $Z$. A different way of expressing this is as follows:
+$$
+\lambda(s)=\rho\big(Z(s)\big)
+$$
+
+In this case, the intensity is a function $\rho$ that maps how the intensity depends on covariate $Z$. Non-parametric estimation of $\rho$ uses the ratio of the density of covariate values at the locations of the point process, relative to the _spatial distribution function_ $G$, the density of covariate values at random locations [see @Baddeley2015spatial, p. 179]. 
+
+The density of covariate values at the locations of the is obtained by means of a kernel density estimator, for example:
+$$
+\lambda_0(s) = \frac{1}{|\mathcal{A}|}\sum_{i = 1}^n\kappa(Z(s_i) - z)
+$$
+where $s_i$ are the locations of the points.
+
+On the other hand, $G$ which is the cumulative distribution function of $Z$ at random point $S$ uniformly distributed in $\mathcal{A}$  :
+$$
+G(z) = \frac{1}{|\mathcal{A}|} \int_{\mathcal{A}}\text{I}\{Z(s)\leq z\}\text{d}s
+$$
+where $\text{I}$ is an indicator function that takes the value of $1$ if the argument is true, and the value of $0$ otherwise. In practice, the spatial distribution function is approximated based on a discretization of space using a fine grid of pixels as follows:
+$$
+G(z) = \frac{\#\{\text{pixels }s:Z(s)\leq z\}}{\# \text{pixels}}
+$$
+
+Therefore, an estimator of $\rho$ is as follows:
+$$
+\rho(z) = \frac{1}{|\mathcal{A}|G'(z)}\sum_{i=1}^n\kappa(Z(s_i) - z)
+$$
+where the derivative $G'$ can be approximated by differentiating a smoothed estimated of $G$. Other estimators are discussed by Baddeley et al. [@Baddeley2015spatial, p. 180].
+
+It is possible to adjust the relative distribution estimate by means of a baseline; a baseline in this case can be a function of other covariates that might confound the estimates of the relative distribution, so that the relative intensity $\lambda(s)/B(s)$ can be assumed to depend only on covariate $Z$. Therefore:
+$$
+\lambda(s) = \rho(Z(s))B(s)
+$$
+where $B(s)$ is a baseline function. It can be seen that $\rho(z)=1$ is the baseline intensity; values of $\rho(z)>1$ correspond to intensities higher than the baseline _as a function of_ $Z(u)$, whereas values of $\rho(z)<1$ correspond to intensities lower than the baseline, again as a function of $Z(u)$.  
+
+# Case Study: Context and Data {#case}
+
+The study is of the city of Recife, the capital of the state of Pernambuco in the Northeast region of Brazil. With a population of 1,550,390 million inhabitants in 2010, Recife is one of the main Brazilian metropolises, exerting a great economic influence in neighboring regions. However, the city experiences a serious problem with violent crime, and has the dubious honor of being one of the five capital cities in Brazil with the highest homicide rates in the period under study [@Menezes2013spatial].
+
+In the current context, the term "violent crime" is an umbrella for several forms of infractions to the penal code. Following recommendations of the National Secretariat of Public Security of the Ministry of Justice of 2006, these are Violent Lethal and Intentional Crimes (VLIC; which includes intentional homicide), theft followed by death (robbery), and corporal injury followed by death. The data on LIVC were extracted from the Police Information System of the Secretariat of Social Defense of Pernambuco (INFOPOL / SDS-PE), which is the most reliable, detailed, and comprehensive information on violent deaths in the region. 
+
+```{r table-descriptive-statistics, echo=FALSE}
 descriptive_stats <- data.frame(Attribute = c("Man",
                                               "Woman",
                                               "Murder",
@@ -237,13 +288,9 @@ kable(descriptive_stats,
   pack_rows("Weapon Used", 15, 16)
 ```
 
-## Data {#data}
+The data are organized at the individual level and it is possible to obtain information about the location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of LIVC in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms. Figure \ref{fig:plot-crime} shows the spatial distribution of the 1,657 LIVC crimes that occurred in the city of Recife between July, 2008 and June, 2010.
 
-The data are organized at the individual level and it is possible to obtain information about the location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of CVLI in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms.
-Information about places of interest was obtained from the National Register of Addresses for Statistical Purposes (CNEFE - Census 2010), which lists 78,056,411 urban and rural addresses, distributed among the 316,574 census tracts. This is the first database of its kind produced by IBGE, and the first version was produced at the time of the 2000 Census. The way addresses are described in the National Register is very rich, and it is possible to identify the names of the places of worship including their denomination. Georeferencing was used to geolocate each place of worship. In this way, a total of 1,719 places of worship were geolocated in the city of Recife.
-Figure 1 (Panel a) shows the spatial distribution of the 1,657 CVLI crimes that occurred in the city of Recife between 2008.2 and 2010.1. Panel b) of the figure shows the spatial distribution of places of worship in the region.
-
-```{r plot-crime, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-crime}Lethal and Intentional Violent Crime in Recife"}
+```{r fig-plot-crime, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-crime}Location of Lethal and Intentional Violent Crime in Recife, July, 2008 - June, 2009"}
 
 #We can experiment with plotting the events:
 
@@ -253,10 +300,12 @@ ggplot(data = events_recife.sf %>% filter(Type == "Violent Crime")) +
   theme_tufte()
 ```
 
+Information about places of interest was obtained from the National Register of Addresses for Statistical Purposes (CNEFE - Census 2010), which lists 78,056,411 urban and rural addresses, distributed among the 316,574 census tracts. This is the first database of its kind produced by IBGE, and the first version was produced at the time of the 2000 Census. The way addresses are described in the National Register is very rich, and it is possible to identify the names of the places of worship including their denomination. Georeferencing was used to geolocate each place of worship. In this way, a total of 1,719 places of worship were geolocated in the city of Recife.
+
 In addition to places of worship, the National Register of Addresses for Statistical Purposes was queried to extract facilities other than places of worship. As discussed above, the idea is to identify points of reference that can be used as controls, having a neutral morality profile. For the sake of the present study, we selected pharmacies, ice cream shops, and bakeries to construct our control group. These three types of establishments comply with the criteria of being morally neutral and having a spatial distribution commensurate with places of worship.
 Figure 2 shows the spatial distribution of the control establishments, namely pharmacies, bakeries, and ice cream shops in the city of Recife. Note the similarity between the maps. As expected, there are differences in the number of points, but the locations of cases and controls are quite similar.
 
-```{r plot-events, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-events}Places of Worship and Commercial Establishments in Recife"}
+```{r fig-plot-events, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-events}Location of Places of Worship and Commercial Establishments in Recife"}
 
 #We can experiment with plotting the events:
 
@@ -284,7 +333,57 @@ summary_pharmacy <- summary(events_recife_list$Pharmacy)
 summary_supermarket <- summary(events_recife_list$Supermarket)
 ```
 
-```{r plot-sed, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-sed}Socio-Economic Deprivation in Recife"}
+# Analysis and results {#results}
+
+The analysis is implemented using the `R` statistical computing language, and documents to replicate the analysis, in addition to all data necessary, can be obtained from this anonymous shared folder:
+
+https://drive.google.com/open?id=1tuJM4Mhi0Ftq3ZEwjv6RP9vO3veGjIR_
+
+## Socio-Economic Deprivation
+
+```{r sed-descriptive-statistics, echo=FALSE}
+
+# Create a dataframe with the descriptive statistics of the socio-economic and demographic variables used for the creation of the Socio-Economic Deprivation index. The descriptive statistics are the min, 2nd quartile, median, mean, 3rd quartile, max, and include as well the loadings of the first principal component for discussion
+
+sed_descriptives <- data.frame(variable = c("Median Income", 
+                    "Proportion Unemployed", 
+                    "Proportion Poverty", 
+                    "Proportion Single Mother", 
+                    "Proportion Young Single Mother"),
+           min = c(min(setores.sf$median_income),
+                   min(setores.sf$prop_unemployed),
+                   min(setores.sf$prop_poverty),
+                   min(setores.sf$prop_single_mother),
+                   min(setores.sf$prop_young_single_mother)),
+           second_q = c(quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_unemployed, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_poverty, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[2]),
+           median = c(median(setores.sf$median_income),
+                      median(setores.sf$prop_unemployed),
+                      median(setores.sf$prop_poverty),
+                      median(setores.sf$prop_single_mother),
+                      median(setores.sf$prop_young_single_mother)),
+           mean = c(mean(setores.sf$median_income),
+                    mean(setores.sf$prop_unemployed),
+                    mean(setores.sf$prop_poverty),
+                    mean(setores.sf$prop_single_mother),
+                    mean(setores.sf$prop_young_single_mother)),
+           third_q = c(quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_unemployed, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_poverty, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4]),
+           max = c(max(setores.sf$median_income),
+                   max(setores.sf$prop_unemployed),
+                   max(setores.sf$prop_poverty),
+                   max(setores.sf$prop_single_mother),
+                   max(setores.sf$prop_young_single_mother)),
+           pca_loadings = as.numeric(setores.pca$rotation[c(1, 2, 5, 3, 4), 1]))
+```
+
+```{r fig-plot-sed, echo=FALSE, include = FALSE, fig.align = "left", fig.cap="\\label{fig:plot-sed}Socio-Economic Deprivation in Recife"}
 ggplot(data = setores.sf) + 
   geom_sf(aes(fill = SED),
           color = NA) +
@@ -292,13 +391,41 @@ ggplot(data = setores.sf) +
   theme_tufte()
 ```
 
-# Analysis and results {#results}
+The first step in our analysis is to obtain an indicator of Socio-Economic Deprivation (SED). Socio-economic deprivation is known to correlated positively with crime, as it often reflects relevant criminogenic factors such as poverty and family disruption [@He2015temporal]. In the present case, we have for the city of Recife information about the variables shown in Table \ref{tab:sed-descriptive-statistics} at the level of _setores_, a small Brazilian census geography. 
 
-## Quadrat Analysis
+As seen in the table, Recife is a city with large socio-economic and demographic disparities; for example, the _setor_ with the highest median income has a median income that is `r prettyNum(filter(sed_descriptives, variable == "Median Income")["max"]/filter(sed_descriptives, variable == "Median Income")["min"] * 100, digits = 2, big.mark = ",")`% higher than the median income in the _setor_ with the lowest median income. Whereas there are _setores_ where the proportion of population who are unemployed is zero, there are _setores_ where almost 60% of the population are unemployed. Likewise, there are _setores_ where almost 70% of the population lives in poverty. In addition to these economic indicators, two variables are used to represent family disruption, the proportion of families whose head is a single mother, and the proportion of families whose head is a _young_ single mother, that is, a woman between the ages of 15 and 25. As can be seen, there are _setores_ with approximately 70% of households led by single mothers, and of these, over 21% are led by younger women, indicating a high degree of family disruption.
+
+For the analysis, we use Principal Component Analysis, a data reduction technique, to obtain an indicator of Socio-Economic Deprivation. The loadings of the first factor, which accounts for almost 54% of the variance, are shown in Table \ref{tab:sed-descriptive-statistics}. The loadings of this factor indicate that high Socio-Economic Deprivation is a combination of (in terms of importance): high levels of poverty, high levels of unemployment, and low median income, followed by high levels of family disruption, in particular proportion of families led by young single mothers.
+
+```{r table-sed-descriptive-statistics, echo=FALSE}
+
+# Render table with descriptives of socio-economic and demographic variables
+
+kable(sed_descriptives,
+      "latex",
+      booktabs = TRUE,
+      digits = 2,
+      escape = FALSE,
+      caption = "\\label{tab:sed-descriptive-statistics}Descriptive statistics of some key socio-economic and demographic variables in Recife",
+      col.names = linebreak(c("Variable", 
+                              "Min", 
+                              "2nd Quartile", 
+                              "Median", 
+                              "Mean", 
+                              "3rd Quartile", 
+                              "Max", "PC Factor 1\n Loadings")),
+      row.names = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "scaled_down")) %>%
+  footnote(general = c("The variable for young single mothers is for women aged 15-25",
+                       "The first principal component accounts for 53.91% of the variance"))
+
+```
+
+Figure \ref{fig:plot-sed-as-quintiles} displays the geography of Socio-Economic Deprivation in Recife, after classifying _setores_ by quintiles, whereby the "High" class corresponds to _setores_ in the top 20% of the Socio-Economic Deprivation indicator, and the "Low" class corresponds to _setores_ in the bottom 20% of the Socio-Economic Deprivation indicator. The figure shows a veritable mosaic of affluence and deprivation, with high deprivation areas directly in contact, and in some cases even completely surrounded, by low deprivation areas. This geographical pattern of unequality, on the other hand, seems to be characteristic of Brazilian metropolitan regions, where enclaves of wealth and _favelas_ (i.e., urban slums) can be found in close proximity [see for example @Feitosa2007global].
 
 ```{r rasterize-sed, include=FALSE}
 
-# Rasterize and convert to image:
+# To use the SED indicator for conditional quadrat counts and relative distribution, we need to rasterize and convert this variable to an image:
 
 # First, we need a base raster; this will be the boundaries of the study area. After some trial and error with different values of number of rows and columns, these values create pixels that are as close to squares as possible, while also being relatively small
 
@@ -351,7 +478,7 @@ sed5.sf <- data.frame(coords_V, sed5_V) %>%
   st_set_crs(value = st_crs(recife.sf))
 ```
 
-```{r plot-sed-as-quintiles, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-sed-as-quintiles}Socio-Economic Deprivation as Quintiles" }
+```{r plot-sed-as-quintiles, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-sed-as-quintiles}Socio-Economic Deprivation in Recife classified by quintiles" }
 ggplot(data = sed5.sf) + 
   geom_sf(aes(fill = SED, color = SED)) +
   geom_sf(data = recife.sf, fill = NA) +
@@ -361,6 +488,8 @@ ggplot(data = sed5.sf) +
          color = guide_legend(reverse = TRUE)) +
   theme_tufte()
 ```
+
+## Conditional Quadrat Analysis
 
 Calculate the intensity of other ppp by quadrat:
 ```{r quadrat-analysis, include=FALSE}
@@ -482,7 +611,7 @@ ggplot(data = intensity_all %>% filter(Type != "Violent Crime"),
   theme(axis.text.x = element_text(angle = 90))
 ```
 
-## Relative Intensity
+## Relative Distribution
 
 ```{r distance-functions, include=FALSE, cache = TRUE}
 
@@ -497,6 +626,9 @@ z_ice_cream <- distfun(events_recife_list$`Ice Cream Shop`)
 z_pharmacies <- distfun(events_recife_list$Pharmacy)
 z_super_markets <- distfun(events_recife_list$Supermarket)
 ```
+
+## Relative Distribution with a Baseline Function
+
 
 # Discussion {#discussion}
 
