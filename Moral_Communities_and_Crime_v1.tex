@@ -212,7 +212,8 @@ entities from the members of the congregations, have received less
 attention in empirical and theoretical research for their deterrence
 potential. The role of these institutions might be particularly
 important in places where formal state institutions lack the means or
-the will to enforce norms - as is the case in Brazil.
+the will to enforce norms in a consistent way - as is the case in Brazil
+(Garmany 2014).
 
 With the above considerations in mind, the objective of this paper is to
 investigate whether and how places of workship correlate spatially with
@@ -618,20 +619,20 @@ these, over 21\% are led by younger women, indicating a high degree of
 family disruption.
 
 For the analysis, we use Principal Component Analysis, a data reduction
-technique, to obtain an indicator of Socio-Economic Deprivation. The
-loadings of the first factor, which accounts for almost 54\% of the
-variance, are shown in Table \ref{tab:sed-descriptive-statistics}. The
-loadings of this factor indicate that high Socio-Economic Deprivation is
-a combination of (in terms of importance): high levels of poverty, high
-levels of unemployment, and low median income, followed by high levels
-of family disruption, in particular proportion of families led by young
-single mothers.
+technique, to obtain an indicator of Socio-Economic Deprivation,
+essentially the first principal component in the output. The loadings of
+this factor (Table \ref{tab:sed-descriptive-statistics}) indicate that
+high Socio-Economic Deprivation is a combination of (in terms of
+importance): high levels of poverty, high levels of unemployment, and
+low median income, followed by high levels of family disruption, in
+particular proportion of families led by young single mothers. This
+factor accounts for almost 54\% of the variance..
 
 \begin{table}
 
 \caption{\label{tab:table-sed-descriptive-statistics}\label{tab:sed-descriptive-statistics}Descriptive statistics of some key socio-economic and demographic variables in Recife}
 \centering
-\begin{tabular}[t]{lrrrrrrr}
+\begin{tabular}[t]{lccccccc}
 \toprule
 Variable & Min & 2nd Quartile & Median & Mean & 3rd Quartile & Max & \makecell[l]{PC Factor 1\\ Loadings}\\
 \midrule
@@ -654,7 +655,7 @@ in the top 20\% of the Socio-Economic Deprivation indicator, and the
 ``Low'' class corresponds to \emph{setores} in the bottom 20\% of the
 Socio-Economic Deprivation indicator. The figure shows a veritable
 mosaic of affluence and deprivation, with high deprivation areas
-directly in contact, and in some cases even completely surrounded, by
+directly in contact, and in some cases almost completely surrounded, by
 low deprivation areas. This geographical pattern of unequality, on the
 other hand, seems to be characteristic of Brazilian metropolitan
 regions, where enclaves of wealth and \emph{favelas} (i.e., urban slums)
@@ -671,7 +672,28 @@ Recife classified by quintiles}
 \subsection{Conditional Quadrat
 Analysis}\label{conditional-quadrat-analysis}}
 
-Calculate the intensity of other ppp by quadrat:
+Once the indicator of Socio-Economic Deprivation has been obtained, as
+outlined above, it can be used for conditional quadrat analysis. As
+previously described, the quadrats are irregular areas that are defined
+based on a covariate, in this case the quintiles of the Socio-Economic
+Deprivation indicator. In essence, this entails counting the number of
+events at each level of the covariate, and then calculating an estimator
+of the intensity.
+
+Figure \ref{fig:plot-crime-quadrat} shows the results of conditional
+quadrat counts for Lethal and Intentional Violent Crime. The dotted line
+indicates the global intensity, simply the total number of criminal
+events divided by the area of the region. It can be seen that the
+intensity of crime clearly increases with Socio-Economic Deprivation,
+and the intensity in areas with the highest levels of Socio-Economic
+Deprivation is 208.7065292 \% higher than in places with the lowest
+levels of Socio-Economic Deprivation. This is as expected, as research
+has consistently found correlations between Socio-Economic Deprivation
+and a variety of negative health outcomes, including homicide (Ichihara
+et al. 2018). A \(\chi^2\) test of independence on the quadrat counts
+yields a value of \(p\leq 0.0001\) (four degrees of freedom), which
+comfortably rejects the null hypothesis of homogeneity of intensity of
+crime by level of Socio-Economic Deprivation.
 
 \begin{figure}
 \centering
@@ -681,6 +703,40 @@ Socio-Economic Deprivation; the dotted line indicates the global
 intensity of crime}
 \end{figure}
 
+Next, we repeat the analysis of conditional quadrat counts, but now for
+the six types of events of reference. As discussed above, this included
+three types of places of worship which are of interest from the
+perspective of moral communities, and three types of commercial
+establishments that we posit are morally neutral. The results of
+estimating the intensity of the process by means of conditional quadrat
+counts are shown in Figure \ref{fig:plot-events-quadrat}.
+
+The first thing that we note are the variations in global intensity of
+places of worship, with Evangelical places of worship being the most
+intense of the three. There are no clear variations in the locational
+pattern of Catholic places of worship by level of Socio-Economic
+Deprivation. Evangelical places of worship, on the other hand, tend to
+be found more frequently in places with middle-low and middle levels of
+Socio-Economic Deprivation, a pattern also discernible, albeit barely,
+for Spiritist churches. Interestingly (see Table
+\ref{tab:quadrat-test-statistics}) \(\chi^2\) tests of independence on
+the conditional quadrat counts fail to reject the hypothesis of
+homogeneity for Catholic and Spiritist churches, and it is only in the
+case of Evangelical places of worship that we detect the possibility of
+locational patterns that vary by level of Socio-Economic Deprivation.
+
+Three types of commercial establishments also appear to display
+inhomogeneous locational patterns (Table
+\ref{tab:quadrat-test-statistics}), with the \(\chi^2\) test of
+independence emphaticaly rejecting the null hypothesis. As seen in
+Figure \ref{fig:plot-events-quadrat}, ice cream shops tend to be found
+more frequently in places with middle-low Socio-Economic Deprivation,
+and less frequently in places with middle-high Socio-Economic
+Deprivation. Pharmacies show a clearer trend, with locational patterns
+that tend to favor places with low Socio-Economic Deprivation. Finally,
+supermarkets are found less frequently in places with middle-high and
+high Socio-Economic Deprivation.
+
 \begin{figure}
 \centering
 \includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/plot-events-quadrat-1.pdf}
@@ -689,47 +745,285 @@ and commercial establishments by level of Socio-Economic Deprivation;
 the dotted lines indicates the respective global intensities}
 \end{figure}
 
+\begin{table}
+
+\caption{\label{tab:table-quadrat-test-statistics}\label{tab:quadrat-test-statistics}$\chi^2$ tests of independence of conditional quadrat counts}
+\centering
+\begin{tabular}[t]{lccc}
+\toprule
+Event & Statistic & Degrees of Freedom & p-value\\
+\midrule
+Catholic & 6.913 & 4 & 0.2811\\
+Evangelical & 38.669 & 4 & $<0.001$\\
+Spiritist & 9.108 & 4 & 0.1169\\
+Ice Crem Shop & 15.108 & 4 & 0.009\\
+Pharmacy & 51.869 & 4 & $<0.001$\\
+\addlinespace
+Supermarket & 23.826 & 4 & $<0.001$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \hypertarget{relative-distribution}{%
 \subsection{Relative Distribution}\label{relative-distribution}}
+
+The preceding analysis provides a valuable backdrop. As seen there,
+there is a clear distribution of criminal events, increasing on par with
+the level of Socio-Economic deprivation. Of the three different classes
+of places of worship, only Evangelical churches display a locational
+pattern that is commensurate, with Socio-Economic Deprivation, albeit
+the pattern is distinct from criminal events, with Evangelical churches
+found less frequently in both high and low Socio-Economic Deprivation
+areas.
+
+The analysis does not answer the question, yet, of possible covariations
+between crime, on the one hand, and places of worship and commercial
+establishments, on the other. In this subsection we implement the
+relative distribution estimator of intensity of Lethal and Intentional
+Violent Crime. The covariate \(Z(u)\) in this analysis is distance to
+one of a place of worship or a commercial establishment: \[
+\lambda_k(s)=\rho(Z_k(s))
+\] with: \[
+Z_k(s) = d_{sk}
+\] In the expression above, \(d_{s_k}\) is distance from location \(s\)
+to an event of class \(k\), and
+\(k=\{\text{Catholic, Evangelical, Spiritist, Ice Cream Shop, Pharmacy, Supermarket}\}\).
+
+The results of this analysis are shown in Figure
+\ref{fig:plot-relative-distribution}. The global estimator for the
+intensity of crime is shown in this figure as a dotted line. Three types
+of places of worship are shown in solid lines, and three types of
+commercial establishments are shown in dashed lines. Each relative
+distribution function is shown with its corresponding 95\% confidence
+bands.
+
+Several interesting things emerge from inspection of this figure. First,
+we notice that with the exception of Spiritist churches (which has an
+intensity significantly lower than the global intensity at a distance of
+zero), the intensity of crime at for other churches and commercial
+establishments is close, but higher than, the global intensity of crime.
+In general, the intensity tends to increase at short distances; however,
+this effect is much more marked for Evangelical places of worship. The
+intensity of crime in the proximity of these places of worship grows
+rapidly within a short distance, reaching a peak of
+\ensuremath{2.4916\times 10^{-5}} at a distance of 64.92 m. At that
+distance, the intensity of crime with respect to Evangelical places of
+worship is 183.78\% higher than the intensity of Catholic places of
+worship; 194.54\% higher than the intensity of crime with respect to
+Spiritist churches; 174.19\% higher than the intensity with respect to
+ice cream shops; 151.52\% higher than the intensity with respect to
+pharmacies; and 177.63\% higher than the intensity with respect to
+supermarkets.
+
+Intriguingly, after reaching its peak intensity, the intensity of crime
+with respect to Evangelical places of worship declines sharply, until at
+distances of approximately 200 m it is lower than for other places of
+worship and commercial establishments, and at distances of approximately
+270 m it is lower than the global intensity of crime. This does not
+happen with other places of worship or commercial establishments: the
+intensity of crime with respect to these locations remains higher than
+the global intensity of crime for the interval of distances examined.
+Another interesting observation is that the intensity of crime with
+respect to Catholic places of worship is not substantially different
+when compared to the intensity of crime with respect to any of the
+commercial establishments considered.
+
+These results, while intriguing, beg the question of whether variations
+in Socio-Economic Deprivation may have a confounding effect on the
+relative distributions; for instance, if as seen in the case of
+conditional quadrat counts, there is some overlap in the locational
+patterns of, say, Evangelical places of worship and crime with respect
+to Socio-Economic Deprivation. Next section explores this question.
+
+\begin{figure}
+\centering
+\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/figure-plot-relative-distribution-1.pdf}
+\caption{\label{fig:plot-relative-distribution}Intensity of crime as a
+function of distance to a selected place of worship or commercial
+establishment; bands are 95\% confidence interval and the dotted line
+indicates the global intensity of crime}
+\end{figure}
 
 \hypertarget{relative-distribution-with-a-baseline-function}{%
 \subsection{Relative Distribution with a Baseline
 Function}\label{relative-distribution-with-a-baseline-function}}
 
+In this section, the preceding analysis regarding the relative
+distribution of crime using distance to places of worship and commercial
+establishments is repeated, after introducing a baseline function. The
+interpretation of \(\rho(Z(s))\) in this case is as follows: instead of
+the raw intensity at the value of \(z\), it is the intensity
+\emph{relative to the intensity according to the level of Socio-Economic
+Deprivation}. Therefore, \(rho(z)=1\) matches the intensity according to
+Socio-Economic Deprivation; values of \(rho(z)>1\) indicate a higher
+intensity than explained by Socio-Economic Deprivation; and values of
+\(rho(z)<1\) correspond to lower intensities than explained by
+Socio-Economic Deprivation.
+
+The results of the analysis are shown in Figure
+\ref{fig:plot-relative-distribution-with-baseline}. The general trends
+shown by the relative distribution functions are similar to those seen
+above, before the introduction of a baseline function. We notice that at
+short distances the intensity of crime as a function of distance to the
+various places of worship and commercial establishments is higher than
+the baseline intesity (i.e., the intensity according to Socio-Ecomomic
+Deprivation). The only exception is intensity as a function of distance
+to a Spiritist church, which at short distances is not significantly
+different from the baseline intensity (see the confidence bands).
+
+The peak intensity as a function of distance to Evangelical churches is
+3.33 times the baseline intensity; for Catholic places of worship, the
+highest intesity is 2.12 times the baseline intensity; and the intensity
+reaches a peak of 2.67 times the baseline intensity when the covariate
+is distance to Spiritist churches. Turning now to inspect the three
+types of commercial establishments, we see that the highest intensities
+are 2.28, 2.46, and 2.09 times the intensity according to Socio-Economic
+Deprivation for ice cream shops, pharmacies, and supermarkets,
+respectively.
+
+Some differences are observed as well. Whereas the peak intensity as a
+function of distance to Evangelical places of worship was 183.78\%
+higher than the intensity of Catholic places of worship \emph{without a
+baseline function}, once that we account for Socio-Economic Deprivation
+by means of a baseline function, the peak relative intensity as a
+function of distance to Evangelical churches declines to 176.53\% higher
+than the intensity as a function of distance to Catholic places of
+worship at the same distance. Accounting for Socio-Economic Deprivation
+in this analysis of intensity has in general a moderating effect:
+whereas the peak intensity of crime was was 194.54\% higher when
+comparing Evangelical and Spiritist churches at the distance of the peak
+intensity of Evangelical churches, this difference declines to 186.45\%
+after accounting for Socio-Economic Deprivation. Similarly, this changes
+from 174.19\% to 168.33\% in the case of ice cream shops, from 151.52\%
+to 140.97\% in the case of pharmacies, and finally from 177.63\% to
+164.33\% in the case of supermarkets.
+
+Again, it is interesting to note that while the intensity with respect
+to distance to Catholic and Spiritist places of worship, as well as ice
+cream shops, pharmacies, and supermarkets remains higher than the
+background intensity (given by the baseline according to Socio-Economic
+Deprivation), the intensity of crime at distances of approximately 300 m
+of an Evangelical church are significantly lower than the background
+intensity of crime. In the following section we discuss the possible
+implications of these findings.
+
+\begin{figure}
+\centering
+\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/figure-plot-relative-distribution-with-baseline-1.pdf}
+\caption{\label{fig:plot-relative-distribution-with-baseline}Intensity
+of crime as a function of distance to a selected place of worship or
+commercial establishment after introducing Socio-Economic Deprivation as
+a baseline function; bands are 95\% confidence intervals and the dotted
+line indicates the baseline intensity with respect to Socio-Economic
+Deprivation}
+\end{figure}
+
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
-An opposing viewpoint is offered by the theory of conservative
-Protestants (Ellison, Burr, and McCall 2003). This theory argues that
-religion is not always beneficial in order to guarantee social order,
-and consequently to result in lower crime rates. This theory suggested
-that, conservative Protestants are more tolerate with violent behavior
-when associated with defense of honor, family, property, or woman.
-However, high rates are not expected for all types of crimes in densely
-populated areas of conservative Protestants. But what justifies this
-behavior? Ellison et al.~(2003) argue that this tolerance stems from a
-religious view of the world. More clearly, punishment is seen as a
-legitimate form of retribution whose explanation can be attributed to
-the literal interpretation of the Bible. In the specific context of
-Brazil, it is important to consider that the interpretations and
-meanings attributed to urban violence during the last two decades in
-Brazil often had religious figures as protagonists (Birman and Machado
-2012).
+Words go here.
 
 \hypertarget{conclusions}{%
 \section{Conclusions}\label{conclusions}}
 
-The theory of conservative Protestants, argues that conservative
-Protestants are more likely to tolerate violent behavior of a defensive
-or punitive character, especially when associated to defense of honor,
-family, property, or woman. Our objective in the study is to explore the
-question whether moral communities have a spatial dimension. To this end
-we deploy an array of spatial analytical tools to investigate potential
-patterns of clustering of violent crime and places of worship, using as
-well other kinds of urban facilities to act as controls. The case study
-is the city of Recife, in the northeast of Brazil, and analysis is based
-on geographically detailed datasets of criminal events as well as
-several types of urban facilities.
+The objective of this research was to investigate the covariation of
+incidence of crime to proximity of places of worship. The hypothesis of
+moral communities (closely related to social disorganization theory)
+posits that a negative correlation between the presence of churches and
+crime. Recent papers have argued that it is important to study this
+phenomenon from a geographical perspective, paying attention to the
+level of aggregation. Accordingly, our research for the city of Recife
+in Brazil makes the following contributions to the literature:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  By using disaggregated data for Lethal and Intentional Violent Crime
+  and various types of places of worship, we were able to analyze the
+  intensity of crime with respect to proximity to churches as a point
+  pattern.
+\item
+  Following the suggestion of Warner and Konkel (2019), we also
+  disaggregate our data by type of place of worship, and consider the
+  three following denominations: Catholic, Evangelical, and Spiritist.
+\item
+  Use of relative distribution functions is effectively a multi-scale
+  technique, since the intensity of crime can be estimated at different
+  distances from various types of places of worship.
+\item
+  We also used a set of putatively morally neutral commercial
+  establishments to serve as controls in our analysis.
+\end{enumerate}
+
+Our key findings can be summarized as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Catholic places of worhsip do not seem to geographically project more
+  or less of a moral community effect than, say, ice cream shops,
+  pharmacies, or supermarkets: the intensity of crime as a function of
+  distance to Catholic churches is not significantly different that what
+  we observe when we consider distance to any of these types of
+  commercial establishments, at any distance.
+\item
+  The intensity of crime with respect to distance to Evangelical
+  churches is more complex than previously known: whereas the intensity
+  of crime is higher at relativey short distance from Evangelical places
+  of worship, at longer distances it tends to decline even below the
+  global intensity of crime and the background level of crime according
+  to Socio-Economic Deprivation.
+\item
+  Spiritist churches are associated with lower intensity of crime at
+  very short distance; however, at longer distances(approximately
+  between 200 m and 500 m), the intensity of crime is in fact higher
+  than the intensity of crime at comparable distances from Catholic and
+  Evangelical places of worship, or any of the three kinds of commercial
+  establishments.
+\end{enumerate}
+
+These results are interesting of and in themselves as they help to
+clarify the potential of various types of moral communities to act as
+restraints on crime or, on the contrary, as criminogenic factors. They
+also suggest several avenues for further research.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The analysis presented in this paper is to a large extent exploratory.
+  For example, to introduce a baseline function in the analysis of
+  relative distribution, we used a data reduction technique to obtain an
+  indicator of Socio-Economic Deprivation. This indicator was useful to
+  determine a general spatial pattern of crime conditional on this
+  variable, and to account for a baseline (or background) intensity of
+  crime. However, it would be interesting to investigate the effect of
+  the individual socio-economic and demographic variables on the
+  intensity of crime, as opposed to the aggregated effect of
+  Socio-Economic Deprivation. This implies the use of multivariate
+  analytical techniques.
+\item
+  It would be interesting to explore the effect of aggregation on the
+  results. On the one hand, this would be informative with respect to
+  the well-known issues with aggregation bias in spatial analysis
+  (related to the Modifiable Areal Unit Problem in geography; see
+  Fotheringham and Wong 1991; Openshaw and Taylor 1979; and Tagashira
+  and Okabe 2002). On the other hand, as the results of the research
+  presented here, it is possible that analysis at different levels of
+  aggregation may tend to capture different spatial and social processes
+  of interest.
+\item
+  And finally, in relation to the latter point, more in-depth research,
+  perhaps observational, ethnographic, or participatory studies, could
+  help to develop a more refined understanding of the kinds of processes
+  that operate at different scales and how they can influence moral
+  behavior and crime.
+\end{enumerate}
+
+In summary, the research presented on this paper provides information
+about the potential of different types of moral communities to reduce
+crime, and should be of interest to policy makers as they assess whether
+formal or informal forms of social control can be effective to deter
+criminal behavior.
 
 \hypertarget{references}{%
 \section*{References}\label{references}}
@@ -755,11 +1049,6 @@ Analysis}. Book. Essex: Addison Wesley Longman.
 Becker, Kalinca Léia, and Ana Lúcia Kassouf. 2017. ``Uma análise Do
 Efeito Dos Gastos Públicos Em Educação Sobre a Criminalidade No
 Brasil.'' \emph{Economia E Sociedade} 26 (1): 215--42.
-
-\leavevmode\hypertarget{ref-Birman2012violencia}{}%
-Birman, Patricia, and Carly Machado. 2012. ``A Violencia Dos Justos:
-Evangelicos, Midia E Periferias Da Metropole.'' \emph{Revista Brasileira
-de Ciências Sociais} 27 (80): 55--69.
 
 \leavevmode\hypertarget{ref-Brower2007spatial}{}%
 Brower, A. M., and L. Carroll. 2007. ``Spatial and Temporal Aspects of
@@ -810,11 +1099,6 @@ States: Moral Communities and the Deterrence Hypothesis.'' Journal
 Article. \emph{Journal for the Scientific Study of Religion} 50 (1):
 61--81. \url{https://doi.org/10.1111/j.1468-5906.2010.01552.x}.
 
-\leavevmode\hypertarget{ref-Ellison2003enduring}{}%
-Ellison, Christopher G, Jeffrey A Burr, and Patricia L McCall. 2003.
-``The Enduring Puzzle of Southern Homicide: Is Regional Religious
-Culture the Missing Piece?'' \emph{Homicide Studies} 7 (4): 326--52.
-
 \leavevmode\hypertarget{ref-Feitosa2007global}{}%
 Feitosa, F. F., G. Camara, A. M. V. Monteiro, T. Koschitzki, and M. P.
 S. Silva. 2007. ``Global and Local Spatial Indices of Urban
@@ -830,6 +1114,12 @@ Residents' Fear in New Suburban Housing Developments.'' Journal Article.
 \emph{Health \& Place} 16 (6): 1156--65.
 \url{https://doi.org/10.1016/j.healthplace.2010.07.007}.
 
+\leavevmode\hypertarget{ref-Fotheringham1991modifiable}{}%
+Fotheringham, A. S., and D. W. S. Wong. 1991. ``The Modifiable Areal
+Unit Problem in Multivariate Statistical-Analysis.'' Journal Article.
+\emph{Environment and Planning A} 23 (7): 1025--44.
+\url{ISI:A1991GA61200008}.
+
 \leavevmode\hypertarget{ref-Furr2010metric}{}%
 Furr-Holden, C. D. M., K. D. M. Campbell, A. J. Milam, M. J. Smart, N.
 A. Ialongo, and P. J. Leaf. 2010. ``Metric Properties of the
@@ -838,6 +1128,12 @@ Environmental Assessment Tool for Measuring Indicators of Violence,
 Alcohol, Tobacco, and Other Drug Exposures.'' Journal Article.
 \emph{Evaluation Review} 34 (3): 159--84.
 \url{https://doi.org/10.1177/0193841x10368493}.
+
+\leavevmode\hypertarget{ref-Garmany2014space}{}%
+Garmany, J. 2014. ``Space for the State? Police, Violence, and Urban
+Poverty in Brazil.'' Journal Article. \emph{Annals of the Association of
+American Geographers} 104 (6): 1239--55.
+\url{https://doi.org/10.1080/00045608.2014.944456}.
 
 \leavevmode\hypertarget{ref-Groff2015informal}{}%
 Groff, E. R. 2015. ``Informal Social Control and Crime Events.'' Journal
@@ -870,6 +1166,13 @@ Hirschi, Travis, and Rodney Stark. 1969. ``Hellfire and Delinquency.''
 \leavevmode\hypertarget{ref-Hoffmann2015religion}{}%
 Hoffmann, John P. 2015. ``Religion and Crime.'' \emph{The Encyclopedia
 of Crime and Punishment}, 1--5.
+
+\leavevmode\hypertarget{ref-Ichihara2018area}{}%
+Ichihara, M. Y. T., D. Ramos, P. Reboucas, F. J. Oliveira, A. J. F.
+Ferreira, C. Teixeira, M. Allik, et al. 2018. ``Area Deprivation
+Measures Used in Brazil: A Scoping Review.'' Journal Article.
+\emph{Revista de Saude Publica} 52 (83): 1--14.
+\url{https://doi.org/10.11606/s1518-8787.2018052000933}.
 
 \leavevmode\hypertarget{ref-Johnson2011more}{}%
 Johnson, Byron. 2011. \emph{More God, Less Crime: Why Faith Matters and
@@ -938,6 +1241,12 @@ Nie, F. H., and X. Z. Y. Yang. 2019. ``Smoking in the Temple of the Holy
 Spirit? Geographic Location Matters.'' Journal Article. \emph{Health \&
 Place} 58. \url{https://doi.org/10.1016/j.healthplace.2019.05.017}.
 
+\leavevmode\hypertarget{ref-Openshaw1979million}{}%
+Openshaw, S., and P. J. Taylor. 1979. ``A Million or so Correlation
+Coefficients: Three Experiments on the Modifiable Areal Unit Problem.''
+Book Section. In \emph{Statistical Applications in the Spatial
+Sciences}, edited by N. Wrigley, 127--44. London: Pion.
+
 \leavevmode\hypertarget{ref-Quick2017influence}{}%
 Quick, M., J. Law, and H. Luan. 2017. ``The Influence of on-Premise and
 Off-Premise Alcohol Outlets on Reported Violent Crime in the Region of
@@ -983,6 +1292,12 @@ Religiosity, Secularity, and Self-Rated Health Across Communal Religious
 Contexts.'' Journal Article. \emph{Journal of Health and Social
 Behavior} 59 (2): 185--99.
 \url{https://doi.org/10.1177/0022146518755698}.
+
+\leavevmode\hypertarget{ref-Tagashira2002modifiable}{}%
+Tagashira, N., and A. Okabe. 2002. ``The Modifiable Areal Unit Problem
+in a Regression Model Whose Independent Variable Is a Distance from a
+Predetermined Point.'' Journal Article. \emph{Geographical Analysis} 34
+(1): 1--20. \url{ISI:000173383000001}.
 
 \leavevmode\hypertarget{ref-Topalli2013god}{}%
 Topalli, V., T. Brezina, and M. Bernhardt. 2013. ``With God on My Side:
