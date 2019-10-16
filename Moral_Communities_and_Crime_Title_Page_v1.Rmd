@@ -10,19 +10,19 @@ thanks: |
 
 authors: 
 - name: Edivaldo Constantino das Neves Júnior 
-  address: A Department, University of XXX
+  address: University of Sao Paulo - Brazil
   email: edivaldoconstantino@gmail.com
 
 - name: Breno Caldas de Araujo
-  address: A Department, University of XXX
-  email: def@example.edu
+  address: Federal University of Pernambuco - Brazil
+  email: brenocaldasdearaujo@gmail.com
   
 - name: Tatiane Almeida de Menezes
-  address: Programa de Pós-Graduação em Gestão e Economia da Saúde, Universidade Federal de Pernambuco
+  address: Federal University of Pernambuco - Brazil
   email: tatianedemenezes@gmail.com
 
 - name: Antonio Paez
-  address: School of Geography and Earth Sciences, McMaster University
+  address: McMaster University - Canada
   email: paezha@mcmaster.ca
 
 keywords:
@@ -33,7 +33,7 @@ keywords:
 - Intensity
 
 abstract: |
-  Religious tenets of the type "thou shalt not kill" and their equivalents in many world religions have functioned as _de facto_ social policy for determining appropriate and acceptable behavior over the centuries. With the advent of the scientific study of religion, there has been a growth of interest in the role of religions to operate as moral communities. Moral communities, a concept closely related to informal social controls, are of interest in countries and regions where formal controls are weak and ineffective. The objective of this paper is to present a spatial analysis of Violent and Intentional Crime in the city of Recife in Brazil, with a focus on the possible interactions between criminal events and places of worship. Previous research into moral communities has advocated the need for analysis at different scales, and this analysis contributes to the literature by using micro-level data and appropriate spatial analytical tools for spatial point patterns. Analysis is condcuted using three different types of places of worship (Catholic, Evangelical, and Spiritist) and three types of business establishments as controls (ice cream shops, pharmacies, and supermarkets). The results suggest that Catholic and Spiritist places of worship do not project moral communities geographically more than, say, ice cream shops. The intensity of criminal events in the proximity of Evangelical places of worship, in contrast, is markedly higher than for any of our other referential events.
+  Religious tenets of the type "thou shalt not kill" and their equivalents in many world religions have functioned as _de facto_ social policy for determining appropriate and acceptable behavior over the centuries. With the advent of the scientific study of religion, there has been a growth of interest in the role of religions to operate as moral communities. Moral communities, a concept closely related to informal social control, are of interest in countries and regions where formal controls are weak and ineffective. The objective of this paper is to present a spatial analysis of Violent and Intentional Crime in the city of Recife in Brazil, with a focus on the possible interactions between criminal events and places of worship. Previous research into moral communities has advocated the need for analysis at different scales, and this analysis contributes to the literature by using micro-level data and appropriate spatial analytical tools for spatial point patterns. Analysis is conducted using three different types of places of worship (Catholic, Evangelical, and Spiritist) and three types of business establishments as controls (ice cream shops, pharmacies, and supermarkets). The results suggest that Catholic places of worship do not project moral communities geographically more than, say, ice cream shops. The intensity of criminal events in the proximity of Evangelical places of worship, in contrast, is markedly higher at short distances than for any of our other referential events; however, at distances between 300 and 500 m the intensity is lower. Finally, the intensity of crime with respect to Spiritist churches, albeit lower at short distances, tends to be significantly higher at distances between 300 and 500 m.
   
 bibliography: bibliography.bib
 output: rticles::springer_article
