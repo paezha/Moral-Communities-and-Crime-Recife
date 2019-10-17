@@ -9,19 +9,19 @@ thanks: |
     end of the article.
 
 authors: 
-- name: Aye B. Cee
+- name: Author One
   address: A Department, University of XXX
   email: abc@example.edu
 
-- name: Dee E. Eff
+- name: Author Two
   address: A Department, University of XXX
   email: def@example.edu
   
-- name: Gee H. Eye
+- name: Author Three
   address: A Department, University of XXX
   email: ghi@example.edu
 
-- name: Jay K. Elle
+- name: Author Four
   address: Some School, University of WWW
   email: jkl@school.edu
 
