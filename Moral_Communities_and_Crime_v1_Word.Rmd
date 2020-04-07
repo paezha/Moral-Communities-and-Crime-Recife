@@ -1,0 +1,1031 @@
+---
+title: "Moral_Communities_and_Crime_v1"
+author: "Edivaldo Constantino das Neves Júnior et al."
+date: "4/7/2020"
+output: word_document
+---
+
+```{r load-packages, include=FALSE}
+
+# Load packages used in this document
+
+library(tidyverse)
+library(kableExtra)
+library(sf)
+library(spatstat)
+library(maptools)
+library(ggthemes)
+library(raster)
+library(fasterize)
+```
+
+```{r load-data, include=FALSE}
+
+# To run this notebook, a file `Moral_Communities_and_Crime.RData` is needed. This file contains the following objects:
+# 
+# - events_recife.sf: a simple features object with points for violent crimes, churches (Catholic, Evangelical, Spiritist) and commercial establishments (ice cream shops, pharmacies, supermarkets) in the city of Recife.
+# 
+# - recife.sf: a simple features object with the boundaries of the city of Recife
+# 
+# - setores.sf: a simple features object with setores (census tracts) and selected socio-economic and demographic information for the city of Recife, including:
+#   - Population density in persons per sq.km
+#   - Median income in setor
+#   - Proportion of population in setor who are unemployed
+#   - Proportion of households with a single mother
+#   - Proportion of households with a young single mother, a woman between the ages of 15 and 25
+#   - Proportion of population in poverty
+# 
+# Read the RData file:
+
+load("Moral_Communities_and_Crime_Recife.RData")
+```
+
+```{r data-preparation, include=FALSE, cache=TRUE}
+
+# In preparation for doing point pattern analysis, convert the `recife.sf` object to an `owin` object for use in `spatstat`:
+
+recife.owin <- recife.sf %>% as("Spatial") %>% as("owin")
+plot(recife.owin)
+
+# Convert the events to a `ppp` object:
+
+events_recife.ppp <- events_recife.sf %>% 
+  st_coordinates() %>% 
+  data.frame() %>%
+  mutate(Type = events_recife.sf$Type) %>%
+  as.ppp(W = recife.owin)
+
+#Split the point pattern into each type of event: crime, Catholic place of worship, Evangelical place of worship, Spiritist place of worship, ice cream shop, pharmacy, and supermarket
+
+events_recife_list <- split(events_recife.ppp)
+```
+
+```{r socio-economic-deprivation, include=FALSE, cache=TRUE}
+
+# Here an indicator of socio-economic deprivation is obtained using principal component analysis
+
+# PCA is implemented in R as `prcomp`:
+setores.pca <- setores.sf %>% 
+  st_drop_geometry() %>%
+  dplyr::select(median_income, prop_unemployed, prop_single_mother, prop_young_single_mother, prop_poverty) %>%
+  prcomp(center = TRUE, scale = TRUE)
+
+# The loadings of the pca are as follows:
+setores.pca$rotation
+
+# Socio-economic deprivation is a combination of high poverty, high proportion of single mothers, especially young women between the ages of 15-25, high proportion of unemployed people, and low median income.
+
+# Various diagnostics of the results are possible, such as the variance:
+
+std_dev <- setores.pca$sdev
+
+# Compute variance
+
+pr_var <- std_dev^2
+
+# Check variance of the components
+
+pr_var[1:5]
+
+# And the proportion of the variance:
+
+pr_var/sum(pr_var)
+
+# Once that there is principal component (call it SED for socio-economic deprivation), it can be joined to the `sf` object before it can be rasterized and converted to an `im` object:
+
+setores.sf$SED <- setores.pca$x[,1]
+
+# Normalize the SDE factor (with the addition of a small correction; the `rhohat` function does not like values <= 0):
+
+setores.sf <- setores.sf %>% mutate(SED = (SED - min(SED) + 0.1)/(max(SED) + 0.1 - min(SED)))
+```
+
+# Introduction {#intro}
+
+Violent crime is a widespread phenomenon with negative impacts on many spheres of life and society. Although the rate of homicides worldwide has grown at a slower rate than the population in the past few decades, the number of people killed in homicides still increased from 362,000 in 1990 to 464,000 in 2017 [@Unodc2019executive]. Furthermore, variations in the prevalence of violent crime tend to be extremely uneven. The Americas, with a population of approximately 793.8 million people in 2019 (or about 10.3% of the world population), accounted for approximately 173,000 homicides in 2017, or approximately 37.3% of all homicides in the world. Within the Americas, Brazil (along with Venezuela, Colombia, and Mexico) is one of the largest countries in the region with high homicide rates. And there are notable variations at the sub-national and intra-metropolitan levels as well. In fact, understanding the variations in the prevalence of violent crime is recognized as key to achieving policy goals:
+
+>> High levels of homicidal violence are concentrated in geographic and demographic “pockets”, so
+achieving target 16.1 of the Sustainable Development Goals requires interventions within the specific
+regions, countries, communities and population groups that are most at risk [@Unodc2019executive, p. 35]
+
+This concern is not idle: the endemic malady of violent crime represents an important factor that threatens to derail sustainable development goals. Violent crime, furthermore, tends to be more acute in those regions most in need of development. On the one hand, violent crime represents an economic and social drag [@Becker2017analise]. The impacts are multifaceted, since they affect people's well-being, either through the loss of human life, mental health, and limitations in the right to public spaces [@Doran2011putting], or through disturbances in schooling and academic achievement [@Unodc2019development]. In turn, these negative effects combine to create the unfortunate conditions that tend to breed criminal behavior, thus creating a vicious cycle of economic disadvantage and violence [@Unodc2019development]. It is not surprising, given these peculiarities, that researchers have joined calls for increased attention to the study of the patterns of violent crime in Low and Middle Income Countries [LMIC; @Murray2013crime].
+
+Added to the scenario, formal social control institutions in countries like Brazil leave something (or much) to be desired: while in practice they should inhibit criminal behavior, they suffer from deep deficiencies that end up reducing the deterrent power of the justice system. Serious institutional problems include the inefficiency of the police, the lack of national legislation, the glacial pace of judicial processes, and the weak situation of the prison system in the country [@Menezes2013spatial]. This makes it even more urgent to understand the role of _informal social controls_, i.e., the ability of community organizations such as schools, clubs, and neighborhood associations to suppress crime by strengthening the capabilities of neighbors to control inappropriate behavior [@Groff2015informal]. 
+
+In order to understand the factors that can potentially help to deter crime, beyond formal control, it is important to identify empirical regularities. Criminological factors include concrete elements (such as the presence of arms or drugs, or elements of the built environment), and also figurative factors, which include the social cost of deviant behavior. Accordingly, a number of studies have investigated various aspects of the environment and neighborhood design [e.g., @Foster2010neighbourhood; @He2017built; @Loukaitou2001measuring], whereas other studies have focused on exposure to environmental attributes that signal weakened norms, such as liquor and tobacco outlets [e.g., @Brower2007spatial; @Deryol2016crime; @Lipton2008spatial; @Quick2017influence]. 
+
+Yet another fruitful avenue for research, and one that has only recently begun to be explored, is the presence of environmental attributes that can help to reinforce moral norms, such as schools and churches [e.g., @Abdullah2018amenities; @Davignon2015christian; @Furr2010metric; @Traunmuller2011moral]. It is thus that in a recent paper, Warner and Konkel [-@Warner2019neighborhood] note that the role of places of worship, as distinct entities from the members of the congregations, have received less attention in empirical and theoretical research for their deterrence potential. The role of these institutions might be particularly important in places where formal state institutions lack the means or the will to enforce norms in a consistent way - as is the case in Brazil [@Garmany2014space].
+
+With the above considerations in mind, the objective of this paper is to investigate whether and how places of worship correlate spatially with criminal events, or in other words, to investigate whether their signals as moral communities have a discernible spatial dimension. The case study is the city of Recife in the state of Pernambuco, in Brazil's Northeast. Recife is a large and important metropolitan area in a historically poor region, and afflicted by high levels of violent crime, having the dubious honor of being one of five state capitals with the highest rates of homicide in the period under study [@Menezes2013spatial]. The empirical strategy is to use spatial analysis to explore the potential geographical relationships between violent criminal events, on the one hand, and places of worship and a selection of commercial establishments that serve as controls, on the other. Dissagregated data allows us to analyze the relevant point patterns at a very high level of resolution. 
+
+After this introductory section, the rest of this paper is structured as follows: Section \ref{background} reviews some relevant theoretical perspectives on religion and crime; then Section \ref{methods} presents the empirical strategy used in the work. Section \ref{case} presents the context as well as the data used in the study; Section \ref{results} presents the analysis, whereas the results are discussed in Section \ref{discussion}. Finally, some concluding remarks are offered in Section \ref{conclusions}.
+
+# Background: Theoretical Perspectives on Religion and Crime {#background}
+
+Why do humans behave morally? For millennia, it has been the role of religion to provide the basic tenets of morally acceptable behavior: thou shalt not kill et al., and their equivalent in many world religions [e.g., @Donovan1986different]. Enforcement of such tenets implies different mechanisms, including _sin_, _haram_, _karma_, and _tapu_, with punishment delivered by hellfire and exile to _Jahannam_ or _Gehenna_, to mention just some choice places of torment. In addition to acting as _de facto_ social policy for much of history, many of these religious tenets still have the force of law in many cultures and regions - and even where they do not, they are held by some researchers and policy experts to be helpful complements to reduce crime in any case [e.g., @Durrant2017religion; @Johnson2011more]. The hypothesis that religion can act as a factor that deters and reduces criminal behavior, therefore, has prompted the scientific study of the effectiveness of religion on moral behavior [@Hoffmann2015religion].
+
+An early effort to theorize the effect of religion on criminal behavior was the _hellfire hypothesis_ of Hirschi and Stark [-@Hirschi1969hellfire]. The focus of this hypothesis is the threat of extra-temporal (and possibly eternal) punishment, and how this threat can deter believers from commandment-breaking (also see Pascal's wager). Accordingly, Hirsch and Stark [-@Hirschi1969hellfire] posit that negative correlations between crime and religion are a consequence of a sense of commitment with normative values, a commitment that is ritually reinforced in a regular fashion (e.g., the liturgical rite of peace in Catholic Mass). Rohrbaugh and Jessor [-@Rohrbaugh1975religiosity], for instance, note that by attributing to divinity (or some other supra-terrenal entity) the supreme force of punishment, religion helps to build a sense of obduracy, or "hardening" against temptation.
+
+Despite its intuitive appeal, research has not provided much direct evidence for the hypothesis of hellfire [@Hoffmann2015religion, p. 1]. In a bizarre twist, even mainstream doctrines (such as absolution) may in fact encourage beliefs that neutralize the fear of _terrenal_ punishment, and thus turn out to be criminogenic [e.g., @Topalli2013god]. More deviant cases can even recast criminal behavior as a form of spiritual insurgency [@Chesnut2017devoted]. Counterexamples like this notwithstanding, researchers remain open to the possibility that "religion may still serve as a social control mechanism by encouraging conventional beliefs, monitoring behaviors, enhancing family attachments, or providing conventional activities" [@Hoffmann2015religion, p. 1]. In this way, the hypothesis of _moral communities_ [@Stark1996religion] recognizes that social integration is essential for increasing social control, thus reducing the practice of behavior that is not in accordance with current norms. Rohrbaugh and Jessor [-@Rohrbaugh1975religiosity] also emphasize that religion acts as social control since it defines what is an appropriate attitude according to moral values, thus making moral communities a close relative of the concept of _informal social control_, defined as “the ability of social groups or institutions to make norms or rules effective” [@Reiss1951delinquency, p. 196; cited in @Groff2015informal, p. 91].
+
+The hypothesis of moral communities has over the years been used to examine a variety of outcomes of interest. Recent examples include Stroope and Baker's [-@Stroope2018moral] exploration of religiosity and self-rated health; Davignon and Thomson [-@Davignon2015christian] with their research on institutional context and the religiosity of students; and the study of religion as a source of trust of Traunmuller [-@Traunmuller2011moral]. This is in addition, of course, to numerous studies on criminal behavior such as Eitle [-@Eitle2011religion], an author who explored the deterrence power of religion on gambling; Lee and Bartkowski's [-@Lee2004love] investigation of juvenile homicide in rural areas; and the research of Regnerus [-@Regnerus2003moral] on adolescent delinquency. The hypothesis of moral communities as a form of informal social control, on the other hand, has been less studied from a geographical perspective, and it is only recently that has attracted the attention of researchers. Groff [-@Groff2015informal], for instance, discusses informal social control as a phenomenon that can plausibly operate at different geographical scales, from the level of the home and family, through the street block and neighborhood, possibly to other scales such as the county. In this way, Nie and Yang [-@Nie2019smoking] remark on a recent paper on the lack of research conducted to study how the religious context of a geographical area (e.g., a county) may influence (youth smoking) behavior (p. 2). This point is echoed by Warner and Konkel [-@Warner2019neighborhood], who moreover recommend the use of even smaller units of analysis (e.g., Census Block Groups), in an effort to reduce aggregation bias [see @Hipp2007block], but more importantly because the processes defined by social disorganization theory are thought to occur at relatively small geographical scales.
+
+The preceding review, as well as other research [-@Malleson2019identifying], makes clear the need for research at various geographical scales. From a theoretical perspective, the social mechanisms that underpin the hypothesis of moral communities and informal social control can happen at various geographical scales, some of which previous research has already addressed: the work of Nie and Yang [-@Nie2019smoking], for one, highlights the role of processes detectable at a relatively high level of aggregation, whereas Warner and Konkel [-@Warner2019neighborhood], looking specifically at the effect of places of worship, bring the study closer to the level of the neighborhood. In what follows, we propose to adopt a much more disaggregated approach by considering the intensity of criminal events with respect to places of worship. This requires micro-level data both of crimes and places of worship, and the use of appropriate spatial analytical tools for point patterns, as discussed next.
+
+# Empirical Strategy {#methods}
+
+As noted above, previous research that has investigated the presence of churches from a geographical perspective has used data aggregated at different scales. In the case of Nie and Yang [-@Nie2019smoking], the unit of analysis was the county, whereas Warner and Konkel [-@Warner2019neighborhood] used Census Block Groups, a much smaller unit of analysis. Research in spatial criminology, on the other hand, has studied criminal events as point patterns since at least the work of Levine et al. [-@Levine1986crime] investigated the concentration of criminal events in the proximity of bus stops. Since then, many other works have applied tools of spatial point pattern analysis to investigate the empirical properties of the distribution of crime. This includes Craglia et al. [-@Craglia2000comparative] who used the Ripley's K-function [@Ripley1976second] to investigate clustering processes, and Rogerson and Sun [-@Rogerson2001spatial] who applied nearest neighbor techniques to the study of arson. More recent studies of crime as point patterns are Nakaya and Yano [-@Nakaya2010visualizing], Kiani et al. [-@Kiani2015analysis], and Malleson and Andresen [-@Malleson2015spatio].
+
+Readers interested in point pattern analysis techniques are urged to consult the still valuable Bailey and Gatrell [-@Bailey1995interactive] or for an up-to-date and in-depth coverage of the topic, the excellent text by Baddeley et al. [-@Baddeley2015spatial]. In this paper we will concentrate on one property of point processes, namely the intensity. Suppose that the outcome of interest is the number of events per unit area $Y(\mathcal{A})$. This could be, for instance, the number of criminal events observed in an arbitrary area. The intensity of a point pattern then is as follows:
+$$
+\lambda(s)=\lim_{\text{d}s \to 0}\frac{E[Y(\text{d}s)]}{\text{d}s}
+$$
+
+where $\lambda(s)$ is the intensity of the process at point $s$, given by the expected number of events in a small area $\text{d}s$ around $s$, as the area becomes arbitrarily small. If the process is homogeneous (i.e., the intensity is a constant over space), an apt estimator of the intensity is the global intensity, simply the number of events divided by the area of the region under analysis:
+$$
+\hat{\lambda} = \frac{n}{|\mathcal{A}|}
+$$
+
+When the process is not homogeneous, other estimators are more appropriate. In the analysis to follow we use two estimators of intensity: conditional quadrat counts and relative distribution estimate. These techniques are briefly discussed next.
+
+## Conditional Quadrat Counts
+
+Quadrat counts is a relatively simple technique to analyze spatial variations in the intensity of a point process. It operates by partitioning the region under study $\mathcal{A}$ into subregions $\mathcal{A}_1,\cdots,\mathcal{A}_m$. These subregions are mutually exclusive, and their union is identical to $\mathcal{A}$. In the simplest case, the subregions have equal area. The number of events within each subregion (i.e., $n_{\mathcal{A}}$) divided by the area of the subregion (i.e., $|\mathcal{A}|$) is a local estimate of the intensity:
+$$
+\lambda(\mathcal{A}_i)=\frac{n_{\mathcal{A}_i}}{|\mathcal{A}_i|}
+$$
+
+A test for homogeneity consists of assessing whether the intensity of the point process at the quadrats is uniform:
+$$
+\lambda(\mathcal{A}_1)=\cdots=\lambda(\mathcal{A}_m)
+$$
+
+Using quadrats of equal size is a convenient simplification, but in principle the areas could be different - in which case the count of events would be proportional to the area of the quadrat under homogeneity. An interesting variation of this technique is conditional quadrat counts, whereby the partition of regions $\mathcal{A}_1,\cdots,\mathcal{A}_m$ is done to reflect an underlying covariate of interest, say $Z$. By introducing a covariate as a partitioning criterion, it becomes possible to calculate estimators of the intensity of quadrats at different levels of the value of the covariate. For exploratory purposes, we can plot average intensity by quadrat, and compare to the global intensity.
+
+## Relative Distribution Estimate
+
+Conditional quadrat counts allow us to explore whether the intensity of the process depends on a covariate $Z$. A different way of expressing this is as follows:
+$$
+\lambda(s)=\rho\big(Z(s)\big)
+$$
+
+In this case, the intensity is a function $\rho$ that maps how the intensity depends on covariate $Z$. Non-parametric estimation of $\rho$ uses the ratio of the density of covariate values at the locations of the point process, relative to the _spatial distribution function_ $G$, the density of covariate values at random locations [see @Baddeley2015spatial, p. 179]. 
+
+The density of covariate values at the locations of the is obtained by means of a kernel density estimator, for example:
+$$
+\lambda_0(s) = \frac{1}{|\mathcal{A}|}\sum_{i = 1}^n\kappa(Z(s_i) - z)
+$$
+where $s_i$ are the locations of the points.
+
+On the other hand, $G$ which is the cumulative distribution function of $Z$ at random point $S$ uniformly distributed in $\mathcal{A}$  :
+$$
+G(z) = \frac{1}{|\mathcal{A}|} \int_{\mathcal{A}}\text{I}\{Z(s)\leq z\}\text{d}s
+$$
+where $\text{I}$ is an indicator function that takes the value of $1$ if the argument is true, and the value of $0$ otherwise. In practice, the spatial distribution function is approximated based on a discretization of space using a fine grid of pixels as follows:
+$$
+G(z) = \frac{\#\{\text{pixels }s:Z(s)\leq z\}}{\# \text{pixels}}
+$$
+
+Therefore, an estimator of $\rho$ is as follows:
+$$
+\rho(z) = \frac{1}{|\mathcal{A}|G'(z)}\sum_{i=1}^n\kappa(Z(s_i) - z)
+$$
+where the derivative $G'$ can be approximated by differentiating a smoothed estimated of $G$. Other estimators are discussed by Baddeley et al. [@Baddeley2015spatial, p. 180].
+
+It is possible to adjust the relative distribution estimate by means of a baseline; a baseline in this case can be a function of other covariates that might confound the estimates of the relative distribution, so that the relative intensity $\lambda(s)/B(s)$ can be assumed to depend only on covariate $Z$. Therefore:
+$$
+\lambda(s) = \rho(Z(s))B(s)
+$$
+where $B(s)$ is a baseline function. It can be seen that $\rho(z)=1$ is the baseline intensity; values of $\rho(z)>1$ correspond to intensities higher than the baseline _as a function of_ $Z(u)$, whereas values of $\rho(z)<1$ correspond to intensities lower than the baseline, again as a function of $Z(u)$.  
+
+# Case Study: Context and Data {#case}
+
+The study is of the city of Recife, the capital of the state of Pernambuco in the Northeast region of Brazil. With a population of 1,550,390 million inhabitants in 2010, Recife is one of the main Brazilian metropolises, exerting a great economic influence in neighboring regions. However, the city experiences a serious problem with violent crime, and has the dubious honor of being one of the five capital cities in Brazil with the highest homicide rates in the period under study [@Menezes2013spatial].
+
+In the current context, the term "violent crime" is an umbrella for several forms of infractions to the penal code. Following recommendations of the National Secretariat of Public Security of the Ministry of Justice of 2006, these are Violent Lethal and Intentional Crimes (VLIC; which includes intentional homicide), theft followed by death (robbery), and corporal injury followed by death. The data on LIVC were extracted from the Police Information System of the Secretariat of Social Defense of Pernambuco (INFOPOL / SDS-PE), which is the most reliable, detailed, and comprehensive information on violent deaths in the region. 
+
+```{r table-descriptive-statistics, echo=FALSE}
+descriptive_stats <- data.frame(Attribute = c("Man",
+                                              "Woman",
+                                              "Murder",
+                                              "Robbery",
+                                              "Body injury followed by death",
+                                              "Black and Brown",
+                                              "Yellow and White",
+                                              "Not Reported",
+                                              "1 to 12 years",
+                                              "13 to 17 years",
+                                              "18 to 30 years",
+                                              "31 to 65 years",
+                                              "65 years and older",
+                                              "Not Reported",
+                                              "Firearm",
+                                              "Other"),
+                                Percentage = c(91.35,
+                                               8.65,
+                                               97.82,
+                                               2.00,
+                                               0.18,
+                                               95.11,
+                                               1.27,
+                                               3.62,
+                                               0.18,
+                                               11.31,
+                                               61.70,
+                                               25.84,
+                                               0.73,
+                                               0.24,
+                                               87.51,
+                                               12.49))
+
+kable(descriptive_stats, 
+      "latex", 
+      booktabs = TRUE,
+      digits = 3,
+      caption = "\\label{tab:descriptive-statistics}Characteristics of Violent Crime in Recife, July, 2008 - June, 2009",
+      col.names = c("", "Percentage")) %>%
+  kable_styling() %>%
+  pack_rows("Gender of Victim", 1, 2) %>%
+  pack_rows("Type of Crime", 3, 5) %>%
+  pack_rows("Ethnicity of Victim", 6, 8) %>%
+  pack_rows("Age of Victim", 9, 14) %>%
+  pack_rows("Weapon Used", 15, 16)
+```
+
+The data are organized at the individual level and it is possible to obtain information about the location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of LIVC in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms. Figure \ref{fig:plot-crime} shows the spatial distribution of the 1,657 LIVC crimes that occurred in the city of Recife between July, 2008 and June, 2010.
+
+```{r fig-plot-crime, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-crime}Location of Lethal and Intentional Violent Crime in Recife, July, 2008 - June, 2009"}
+
+#We can experiment with plotting the events:
+
+ggplot(data = events_recife.sf %>% filter(Type == "Violent Crime")) + 
+  geom_sf(color = "red") +
+  geom_sf(data = recife.sf, fill = NA) + 
+  theme_tufte()
+```
+
+Information about places of interest was obtained from the National Register of Addresses for Statistical Purposes (CNEFE - Census 2010), which lists 78,056,411 urban and rural addresses, distributed among the 316,574 census tracts. This is the first database of its kind produced by IBGE, and the first version was produced at the time of the 2000 Census. The way addresses are described in the National Register is very rich, and it is possible to identify the names of the places of worship including their denomination. Georeferencing was used to geolocate each place of worship. In this way, a total of 1,719 places of worship were geolocated in the city of Recife.
+
+In addition to places of worship, the National Register of Addresses for Statistical Purposes was queried to extract facilities other than places of worship. As discussed above, the idea is to identify points of reference that can be used as controls, having a neutral morality profile. For the sake of the present study, we selected pharmacies, ice cream shops, and bakeries to construct our control group. These three types of establishments comply with the criteria of being morally neutral and having a spatial distribution commensurate with places of worship.
+
+Figure \ref{fig:plot-events} shows the spatial distribution of the places of worhsip and control establishments in the city of Recife. Note the similarity between the maps. As expected, there are differences in the number of points, but the locations of cases and controls are quite similar.
+
+```{r fig-plot-events, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-events}Location of Places of Worship and Commercial Establishments in Recife"}
+
+#We can experiment with plotting the events:
+
+ggplot(data = events_recife.sf %>% filter(Type != "Violent Crime")) + 
+  geom_sf(aes(color = Type, fill = Type)) +
+  geom_sf(data = recife.sf, fill = NA) + 
+  facet_wrap(~ Type, nrow = 2) +
+  scale_fill_viridis_d(option = "viridis", direction = 1) +
+  scale_color_viridis_d(option = "viridis", direction = 1) +
+  theme_tufte()  +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+```{r summary-point-patterns, include=FALSE}
+
+# Extract the intensity of each point pattern for the study area
+
+summary_crime <- summary(events_recife_list$`Violent Crime`)
+summary_catholic <- summary(events_recife_list$Catholic)
+summary_evangelic <- summary(events_recife_list$Evangelical)
+summary_spiritist <- summary(events_recife_list$Spiritist)
+summary_ice_cream <- summary(events_recife_list$`Ice Cream Shop`)
+summary_pharmacy <- summary(events_recife_list$Pharmacy)
+summary_supermarket <- summary(events_recife_list$Supermarket)
+```
+
+# Analysis and results {#results}
+
+The analysis is implemented using the `R` statistical computing language, and documents to replicate the analysis, in addition to all data necessary, can be obtained from this anonymous shared folder:
+
+https://drive.google.com/open?id=1tuJM4Mhi0Ftq3ZEwjv6RP9vO3veGjIR_
+
+## Socio-Economic Deprivation
+
+```{r sed-descriptive-statistics, echo=FALSE}
+
+# Create a dataframe with the descriptive statistics of the socio-economic and demographic variables used for the creation of the Socio-Economic Deprivation index. The descriptive statistics are the min, 2nd quartile, median, mean, 3rd quartile, max, and include as well the loadings of the first principal component for discussion
+
+sed_descriptives <- data.frame(variable = c("Median Income", 
+                    "Proportion Unemployed", 
+                    "Proportion Poverty", 
+                    "Proportion Single Mother", 
+                    "Proportion Young Single Mother"),
+           min = c(min(setores.sf$median_income),
+                   min(setores.sf$prop_unemployed),
+                   min(setores.sf$prop_poverty),
+                   min(setores.sf$prop_single_mother),
+                   min(setores.sf$prop_young_single_mother)),
+           second_q = c(quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_unemployed, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_poverty, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[2]),
+           median = c(median(setores.sf$median_income),
+                      median(setores.sf$prop_unemployed),
+                      median(setores.sf$prop_poverty),
+                      median(setores.sf$prop_single_mother),
+                      median(setores.sf$prop_young_single_mother)),
+           mean = c(mean(setores.sf$median_income),
+                    mean(setores.sf$prop_unemployed),
+                    mean(setores.sf$prop_poverty),
+                    mean(setores.sf$prop_single_mother),
+                    mean(setores.sf$prop_young_single_mother)),
+           third_q = c(quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_unemployed, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_poverty, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4],
+                       quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4]),
+           max = c(max(setores.sf$median_income),
+                   max(setores.sf$prop_unemployed),
+                   max(setores.sf$prop_poverty),
+                   max(setores.sf$prop_single_mother),
+                   max(setores.sf$prop_young_single_mother)),
+           pca_loadings = as.numeric(setores.pca$rotation[c(1, 2, 5, 3, 4), 1]))
+```
+
+```{r fig-plot-sed, echo=FALSE, include = FALSE, fig.align = "left", fig.cap="\\label{fig:plot-sed}Socio-Economic Deprivation in Recife"}
+ggplot(data = setores.sf) + 
+  geom_sf(aes(fill = SED),
+          color = NA) +
+  scale_fill_viridis_c(option = "plasma", direction = 1, values = c(0, 0.05, 0.2, 0.3, 0.4, 1)) +
+  theme_tufte()
+```
+
+The first step in our analysis is to obtain an indicator of Socio-Economic Deprivation (SED). Socio-economic deprivation is known to correlated positively with crime, as it often reflects relevant criminogenic factors such as poverty and family disruption [@He2015temporal]. In the present case, we have for the city of Recife information about the variables shown in Table \ref{tab:sed-descriptive-statistics} at the level of _setores_, a small Brazilian census geography. 
+
+As seen in the table, Recife is a city with large socio-economic and demographic disparities; for example, the _setor_ with the highest median income has a median income that is `r prettyNum(filter(sed_descriptives, variable == "Median Income")["max"]/filter(sed_descriptives, variable == "Median Income")["min"] * 100, digits = 2, big.mark = ",")`% higher than the median income in the _setor_ with the lowest median income. Whereas there are _setores_ where the proportion of population who are unemployed is zero, there are _setores_ where almost 60% of the population are unemployed. Likewise, there are _setores_ where almost 70% of the population lives in poverty. In addition to these economic indicators, two variables are used to represent family disruption, the proportion of families whose head is a single mother, and the proportion of families whose head is a _young_ single mother, that is, a woman between the ages of 15 and 25. As can be seen, there are _setores_ with approximately 70% of households led by single mothers, and of these, over 21% are led by younger women, indicating a high degree of family disruption.
+
+For the analysis, we use Principal Component Analysis, a data reduction technique, to obtain an indicator of Socio-Economic Deprivation, essentially the first principal component in the output. The loadings of this factor (Table \ref{tab:sed-descriptive-statistics}) indicate that high Socio-Economic Deprivation is a combination of (in terms of importance): high levels of poverty, high levels of unemployment, and low median income, followed by high levels of family disruption, in particular proportion of families led by young single mothers. This factor accounts for almost 54% of the variance..
+
+```{r table-sed-descriptive-statistics, echo=FALSE}
+
+# Render table with descriptives of socio-economic and demographic variables
+
+kable(sed_descriptives,
+      "latex",
+      booktabs = TRUE,
+      digits = 2,
+      escape = FALSE,
+      align = c("l", "c", "c", "c", "c", "c", "c", "c"),
+      caption = "\\label{tab:sed-descriptive-statistics}Descriptive statistics of some key socio-economic and demographic variables in Recife",
+      col.names = linebreak(c("Variable", 
+                              "Min", 
+                              "2nd Quartile", 
+                              "Median", 
+                              "Mean", 
+                              "3rd Quartile", 
+                              "Max", 
+                              "PC Factor 1\n Loadings")),
+      row.names = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "scaled_down")) %>%
+  footnote(general = c("The variable for young single mothers is for women aged 15-25",
+                       "The first principal component accounts for 53.91% of the variance"))
+
+```
+
+Figure \ref{fig:plot-sed-as-quintiles} displays the geography of Socio-Economic Deprivation in Recife, after classifying _setores_ by quintiles, whereby the "High" class corresponds to _setores_ in the top 20% of the Socio-Economic Deprivation indicator, and the "Low" class corresponds to _setores_ in the bottom 20% of the Socio-Economic Deprivation indicator. The figure shows a veritable mosaic of affluence and deprivation, with high deprivation areas directly in contact, and in some cases almost completely surrounded, by low deprivation areas. This geographical pattern of inequality, on the other hand, seems to be characteristic of Brazilian metropolitan regions, where enclaves of wealth and _favelas_ (i.e., urban slums) can be found in close proximity [see for example @Feitosa2007global].
+
+```{r rasterize-sed, include=FALSE}
+
+# To use the SED indicator for conditional quadrat counts and relative distribution, we need to rasterize and convert this variable to an image:
+
+# First, we need a base raster; this will be the boundaries of the study area. After some trial and error with different values of number of rows and columns, these values create pixels that are as close to squares as possible, while also being relatively small
+
+recife.r <- raster(recife.sf, nrows = 400, ncols = 276)
+
+# The raster `recife.r` is the template for rasterizing other items, in this case socio-economic deprivation. Use package `fasterize` to rasterize an `sf` object.
+
+sed.r <- fasterize(setores.sf, recife.r, field = "SED")
+
+# Once that the object is a raster, it can be converted to a `spatstat` `img` class object:
+sed.img <- as.im(sed.r)
+```
+
+```{r quadrat-analysis-preliminaries, include=FALSE}
+
+# To do quadrat analysis by different levels of SED we need the quintiles of this variable (other criteria could be used to slice the distribution, e.g., standard deviations, but this one is intuitive and simple)
+
+sed5 <- quantile(sed.img, c(0, 0.2, 0.4, 0.6, 0.8, 1))
+
+# Next we can cut the `sed.im` using the quintiles:
+
+sed_cut5.img <- cut(sed.img, breaks = sed5, include.lowest = TRUE, labels = c(1:5))
+```
+
+```{r tesselate-sed5, include=FALSE}
+
+# To do quadrat analysis we need to tesellate the cut image: 
+
+V <- tess(image = sed_cut5.img)
+
+# This object is used for the analysis, but it is not very neat for plotting purposes. Lets convert instead to an `sf` object. First, extract and expand the coordinates:
+
+coords_V <- expand.grid(X = V$image$xcol, Y = V$image$yrow)
+
+# Next, extract the values of the cells and convert to a vector:
+
+sed5_V <- as.vector(t(V$image$v))
+
+# Join the coordinates with the values in a dataframe and drop all NAs, before converting to `sf` and adding coordinate referencing system information (crs) to ensure that its projection information is there and compatible with the rest of `sf` objects (i.e., recife.sf, setores.sf, events_recife.sf):
+
+sed5.sf <- data.frame(coords_V, sed5_V) %>% 
+  drop_na() %>% transmute(X, Y, SED = factor(sed5_V, 
+                                              levels = c(1:5),
+                                              labels = c("Low", 
+                                                         "Medium Low", 
+                                                         "Medium", 
+                                                         "Medium High", 
+                                                         "High"))) %>%
+  st_as_sf(coords = c("X", "Y")) %>%
+  st_set_crs(value = st_crs(recife.sf))
+```
+
+```{r plot-sed-as-quintiles, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-sed-as-quintiles}Socio-Economic Deprivation in Recife classified by quintiles" }
+ggplot(data = sed5.sf) + 
+  geom_sf(aes(fill = SED, color = SED)) +
+  geom_sf(data = recife.sf, fill = NA) +
+  scale_fill_viridis_d(option = "plasma", direction = 1) +
+  scale_color_viridis_d(option = "plasma", direction = 1) +
+  guides(fill = guide_legend(reverse = TRUE),
+         color = guide_legend(reverse = TRUE)) +
+  theme_tufte()
+```
+
+## Conditional Quadrat Analysis
+
+Once the indicator of Socio-Economic Deprivation has been obtained, as outlined above, it can be used for conditional quadrat analysis. As previously described, the quadrats are irregular areas that are defined based on a covariate, in this case the quintiles of the Socio-Economic Deprivation indicator. In essence, this entails counting the number of events at each level of the covariate, and then calculating an estimator of the intensity.
+
+```{r quadrat-analysis, include=FALSE}
+
+# Calculate the intensity of the various point patterns by quadrat, conditional on Socio-Economic Deprivation:
+
+# Crime
+
+crime5 <- quadratcount(events_recife_list$`Violent Crime`, tess = V)
+crime5_intensity <- intensity(crime5)
+
+# Catholic
+
+catholic5 <- quadratcount(events_recife_list$Catholic, tess = V)
+catholic5_intensity <- intensity(catholic5)
+
+# Evangelical
+
+evangelic5 <- quadratcount(events_recife_list$Evangelical, tess = V)
+evangelic5_intensity <- intensity(evangelic5)
+
+# Spiritist
+
+spiritist5 <- quadratcount(events_recife_list$Spiritist, tess = V)
+spiritist5_intensity <- intensity(spiritist5)
+
+# Ice cream
+
+ice_cream5 <- quadratcount(events_recife_list$`Ice Cream Shop`, tess = V)
+ice_cream5_intensity <- intensity(ice_cream5)
+
+# Pharmacies
+
+pharmacies5 <- quadratcount(events_recife_list$Pharmacy, tess = V)
+pharmacies5_intensity <- intensity(pharmacies5)
+
+# Supermarkets
+
+super_markets5 <- quadratcount(events_recife_list$Supermarket, tess = V)
+supermarkets5_intensity <- intensity(super_markets5)
+```
+
+```{r instensity-dataframe, include=FALSE}
+
+# Collect in a data.frame for convenience of plotting:
+
+intensity_all <- data.frame(SED = rep(c("Low", 
+                                        "Middle Low", 
+                                        "Middle", 
+                                        "Middle High", 
+                                        "High"), 
+                                      times = 7),
+                            Type = rep(c("Violent Crime", 
+                                         "Catholic",
+                                         "Evangelical",
+                                         "Spiritist",
+                                         "Ice Cream",
+                                         "Pharmacies",
+                                         "Super Markets"), 
+                                       each = 5),
+                            Intensity = c(crime5_intensity,
+                                          catholic5_intensity,
+                                          evangelic5_intensity,
+                                          spiritist5_intensity,
+                                          ice_cream5_intensity,
+                                          pharmacies5_intensity,
+                                          supermarkets5_intensity),
+                            Global_Intensity = rep(c(summary_crime$intensity,
+                                                     summary_catholic$intensity,
+                                                     summary_evangelic$intensity,
+                                                     summary_spiritist$intensity,
+                                                     summary_ice_cream$intensity,
+                                                     summary_pharmacy$intensity,
+                                                     summary_supermarket$intensity),
+                                                   each = 5)) %>%
+  mutate(SED = factor(SED, levels = c("Low", 
+                                        "Middle Low", 
+                                        "Middle", 
+                                        "Middle High", 
+                                        "High"),
+                      ordered = TRUE),
+         Type = factor(Type, levels = c("Violent Crime", 
+                                        "Catholic",
+                                        "Evangelical",
+                                        "Spiritist",
+                                        "Ice Cream",
+                                        "Pharmacies",
+                                        "Super Markets")))
+```
+
+Figure \ref{fig:plot-crime-quadrat} shows the results of conditional quadrat counts for Lethal and Intentional Violent Crime. The dotted line indicates the global intensity, simply the total number of criminal events divided by the area of the region. It can be seen that the intensity of crime clearly increases with Socio-Economic Deprivation, and the intensity in areas with the highest levels of Socio-Economic Deprivation is `r round(crime5_intensity[5]/crime5_intensity[1] * 100, 2)`% higher than in places with the lowest levels of Socio-Economic Deprivation. This is as expected, as research has consistently found correlations between Socio-Economic Deprivation and a variety of negative health outcomes, including homicide [@Ichihara2018area]. A $\chi^2$ test of independence on the quadrat counts yields a value of $p\leq 0.0001$ (four degrees of freedom), which comfortably rejects the null hypothesis of homogeneity of intensity of crime by level of Socio-Economic Deprivation. 
+
+```{r plot-crime-quadrat, echo=FALSE, fig.width=3, fig.asp=1 , cache = TRUE, fig.cap="\\label{fig:plot-crime-quadrat}Intensity of crime by level of Socio-Economic Deprivation; the dotted line indicates the global intensity of crime"}
+
+#Plot the intensity of crime:
+
+ggplot(data = intensity_all %>% filter(Type == "Violent Crime"), 
+       aes(x = SED, y = Intensity, fill = Type)) + 
+  geom_col(fill = "red") +
+  xlab("Socio-Economic Deprivation") +
+  geom_hline(aes(yintercept = Global_Intensity), linetype = "dotted", size = 1) +
+  #facet_wrap(Type ~.) +
+  theme_tufte() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+Next, we repeat the analysis of conditional quadrat counts, but now for the six types of events of reference. As discussed above, this included three types of places of worship which are of interest from the perspective of moral communities, and three types of commercial establishments that we posit are morally neutral. The results of estimating the intensity of the process by means of conditional quadrat counts are shown in Figure \ref{fig:plot-events-quadrat}.
+
+The first thing that we note are the variations in global intensity of places of worship, with Evangelical places of worship being the most intense of the three. There are no clear variations in the locational pattern of Catholic places of worship by level of Socio-Economic Deprivation. Evangelical places of worship, on the other hand, tend to be found more frequently in places with middle-low and middle levels of Socio-Economic Deprivation, a pattern also discernible, albeit barely, for Spiritist churches. Interestingly (see Table \ref{tab:quadrat-test-statistics}) $\chi^2$ tests of independence on the conditional quadrat counts fail to reject the hypothesis of homogeneity for Catholic and Spiritist churches, and it is only in the case of Evangelical places of worship that we detect the possibility of locational patterns that vary by level of Socio-Economic Deprivation.
+
+Three types of commercial establishments also appear to display inhomogeneous locational patterns (Table \ref{tab:quadrat-test-statistics}), with the $\chi^2$ test of independence emphatically rejecting the null hypothesis. As seen in Figure \ref{fig:plot-events-quadrat}, ice cream shops tend to be found more frequently in places with middle-low Socio-Economic Deprivation, and less frequently in places with middle-high Socio-Economic Deprivation. Pharmacies show a clearer trend, with locational patterns that tend to favor places with low Socio-Economic Deprivation. Finally, supermarkets are found less frequently in places with middle-high and high Socio-Economic Deprivation.
+
+```{r plot-events-quadrat, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-events-quadrat}Intensity of places of worship and commercial establishments by level of Socio-Economic Deprivation; the dotted lines indicates the respective global intensities"}
+
+#Plot the intensity of point patterns:
+
+ggplot(data = intensity_all %>% filter(Type != "Violent Crime"), 
+       aes(x = SED, y = Intensity, fill = Type)) + 
+  geom_col() +
+  xlab("Socio-Economic Deprivation") +
+  geom_hline(aes(yintercept = Global_Intensity), linetype = "dotted", size = 1) +
+  scale_fill_viridis_d(option = "viridis", direction = 1) +
+  scale_color_viridis_d(option = "viridis", direction = 1) +
+  facet_wrap(Type ~.) +
+  theme_tufte() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+```{r table-quadrat-test-statistics, echo=FALSE}
+
+quad.tests <- data.frame(Event = c("Catholic",
+                                   "Evangelical",
+                                   "Spiritist",
+                                   "Ice Cream Shop",
+                                   "Pharmacy",
+                                   "Supermarket"),
+                         rbind(quadrat.test(catholic5), 
+                               quadrat.test(evangelic5), 
+                               quadrat.test(spiritist5),
+                               quadrat.test(ice_cream5),
+                               quadrat.test(pharmacies5),
+                               quadrat.test(super_markets5))) %>%
+  transmute(Event,
+            Statistic = as.numeric(statistic),
+            degrees_of_freedom = as.numeric(parameter),
+            p_value = as.numeric(p.value)) %>%
+  mutate(p_value = ifelse(p_value >= 0.001, paste0(round(p_value, 4)), "$<0.001$"))
+
+# Render table with descriptives of socio-economic and demographic variables
+
+kable(quad.tests,
+      "latex",
+      booktabs = TRUE,
+      digits = 3,
+      escape = FALSE,
+      align = c("l", "c", "c", "c"),
+      caption = "\\label{tab:quadrat-test-statistics}$\\chi^2$ tests of independence of conditional quadrat counts",
+      col.names = linebreak(c("Event", 
+                              "Statistic", 
+                              "Degrees of Freedom", 
+                              "p-value"))) %>%
+  kable_styling(bootstrap_options = c("striped", "scaled_down"))
+```
+
+## Relative Distribution
+
+The preceding analysis provides a valuable backdrop. As seen there, there is a clear distribution of criminal events, increasing on par with the level of Socio-Economic deprivation. Of the three different classes of places of worship, only Evangelical churches display a locational pattern that is commensurate, with Socio-Economic Deprivation, albeit the pattern is distinct from criminal events, with Evangelical churches found less frequently in both high and low Socio-Economic Deprivation areas.
+
+The analysis does not answer the question, yet, of possible covariations between crime, on the one hand, and places of worship and commercial establishments, on the other. In this subsection we implement the relative distribution estimator of intensity of Lethal and Intentional Violent Crime. The covariate $Z(u)$ in this analysis is distance to one of a place of worship or a commercial establishment:
+$$
+\lambda_k(s)=\rho(Z_k(s))
+$$
+with:
+$$
+Z_k(s) = d_{sk}
+$$
+In the expression above, $d_{s_k}$ is distance from location $s$ to an event of class $k$, and $k=\{\text{Catholic, Evangelical, Spiritist, Ice Cream Shop, Pharmacy, Supermarket}\}$.
+
+```{r distance-functions, include=FALSE, cache = TRUE}
+
+# Estimation of the relative intensity (see Baddeley et al. (2015) Spatial Point Pattern, pp. 179-183).
+
+# This needs that we convert the point patterns for places of worship to distance functions. This way, the covariates for the relative distribution estimate are distance estimates to places of worship. The function `distfun` is used for this:
+
+z_catholic <- distfun(events_recife_list$Catholic)
+z_evangelical <- distfun(events_recife_list$Evangelical)
+z_spiritist <- distfun(events_recife_list$Spiritist)
+z_ice_cream <- distfun(events_recife_list$`Ice Cream Shop`)
+z_pharmacies <- distfun(events_recife_list$Pharmacy)
+z_super_markets <- distfun(events_recife_list$Supermarket)
+```
+
+```{r relative-distribution, include=FALSE, cache=TRUE}
+
+# The estimates of intensity are calculated with `rhohat`:
+
+rho_catholic <- rhohat(events_recife_list$`Violent Crime`, z_catholic)
+rho_evangelic <- rhohat(events_recife_list$`Violent Crime`, z_evangelical)
+rho_spiritist <- rhohat(events_recife_list$`Violent Crime`, z_spiritist)
+rho_ice_cream <- rhohat(events_recife_list$`Violent Crime`, z_ice_cream)
+rho_pharmacies <- rhohat(events_recife_list$`Violent Crime`, z_pharmacies)
+rho_supermarkets <- rhohat(events_recife_list$`Violent Crime`, z_super_markets)
+```
+
+```{r prepare-relative-distribution-data, include=FALSE}
+
+# Rename the variables in the results to collect in a single dataframe:
+
+rho_catholic <- rho_catholic %>% as.data.frame() %>% dplyr::rename(z = z_catholic)
+rho_evangelic <- rho_evangelic %>% as.data.frame() %>% rename(z = z_evangelica)
+rho_spiritist <- rho_spiritist %>% as.data.frame() %>% dplyr::rename(z = z_spiritist)
+rho_ice_cream <- rho_ice_cream %>% as.data.frame() %>% rename(z = z_ice_cream)
+rho_pharmacies <- rho_pharmacies %>% as.data.frame() %>% rename(z = z_pharmacies)
+rho_supermarkets <- rho_supermarkets %>% as.data.frame() %>% rename(z = z_super_mark)
+
+# Collect into dataframe for convenience of plotting:
+
+rho_all <- rbind(data.frame(rho_catholic, Type = "Catholic", Class = "Place of Worship"), 
+                 data.frame(rho_evangelic, Type = "Evangelical", Class = "Place of Worship"),
+                 data.frame(rho_spiritist, Type = "Spiritist", Class = "Place of Worship"),
+                 data.frame(rho_ice_cream, Type = "Ice Cream Shops", Class = "Business"), 
+                 data.frame(rho_pharmacies, Type = "Pharmacies", Class = "Business"), 
+                 data.frame(rho_supermarkets, Type = "Supermarkets", Class = "Business")) 
+```
+
+```{r analysis-relative-distribution, include=FALSE}
+
+# Extract some useful information from the relative distribution functions
+
+# First, find the max intensity for Evangelical:
+
+max_int_evangelical <- max(filter(rho_all, Type == "Evangelical")$rho)
+
+# Next, the distance at which the intensity of crime with respect to distance to Evangelical is max:
+
+dist_max_int_evangelical <- filter(rho_all, Type == "Evangelical")[filter(rho_all, Type == "Evangelical")$rho == max_int_evangelical,"z"]
+
+# Next, find the approximate intensity at that distance for the other types of events. First, what is the nearest distance to the distance at which the intensity with respect to Evangelical is max?
+
+near_dist_catholic_i <- which.min(abs(filter(rho_all, Type == "Catholic")$z - dist_max_int_evangelical))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all, Type == "Catholic")[near_dist_catholic_i, "z"] > dist_max_int_evangelical){
+  interv <- filter(rho_all, Type == "Catholic")[(near_dist_catholic_i-1):near_dist_catholic_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  catholic_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all, Type == "Catholic")[near_dist_catholic_i:(near_dist_catholic_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  catholic_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}
+
+# Repeat for Spiritist
+
+near_dist_spiritist_i <- which.min(abs(filter(rho_all, Type == "Spiritist")$z - dist_max_int_evangelical))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all, Type == "Spiritist")[near_dist_spiritist_i, "z"] > dist_max_int_evangelical){
+  interv <- filter(rho_all, Type == "Spiritist")[(near_dist_spiritist_i-1):near_dist_spiritist_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  spiritist_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all, Type == "Spiritist")[near_dist_spiritist_i:(near_dist_spiritist_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  spiritist_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}
+
+# Repeat for ice cream shop
+
+near_dist_ice_cream_i <- which.min(abs(filter(rho_all, Type == "Ice Cream Shops")$z - dist_max_int_evangelical))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all, Type == "Ice Cream Shops")[near_dist_ice_cream_i, "z"] > dist_max_int_evangelical){
+  interv <- filter(rho_all, Type == "Ice Cream Shops")[(near_dist_ice_cream_i-1):near_dist_ice_cream_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  ice_cream_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all, Type == "Ice Cream Shops")[near_dist_ice_cream_i:(near_dist_ice_cream_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  ice_cream_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}
+
+# Repeat for pharmacy
+
+near_dist_pharmacies_i <- which.min(abs(filter(rho_all, Type == "Pharmacies")$z - dist_max_int_evangelical))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all, Type == "Pharmacies")[near_dist_pharmacies_i, "z"] > dist_max_int_evangelical){
+  interv <- filter(rho_all, Type == "Pharmacies")[(near_dist_pharmacies_i - 1):near_dist_pharmacies_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  pharmacies_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all, Type == "Pharmacies")[near_dist_pharmacies_i:(near_dist_pharmacies_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  pharmacies_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}
+
+# Repeat for supermarkets
+
+near_dist_supermarkets_i <- which.min(abs(filter(rho_all, Type == "Supermarkets")$z - dist_max_int_evangelical))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all, Type == "Supermarkets")[near_dist_supermarkets_i, "z"] > dist_max_int_evangelical){
+  interv <- filter(rho_all, Type == "Supermarkets")[(near_dist_supermarkets_i - 1):near_dist_supermarkets_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  supermarkets_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all, Type == "Supermarkets")[near_dist_supermarkets_i:(near_dist_supermarkets_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  supermarkets_int_at_evangelical_max_int <- interv$rho[1] + (dist_max_int_evangelical - interv$z[1]) * slope
+}
+```
+
+The results of this analysis are shown in Figure \ref{fig:plot-relative-distribution}. The global estimator for the intensity of crime is shown in this figure as a dotted line. Three types of places of worship are shown in solid lines, and three types of commercial establishments are shown in dashed lines. Each relative distribution function is shown with its corresponding 95% confidence bands.
+
+Several interesting things emerge from inspection of this figure. First, we notice that with the exception of Spiritist churches (which has an intensity significantly lower than the global intensity at a distance of zero), the intensity of crime at for other churches and commercial establishments is close, but higher than, the global intensity of crime. In general, the intensity tends to increase at short distances; however, this effect is much more marked for Evangelical places of worship. The intensity of crime in the proximity of these places of worship grows rapidly within a short distance, reaching a peak of `r signif(max_int_evangelical, 5)` at a distance of `r round(dist_max_int_evangelical, 2)` m. At that distance, the intensity of crime with respect to Evangelical places of worship is `r round(max_int_evangelical/catholic_int_at_evangelical_max_int * 100, 2)`% higher than the intensity of Catholic places of worship; `r round(max_int_evangelical/spiritist_int_at_evangelical_max_int * 100, 2)`% higher than the intensity of crime with respect to Spiritist churches; `r round(max_int_evangelical/ice_cream_int_at_evangelical_max_int * 100, 2)`% higher than the intensity with respect to ice cream shops; `r round(max_int_evangelical/pharmacies_int_at_evangelical_max_int * 100, 2)`% higher than the intensity with respect to pharmacies; and `r round(max_int_evangelical/supermarkets_int_at_evangelical_max_int * 100, 2)`% higher than the intensity with respect to supermarkets.
+
+Intriguingly, after reaching its peak intensity, the intensity of crime with respect to Evangelical places of worship declines sharply, until at distances of approximately 200 m it is lower than for other places of worship and commercial establishments, and at distances of approximately 270 m it is lower than the global intensity of crime. This does not happen with other places of worship or commercial establishments: the intensity of crime with respect to these locations remains higher than the global intensity of crime for the interval of distances examined. Another interesting observation is that the intensity of crime with respect to Catholic places of worship is not substantially different when compared to the intensity of crime with respect to any of the commercial establishments considered. 
+
+These results, while intriguing, beg the question of whether variations in Socio-Economic Deprivation may have a confounding effect on the relative distributions; for instance, if as seen in the case of conditional quadrat counts, there is some overlap in the locational patterns of, say, Evangelical places of worship and crime with respect to Socio-Economic Deprivation. Next section explores this question.
+
+```{r figure-plot-relative-distribution, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-relative-distribution}Intensity of crime as a function of distance to a selected place of worship or commercial establishment; bands are 95% confidence interval and the dotted line indicates the global intensity of crime"}
+# Plot all estimates. The dotted line is the intensity if the intensity was constant (this is a summary measure of the `crime.ppp` object). Select only distance less than 500 m:
+
+ggplot(data = filter(rho_all, z <= 500)) +
+  geom_ribbon(aes(x = z, ymin = lo, ymax = hi, fill = Type), alpha = 0.2) + 
+  geom_line(aes(x = z, y = rho, color = Type, linetype = Class), size = 1) +
+  geom_abline(intercept = 7.575416e-06, slope = 0, linetype = "dotted") +
+  #xlim(c(0, 500)) +
+  theme_tufte()
+```
+
+## Relative Distribution with a Baseline Function
+
+In this section, the preceding analysis regarding the relative distribution of crime using distance to places of worship and commercial establishments is repeated, after introducing a baseline function. The interpretation of $\rho(Z(s))$ in this case is as follows: instead of the raw intensity at the value of $z$, it is the intensity _relative to the intensity according to the level of Socio-Economic Deprivation_. Therefore, $rho(z)=1$ matches the intensity according to Socio-Economic Deprivation; values of $rho(z)>1$ indicate a higher intensity than explained by Socio-Economic Deprivation; and values of $rho(z)<1$ correspond to lower intensities than explained by Socio-Economic Deprivation.
+
+```{r relative-distribution-with-baseline, include=FALSE}
+
+#The estimates of intensity are calculated with `rhohat`, but now with a baseline intensity function that depends on median income:
+
+rho_catholic_bl <- rhohat(events_recife_list$`Violent Crime`, z_catholic, baseline = sed.img)
+rho_evangelic_bl <- rhohat(events_recife_list$`Violent Crime`, z_evangelical, baseline = sed.img)
+rho_spiritist_bl <- rhohat(events_recife_list$`Violent Crime`, z_spiritist, baseline = sed.img)
+rho_ice_cream_bl <- rhohat(events_recife_list$`Violent Crime`, z_ice_cream, baseline = sed.img)
+rho_pharmacies_bl <- rhohat(events_recife_list$`Violent Crime`, z_pharmacies, baseline = sed.img)
+rho_supermarkets_bl <- rhohat(events_recife_list$`Violent Crime`, z_super_markets, baseline = sed.img)
+```
+
+```{r prepare-relative-distribution-with-baseline-data, include=FALSE}
+
+# Rename variables to combine dataframes:
+
+rho_catholic_bl <- rho_catholic_bl %>% 
+  as.data.frame() %>% 
+  dplyr::rename(z = z_catholic)
+rho_evangelic_bl <- rho_evangelic_bl %>% 
+  as.data.frame() %>% 
+  rename(z = z_evangelica)
+rho_spiritist_bl <- rho_spiritist_bl %>% 
+  as.data.frame() %>% 
+  dplyr::rename(z = z_spiritist)
+rho_ice_cream_bl <- rho_ice_cream_bl %>% 
+  as.data.frame() %>% 
+  rename(z = z_ice_cream)
+rho_pharmacies_bl <- rho_pharmacies_bl %>% 
+  as.data.frame() %>% 
+  rename(z = z_pharmacies)
+rho_supermarkets_bl <- rho_supermarkets_bl %>% 
+  as.data.frame() %>% 
+  rename(z = z_super_mark)
+
+# Collect into dataframe for convenience of plotting:
+
+rho_all_bl <- rbind(data.frame(rho_catholic_bl, Type = "Catholic", Class = "Place of Worship"), 
+                    data.frame(rho_evangelic_bl, Type = "Evangelical", Class = "Place of Worship"),
+                    data.frame(rho_spiritist_bl, Type = "Spiritist", Class = "Place of Worship"),  
+                    data.frame(rho_ice_cream_bl, Type = "Ice Cream Shops", Class = "Business"), 
+                    data.frame(rho_pharmacies_bl, Type = "Pharmacies", Class = "Business"), 
+                    data.frame(rho_supermarkets_bl, Type = "Supermarkets", Class = "Business")) 
+```
+
+```{r analysis-relative-distribution-with-baseline, include=FALSE}
+
+# Extract some useful information from the relative distribution functions
+
+# First, find the max intensity for each type of event:
+
+max_int_evangelical_bl <- max(filter(rho_all_bl, Type == "Evangelical")$rho)
+max_int_catholic_bl <- max(filter(rho_all_bl, Type == "Catholic")$rho)
+max_int_spiritist_bl <- max(filter(rho_all_bl, Type == "Spiritist")$rho)
+max_int_ice_cream_bl <- max(filter(rho_all_bl, Type == "Ice Cream Shops")$rho)
+max_int_pharmacy_bl <- max(filter(rho_all_bl, Type == "Pharmacies")$rho)
+max_int_supermarket_bl <- max(filter(rho_all_bl, Type == "Supermarkets")$rho)
+
+# Next, the distance at which the intensity of crime with respect to distance to Evangelical is max:
+
+dist_max_int_evangelical_bl <- filter(rho_all_bl, Type == "Evangelical")[filter(rho_all_bl, Type == "Evangelical")$rho == max_int_evangelical_bl,"z"]
+
+# Next, find the approximate intensity at that distance for the other types of events. First, what is the nearest distance to the distance at which the intensity with respect to Evangelical is max?
+
+near_dist_catholic_i <- which.min(abs(filter(rho_all_bl, Type == "Catholic")$z - dist_max_int_evangelical_bl))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all_bl, Type == "Catholic")[near_dist_catholic_i, "z"] > dist_max_int_evangelical_bl){
+  interv <- filter(rho_all_bl, Type == "Catholic")[(near_dist_catholic_i-1):near_dist_catholic_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  catholic_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all_bl, Type == "Catholic")[near_dist_catholic_i:(near_dist_catholic_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  catholic_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}
+
+# Repeat for Spiritist
+
+near_dist_spiritist_i <- which.min(abs(filter(rho_all_bl, Type == "Spiritist")$z - dist_max_int_evangelical_bl))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all_bl, Type == "Spiritist")[near_dist_spiritist_i, "z"] > dist_max_int_evangelical_bl){
+  interv <- filter(rho_all_bl, Type == "Spiritist")[(near_dist_spiritist_i-1):near_dist_spiritist_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  spiritist_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all_bl, Type == "Spiritist")[near_dist_spiritist_i:(near_dist_spiritist_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  spiritist_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}
+
+# Repeat for ice cream shop
+
+near_dist_ice_cream_i <- which.min(abs(filter(rho_all_bl, Type == "Ice Cream Shops")$z - dist_max_int_evangelical_bl))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all_bl, Type == "Ice Cream Shops")[near_dist_ice_cream_i, "z"] > dist_max_int_evangelical_bl){
+  interv <- filter(rho_all_bl, Type == "Ice Cream Shops")[(near_dist_ice_cream_i-1):near_dist_ice_cream_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  ice_cream_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all_bl, Type == "Ice Cream Shops")[near_dist_ice_cream_i:(near_dist_ice_cream_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  ice_cream_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}
+
+# Repeat for pharmacy
+
+near_dist_pharmacies_i <- which.min(abs(filter(rho_all_bl, Type == "Pharmacies")$z - dist_max_int_evangelical_bl))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all_bl, Type == "Pharmacies")[near_dist_pharmacies_i, "z"] > dist_max_int_evangelical_bl){
+  interv <- filter(rho_all_bl, Type == "Pharmacies")[(near_dist_pharmacies_i - 1):near_dist_pharmacies_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  pharmacies_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all_bl, Type == "Pharmacies")[near_dist_pharmacies_i:(near_dist_pharmacies_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  pharmacies_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}
+
+# Repeat for supermarkets
+
+near_dist_supermarkets_i <- which.min(abs(filter(rho_all_bl, Type == "Supermarkets")$z - dist_max_int_evangelical_bl))
+
+# If the nearest distance is greater than the one for evangelical, pick the preceding row in the dataframe, if it is less than then the following row. Use the two rows to obtain a linear approximation of the intensity at the desired distance
+
+if(filter(rho_all_bl, Type == "Supermarkets")[near_dist_supermarkets_i, "z"] > dist_max_int_evangelical_bl){
+  interv <- filter(rho_all_bl, Type == "Supermarkets")[(near_dist_supermarkets_i - 1):near_dist_supermarkets_i,] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  supermarkets_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}else{
+  interv <- filter(rho_all_bl, Type == "Supermarkets")[near_dist_supermarkets_i:(near_dist_supermarkets_i + 1),] %>%
+    dplyr::select(z, rho)
+  slope <- (interv$rho[2] - interv$rho[1]) / (interv$z[2] - interv$z[1])
+  supermarkets_int_at_evangelical_max_int_bl <- interv$rho[1] + (dist_max_int_evangelical_bl - interv$z[1]) * slope
+}
+```
+
+The results of the analysis are shown in Figure \ref{fig:plot-relative-distribution-with-baseline}. The general trends shown by the relative distribution functions are similar to those seen above, before the introduction of a baseline function. We notice that at short distances the intensity of crime as a function of distance to the various places of worship and commercial establishments is higher than the baseline intensity (i.e., the intensity according to Socio-Economic Deprivation). The only exception is intensity as a function of distance to a Spiritist church, which at short distances is not significantly different from the baseline intensity (see the confidence bands). 
+
+The peak intensity as a function of distance to Evangelical churches is `r round(max_int_evangelical_bl, 2)` times the baseline intensity; for Catholic places of worship, the highest intensity is `r round(max_int_catholic_bl, 2)` times the baseline intensity; and the intensity reaches a peak of `r round(max_int_spiritist_bl, 2)` times the baseline intensity when the covariate is distance to Spiritist churches. Turning now to inspect the three types of commercial establishments, we see that the highest intensities are `r round(max_int_ice_cream_bl, 2)`, `r round(max_int_pharmacy_bl, 2)`, and `r round(max_int_supermarket_bl, 2)` times the intensity according to Socio-Economic Deprivation for ice cream shops, pharmacies, and supermarkets, respectively.
+
+Some differences are observed as well. Whereas the peak intensity as a function of distance to Evangelical places of worship was `r round(max_int_evangelical/catholic_int_at_evangelical_max_int * 100, 2)`% higher than the intensity of Catholic places of worship _without a baseline function_, once that we account for Socio-Economic Deprivation by means of a baseline function, the peak relative intensity as a function of distance to Evangelical churches declines to `r round(max_int_evangelical_bl/catholic_int_at_evangelical_max_int_bl * 100, 2)`% higher than the intensity as a function of distance to Catholic places of worship at the same distance. Accounting for Socio-Economic Deprivation in this analysis of intensity has in general a moderating effect: whereas the peak intensity of crime was was `r round(max_int_evangelical/spiritist_int_at_evangelical_max_int * 100, 2)`% higher when comparing Evangelical and Spiritist churches at the distance of the peak intensity of Evangelical churches, this difference declines to  `r round(max_int_evangelical_bl/spiritist_int_at_evangelical_max_int_bl * 100, 2)`% after accounting for Socio-Economic Deprivation. Similarly, this changes from `r round(max_int_evangelical/ice_cream_int_at_evangelical_max_int * 100, 2)`% to `r round(max_int_evangelical_bl/ice_cream_int_at_evangelical_max_int_bl * 100, 2)`% in the case of ice cream shops, from `r round(max_int_evangelical/pharmacies_int_at_evangelical_max_int * 100, 2)`% to `r round(max_int_evangelical_bl/pharmacies_int_at_evangelical_max_int_bl * 100, 2)`% in the case of pharmacies, and finally from `r round(max_int_evangelical/supermarkets_int_at_evangelical_max_int * 100, 2)`% to `r round(max_int_evangelical_bl/supermarkets_int_at_evangelical_max_int_bl * 100, 2)`% in the case of supermarkets.
+
+Again, it is interesting to note that while the intensity with respect to distance to Catholic and Spiritist places of worship, as well as ice cream shops, pharmacies, and supermarkets remains higher than the background intensity (given by the baseline according to Socio-Economic Deprivation), the intensity of crime at distances of approximately 300 m of an Evangelical church are significantly lower than the background intensity of crime. In the following section we discuss the possible implications of these findings.
+
+```{r figure-plot-relative-distribution-with-baseline, echo=FALSE, cache = TRUE, fig.cap="\\label{fig:plot-relative-distribution-with-baseline}Intensity of crime as a function of distance to a selected place of worship or commercial establishment after introducing Socio-Economic Deprivation as a baseline function; bands are 95% confidence intervals and the dotted line indicates the baseline intensity with respect to Socio-Economic Deprivation"}
+
+# Plot relative distribution with baseline function
+
+ggplot(data = filter(rho_all_bl, z <= 500)) +
+  geom_ribbon(aes(x = z, ymin = lo, ymax = hi, fill = Type), alpha = 0.2) + 
+  geom_line(aes(x = z, y = rho, color = Type, linetype = Class), size = 1) +
+  geom_abline(intercept = 1, slope = 0, linetype = "dotted") +
+  #xlim(c(0, 500)) +
+  theme_tufte()
+```
+
+# Discussion {#discussion}
+
+Theories of moral communities and social disorganization suggest that the presence of institutions that can provide a measure of social control can help to improve crime prevention, and this has been borne to some extent by previous empirical research. However, as noted by Warner and Konkel [-@Warner2019neighborhood], it is important to distinguish between different religious traditions. 
+
+In this respect, it has been argued that Catholics and some Protestant groups are more adept at generating bridging social capital with strong intergroup relations. This can result in greater collective efficacy - which in turn can decrease the likelihood of crime [see @Hoffmann2015religion, p. 2]. Along these lines, Beyerlein and Hipp [-@Beyerlein2005social], examined data for 3,157 counties in the United States in 2000, and found that counties with greater percentages of people affiliated with mainline Protestant and Catholic traditions tended to have lower crime rates. Similarly, Warner and Konkel [-@Warner2019neighborhood] found that mainline Protestant and bridging churches (but not Catholic churches) correlated positively with informal social control at the neighborhood level in two cities in Kentucky. Nie and Yang [-@Nie2019smoking], in a study of smoking, also found that share of Catholic population in counties did not reduce the rate of smoking, thus bringing into question the efficacy of this type of moral community in generating social control - albeit at a fairly aggregated scale (counties). Our findings with respect to Catholic places of worship echo these results at a much higher level of disaggregation, as we fail to find evidence that Catholic churches project a moral community in space more than any of various common types of business establishments.
+
+Conservative Protestant and Evangelic traditions, unlike mainline Protestants and Catholics, appear to focus less on bridging and more on bonding social capital with strong within-group relations. Associated with this, Conservative Protestant doctrine emphasizes individual responsibility, and therefore social ills tend to be seen as primarily personal ills in need of religious redemption instead of secular interventions [@Nie2019smoking, pp. 2-3]. Under this light, a moral community with such views of social problems may not be effective to deter crime [@Ellison2003enduring]; instead, conservative Protestant doctrine may be more tolerant of violent behavior when associated with defense of honor, family, property, or women, or unfortunate events may be seen as representing legitimate celestial retribution for moral turpitude. Empirical research by Beyerlein and Hipp [-@Beyerlein2005social] found that counties with greater percentages of people affiliated with Evangelical traditions tended to have higher crime rates. More recent research by Desmond et al. [-@Desmond2010congregations] in more than 400 block groups in Indianapolis found that neighborhoods with a greater presence of Evangelical congregations had higher rates of both violent and property crimes. In the specific context of Brazil, it is important to consider the role that religion has had in interpreting and conferring meaning to urban violence, or what Brazilian anthropologist Patricia Birman has termed "The Violence of the Just" [see @Birman2012violencia; @Birman2019narrativas].
+
+Our analysis suggests that the role of Evangelical churches may be more complex than thought: on the one hand, our results indicate that Lethal and Intentional Violent Crime tends to be more intense in the proximity of Evangelical places of worship, up to a distance of approximately 100 m, but then declines even below the global intensity and the background intensity at distances between 300 m and 100 m. It is at the moment unclear what could cause this, and candidate explanations could include the way police respond to crime incidents in different neighborhoods, the likelihood of residents reporting crime to the police, and the level of opportunity for crimes [@Warner2019neighborhood]. Could Evangelicals churches provide greater levels of opportunity for crime, if adherents to this tradition are seen as meek? And is it possible that at a different scale, unlike reports by other researchers, Evangelical churches are more effective at keeping social control? While these speculations cannot be answered in the context of the present study, we suggest that these might be fruitful areas for future research.
+
+Finally, we would like to remark on the results regarding Spiritist churches, which in some way are the mirror image of those for Evangelical churches. An extensive scan of the literature finds much less information about this religious tradition, in particular in the context of Brazil where it adapted in ways that made it very different from its original French predecessor [see @daGraca2011espiritismo]. Could it be that Spiritism is seen by potential criminals as spiritually or materially risky, if supernatural retribution is feared? Again, we cannot do more than speculate about this at the moment, but this might be another worthwhile avenue for future investigation.
+
+# Conclusions {#conclusions}
+
+The objective of this research was to investigate the covariation of incidence of crime to proximity of places of worship. The hypothesis of moral communities (closely related to social disorganization theory) posits that a negative correlation between the presence of churches and crime. Recent papers have argued that it is important to study this phenomenon from a geographical perspective, paying attention to the level of aggregation. Accordingly, our research for the city of Recife in Brazil makes the following contributions to the literature:
+
+1. By using disaggregated data for Lethal and Intentional Violent Crime and various types of places of worship, we were able to analyze the intensity of crime with respect to proximity to churches as a point pattern.
+
+2. Following the suggestion of Warner and Konkel [-@Warner2019neighborhood], we also disaggregate our data by type of place of worship, and consider the three following denominations: Catholic, Evangelical, and Spiritist.
+
+2. Use of relative distribution functions is effectively a multi-scale technique, since the intensity of crime can be estimated at different distances from various types of places of worship.
+
+3. We also used a set of putatively morally neutral commercial establishments to serve as controls in our analysis.
+
+Our key findings can be summarized as follows:
+
+1. Catholic places of worship do not seem to geographically project more or less of a moral community effect than, say, ice cream shops, pharmacies, or supermarkets: the intensity of crime as a function of distance to Catholic churches is not significantly different that what we observe when we consider distance to any of these types of commercial establishments, at any distance.
+
+2. The intensity of crime with respect to distance to Evangelical churches is more complex than previously known: whereas the intensity of crime is higher at relatively short distance from Evangelical places of worship, at longer distances it tends to decline even below the global intensity of crime and the background level of crime according to Socio-Economic Deprivation.
+
+3. Spiritist churches are associated with lower intensity of crime at very short distance; however, at longer distances(approximately between 200 m and 500 m), the intensity of crime is in fact higher than the intensity of crime at comparable distances from Catholic and Evangelical places of worship, or any of the three kinds of commercial establishments.
+
+These results are interesting of and in themselves as they help to clarify the potential of various types of moral communities to act as restraints on crime or, on the contrary, as criminogenic factors. They also suggest several avenues for further research.
+
+1. The analysis presented in this paper is to a large extent exploratory. For example, to introduce a baseline function in the analysis of relative distribution, we used a data reduction technique to obtain an indicator of Socio-Economic Deprivation. This indicator was useful to determine a general spatial pattern of crime conditional on this variable, and to account for a baseline (or background) intensity of crime. However, it would be interesting to investigate the effect of the individual socio-economic and demographic variables on the intensity of crime, as opposed to the aggregated effect of Socio-Economic Deprivation. This implies the use of multivariate analytical techniques.
+
+2. It would be interesting to explore the effect of aggregation on the results. On the one hand, this would be informative with respect to the well-known issues with aggregation bias in spatial analysis [related to the Modifiable Areal Unit Problem in geography; see @Fotheringham1991modifiable; @Openshaw1979million; and @Tagashira2002modifiable]. On the other hand, as the results of the research presented here, it is possible that analysis at different levels of aggregation may tend to capture different spatial and social processes of interest.
+
+3. And finally, in relation to the latter point, more in-depth research, perhaps observational, ethnographic, or participatory studies, could help to develop a more refined understanding of the kinds of processes that operate at different scales and how they can influence moral behavior and crime.
+
+In summary, the research presented on this paper provides information about the potential of different types of moral communities to reduce crime, and should be of interest to policy makers as they assess whether formal or informal forms of social control can be effective to deter criminal behavior, in order to achieve development goals.
+
+# Acknowledgments
+
+The following `R` packages were used in the course of this investigation and the authors wish to acknowledge their developers: `faterize` [@Ross2018fasterize], `ggthemes` [@Arnold2018], `kableExtra` [@Zhu2018], `knitr` [@Xie2015; @Xie2018], `maptools` [@Bivand2019maptools], `spatstat` [@Baddeley2005spatstat], `raster` [@Hijmans2018raster], `rticles` [@Allaire2018rticles], `sf` [@Pebesma2018simple], and `tidyverse` [@Wickham2017].
+
+# References
