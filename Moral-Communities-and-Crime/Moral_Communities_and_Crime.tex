@@ -31,6 +31,7 @@
 
 
 
+
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -162,9 +163,7 @@ countries, communities and population groups that are most at risk
 \end{quote}
 \end{quote}
 
-This concern is not idle: the endemic malady of violent crime represents
-an important factor that threatens to derail sustainable development
-goals. Violent crime, furthermore, tends to be more acute in those
+This concern is not idle: violent crime tends to be more acute in those
 regions most in need of development. On the one hand, violent crime
 represents an economic and social drag (Becker and Kassouf 2017). The
 impacts are multifaceted, since they affect people's well-being, either
@@ -180,9 +179,9 @@ attention to the study of the patterns of violent crime in Low and
 Middle Income Countries (LMIC; Murray, Cerqueira, and Kahn 2013).
 
 Added to the scenario, formal social control institutions in countries
-like Brazil leave something (or much) to be desired: while in practice
-they should inhibit criminal behavior, they suffer from deep
-deficiencies that end up reducing the deterrent power of the justice
+like Brazil often leave something (or much) to be desired: while in
+practice they should inhibit criminal behavior, they suffer from deep
+deficiencies that end up eroding the deterrent power of the justice
 system. Serious institutional problems include the inefficiency of the
 police, the lack of national legislation, the glacial pace of judicial
 processes, and the weak situation of the prison system in the country
@@ -221,12 +220,27 @@ the will to enforce norms in a consistent way - as is the case in Brazil
 With the above considerations in mind, the objective of this paper is to
 investigate whether and how places of worship correlate spatially with
 criminal events, or in other words, to investigate whether their signals
-as moral communities have a discernible spatial dimension. The case
-study is the city of Recife in the state of Pernambuco, in Brazil's
-Northeast. Recife is a large and important metropolitan area in a
-historically poor region, and afflicted by high levels of violent crime,
-having the dubious honor of being one of five state capitals with the
-highest rates of homicide in the period under study (Menezes et al.
+as moral communities have a discernible spatial dimension. Our argument
+is as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Since places of worship are associated with normative codes of
+  behavior, can they by their presence contribute to create moral
+  communities? The mechanisms for this are explained by Groff (Groff
+  2015) in terms of ``Eyes on the Street'' (see Jacobs 1961, 1968;
+  Appleyard 1980) and Human Territorial Functioning (Taylor 1988, 1998).
+\item
+  If so, what is the distance decay of said moral community effect? Is
+  it uniform over a certain distance or does it vary?
+\end{enumerate}
+
+The case study is the city of Recife in the state of Pernambuco, in
+Brazil's Northeast. Recife is a large and important metropolitan area in
+a historically poor region, and afflicted by high levels of violent
+crime, having the dubious honor of being one of five state capitals with
+the highest rates of homicide in the period under study (Menezes et al.
 2013). The empirical strategy is to use spatial analysis to explore the
 potential geographical relationships between violent criminal events, on
 the one hand, and places of worship and a selection of commercial
@@ -244,8 +258,11 @@ presents the analysis, whereas the results are discussed in Section
 Section \ref{conclusions}.
 
 \hypertarget{background}{%
-\section{Background: Theoretical Perspectives on Religion and
-Crime}\label{background}}
+\section{Background}\label{background}}
+
+\hypertarget{theoretical-perspectives-on-religion-and-crime}{%
+\subsection{Theoretical Perspectives on Religion and
+Crime}\label{theoretical-perspectives-on-religion-and-crime}}
 
 Why do humans behave morally? For millennia, it has been the role of
 religion to provide the basic tenets of morally acceptable behavior:
@@ -295,8 +312,9 @@ Jessor (1975) also emphasize that religion acts as social control since
 it defines what is an appropriate attitude according to moral values,
 thus making moral communities a close relative of the concept of
 \emph{informal social control}, defined as ``the ability of social
-groups or institutions to make norms or rules effective'' (Reiss 1951,
-196; cited in Groff 2015, 91).
+groups or institutions to make norms or rules
+effective''\footnote{The discussion about disorder is directly related to the idea of social control. According to this perspective, control mechanisms to contain deviant actions are considered indispensable [@Rodrigues2012medo]. This theory assumes that the deviant act is seen as normal in social organization, and coercive forces are needed to limit such impulses. This control can be exercised through formal institutions, as well as through informal mechanisms. It would be a set of norms as well as positive and negative sanctions, which are specified throughout the socialization process, which aims to establish values and build the individual's morals, disciplining society and subjecting individuals to standards and principles predefined. As the individual finds himself more and more inserted in the social context, less will be the chances of criminal behavior. From this perspective, the existence of bonds of solidarity and trust would be relevant for the effective exercise of supervision over crime in the neighborhood. Informal control is then linked to the ability of a neighborhood to establish communication and surveillance networks, interfering in cases of criminal actions and increasing security in the region.}
+(Reiss 1951, 196; cited in Groff 2015, 91).
 
 The hypothesis of moral communities has over the years been used to
 examine a variety of outcomes of interest. Recent examples include
@@ -321,8 +339,9 @@ conducted to study how the religious context of a geographical area
 point is echoed by Warner and Konkel (2019), who moreover recommend the
 use of even smaller units of analysis (e.g., Census Block Groups), in an
 effort to reduce aggregation bias (see Hipp 2007), but more importantly
-because the processes defined by social disorganization theory are
-thought to occur at relatively small geographical scales.
+because the processes defined by social disorganization
+theory\footnote{The social disorganization theory (Shaw e McKay, 1942)  presents the social structure as an indispensable factor for the elaboration of theoretical and methodological models related to crime in urban neighborhoods. According to Villareal e Silva [-@Villarreal2006social], “neighborhoods characterized by dense social networks will experience greater trust among residents and cooperation in the enforcement of social norms against crime. Disadvantaged neighborhoods are thought to have fewer social ties among residents and lower rates of organizational participation”. The argument is that community characteristics such as poverty, ethnic heterogeneity and residential mobility disrupt the social organization of urban neighborhoods in such a way as to reduce their capacity to exercise social control [@Rodrigues2012medo]. Thus, aspects such as residential instability or low socioeconomic status would contribute to the weakening of the community organization, increasing crime rates. This theory highlights the importance of the geography of crime and the characteristics of disorder in its analysis.}
+are thought to occur at relatively small geographical scales.
 
 The preceding review, as well as other research (2019), makes clear the
 need for research at various geographical scales. From a theoretical
@@ -338,6 +357,62 @@ disaggregated approach by considering the intensity of criminal events
 with respect to places of worship. This requires micro-level data both
 of crimes and places of worship, and the use of appropriate spatial
 analytical tools for point patterns, as discussed next.
+
+\hypertarget{religion-in-brazil}{%
+\subsection{Religion in Brazil}\label{religion-in-brazil}}
+
+Brazil is a country with a Christian predominance. In the first national
+census in which religion was considered, in 1872, practically the entire
+population (99.72\%) identified themselves as Catholic. In the 1940
+census, when the religion question was researched again, Catholicism was
+still the religion with which the vast majority of the population
+identified: 95.2\% of Brazilians declared themselves as Catholics that
+year.
+
+The dominance of Catholicism in the religious life of Brazil is
+unsurprising given the colonial past of the country. However, the
+religious makeup of the population started was not completely
+homogeneous. Among other offerings in the market place of spiritual
+ideas, Spiritism stands out. The Spiritist Doctrine was founded in
+nineteenth-century France by Allan Kardec as a way of understanding the
+world and its relations with the ``beyond'': a curious mix of
+pseudo-scientific language, philosophy, and religion (Arribas 2011a).
+Spiritism arrived in Brazil in the middle of the previous century and
+since then it slowly spread in large and medium-sized cities. Today,
+Spiritism is the third largest religious segment in Brazil, after
+Catholicism and Evangelical Christianism, and shares with these
+religions the Christian principle of charity through pious assistance.
+
+Another signal event in the developmento of religion in Brazil is the
+arrival of Pentecostal Protestant churches, such as the Christian
+Congregation of Brazil in 1910 and the Assembly of God in 1911.
+Initially, these religious denominations did not make important inroads
+in Brazilian society (as evidenced by the 1940 census). However, in the
+context of rapid industrialization and major urbanization, they
+contributed to the change in the religious landscape along with other
+religions (Souza 2019): according to the 2010 census the configuration
+of the religious scene in Brazil had changed considerably from the
+previous century: 64.6\% of the population identified as Catholic and
+22.2\% as Evangelical Christians. The acceleration of this demographic
+change was directly related to the inroads made by Evangelical churches:
+The Assembly of God, for instance, grew considerably to total more than
+12.3 million adherents. This church is represented extensively in many
+regions of the country, following a system of loosely allied ministries.
+With a charismatic profile and the lack of a centralized authority,
+growth of this church has occurred mainly through subdivision into
+numerous small and autonomous churches. These churches have in common
+the Prosperity Gospel and an emphasis on economic entrepreneurship
+(e.g., Mora 2008). They also do not shy away from partisan political
+action.
+
+In general, there have been two major changes in Brazil regarding
+religious issues: the slow decline of Catholicism and the rapid growth
+of Evangelical Christianism. These changes are evident in the daily life
+of the average Brazilian, either through the radio or through TV
+programs, which give more and more space to religious doctrines. At the
+same time, there has been an increase in cases of religious intolerance
+in Brazil, generating violence acts against temples, objects of worship,
+and people.
 
 \hypertarget{methods}{%
 \section{Empirical Strategy}\label{methods}}
@@ -479,7 +554,9 @@ Brazilian metropolises, exerting a great economic influence in
 neighboring regions. However, the city experiences a serious problem
 with violent crime, and has the dubious honor of being one of the five
 capital cities in Brazil with the highest homicide rates in the period
-under study (Menezes et al. 2013).
+under
+study\footnote{The appendix included information that allows a more in-depth characterization of the city of Recife: population distribution, income, inequality, urban facilities (education and health) and location of residential areas.}
+(Menezes et al. 2013).
 
 In the current context, the term ``violent crime'' is an umbrella for
 several forms of infractions to the penal code. Following
@@ -531,8 +608,8 @@ the region.
 \end{table}
 
 The data are organized at the individual level and it is possible to
-obtain information about the location, day of the week, day of the
-month, period of the day, as well as gender, age, and race of the
+obtain information about the crime event location, day of the week, day
+of the month, period of the day, as well as gender, age, and race of the
 victim. The database used in this study comprises the period from July
 1, 2008 to June 30, 2010. Some descriptive statistics regarding this
 dataset are reported in Table 1, where it can be seen that overall,
@@ -547,7 +624,7 @@ Recife between July, 2008 and June, 2010.
 
 \begin{figure}
 
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/fig-plot-crime-1} \hfill{}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/fig-plot-crime-1} \hfill{}
 
 \caption{\label{fig:plot-crime}Location of Lethal and Intentional Violent Crime in Recife, July, 2008 - June, 2009}\label{fig:fig-plot-crime}
 \end{figure}
@@ -565,23 +642,52 @@ geolocated in the city of Recife.
 
 In addition to places of worship, the National Register of Addresses for
 Statistical Purposes was queried to extract facilities other than places
-of worship. As discussed above, the idea is to identify points of
-reference that can be used as controls, having a neutral morality
-profile. For the sake of the present study, we selected pharmacies, ice
-cream shops, and bakeries to construct our control group. These three
-types of establishments comply with the criteria of being morally
-neutral and having a spatial distribution commensurate with places of
-worship.
+of worship. To study the spatial relationship between churches and
+crime, a control group was built and then a comparison of the empirical
+distribution was carried out. Gilberston and Hayes (2012) highlight that
+different configurations of urban space affect how people perceive the
+environment around them. In this perspective, churches are continually
+affecting the impression that people have of a region. Thus, we assume
+that churches have unique characteristics that may or may not inhibit
+the occurrence of a criminal act: they are urban constructions that are
+not neutral in relation to crime. On the other hand, there are urban
+facilities that do not provide any specific reason to justify the fact
+that the crime occurs closer or further from these buildings. Thus, it
+can be thought that any urban construction belongs to one of the
+following distinct situations: neutral or non-neutral to crime.
+Pharmacies, ice cream parlors and bakeries will be used in the
+construction of the control group and will be considered neutral. The
+comparison between the distributions of non-neutral and crime-neutral
+establishments forms the empirical basis of the study. The choice of
+establishments that make up the control was based on two criteria: (a)
+being neutral to crime and (b) having a spatial distribution similar to
+non-neutral establishments. The strategy used is to compare similar
+establishments about their spatial distribution, but different in
+relation to their neutrality profile in relation to crime, seeking to
+simulate the existence of a case and a control group. The case will be
+composed of churches, while the control will be pharmacies, ice cream
+parlors and bakeries.
+
+As discussed above, the idea is to identify points of reference that can
+be used as controls, having a neutral morality profile. For the sake of
+the present study, we selected pharmacies, ice cream shops, and bakeries
+to construct our control group. These three types of establishments
+comply with the criteria of being morally neutral and having a spatial
+distribution commensurate with places of worship.
 
 Figure \ref{fig:plot-events} shows the spatial distribution of the
 places of worhsip and control establishments in the city of Recife. Note
 the similarity between the maps. As expected, there are differences in
 the number of points, but the locations of cases and controls are quite
-similar.
+similar: the distribution of the churches, as well as of the commercial
+establishments follow the same pattern, being correlated with the
+spatial distribution of the population (see in the appendix). Since such
+urban constructions respond to society's demand, they tend to be located
+close to population agglomerations.
 
 \begin{figure}
 
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/fig-plot-events-1} \hfill{}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/fig-plot-events-1} \hfill{}
 
 \caption{\label{fig:plot-events}Location of Places of Worship and Commercial Establishments in Recife}\label{fig:fig-plot-events}
 \end{figure}
@@ -641,10 +747,12 @@ factor accounts for almost 54\% of the variance..
 \toprule
 Variable & Min & 2nd Quartile & Median & Mean & 3rd Quartile & Max & \makecell[l]{PC Factor 1\\ Loadings}\\
 \midrule
+Population Density & 0.00 & 10564.16 & 16333.62 & 19230.23 & 25106.07 & 181642.55 & 0.03\\
 Median Income & 122.05 & 337.40 & 581.67 & 1031.09 & 1283.79 & 7954.19 & -0.42\\
 Proportion Unemployed & 0.00 & 0.05 & 0.10 & 0.10 & 0.14 & 0.59 & 0.56\\
 Proportion Poverty & 0.00 & 0.05 & 0.11 & 0.12 & 0.17 & 0.63 & 0.58\\
 Proportion Single Mother & 0.00 & 0.33 & 0.37 & 0.37 & 0.41 & 0.70 & 0.17\\
+\addlinespace
 Proportion Young Single Mother & 0.00 & 0.01 & 0.02 & 0.02 & 0.02 & 0.21 & 0.38\\
 \bottomrule
 \multicolumn{8}{l}{\textit{Note: }}\\
@@ -668,7 +776,7 @@ can be found in close proximity (see for example Feitosa et al. 2007).
 
 \begin{figure}
 \centering
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/plot-sed-as-quintiles-1.pdf}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/plot-sed-as-quintiles-1.pdf}
 \caption{\label{fig:plot-sed-as-quintiles}Socio-Economic Deprivation in
 Recife classified by quintiles}
 \end{figure}
@@ -683,7 +791,91 @@ previously described, the quadrats are irregular areas that are defined
 based on a covariate, in this case the quintiles of the Socio-Economic
 Deprivation indicator. In essence, this entails counting the number of
 events at each level of the covariate, and then calculating an estimator
-of the intensity.
+of the intensity. The global intensity of each type of event (i.e.,
+places of worship and businesses), as well as quadrant counts and
+intensity at each level of SED can be consulted in Table
+\ref{tab:quadrat-count-results}.
+
+\begin{table}
+
+\caption{\label{tab:table-counts-intensity-summary}\label{tab:quadrat-count-results}Conditional quadrat counts results}
+\centering
+\begin{tabular}[t]{lcccl}
+\toprule
+Event & Global Intensity & SED Quintile & Quadrat Count & Intensity\\
+\midrule
+ &  & Low & 201 & 0\\
+
+ &  & Middle Low & 295 & 0\\
+
+ &  & Middle & 364 & 0\\
+
+ &  & Middle High & 479 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Violent Crime} &  & High & 318 & 0\\
+
+ &  & Low & 32 & 0\\
+
+ &  & Middle Low & 26 & 0\\
+
+ &  & Middle & 33 & 0\\
+
+ &  & Middle High & 29 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Catholic} &  & High & 11 & 0\\
+
+ &  & Low & 209 & 0\\
+
+ &  & Middle Low & 304 & 0\\
+
+ &  & Middle & 334 & 0\\
+
+ &  & Middle High & 345 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Evangelical} &  & High & 185 & 0\\
+
+ &  & Low & 37 & 0\\
+
+ &  & Middle Low & 50 & 0\\
+
+ &  & Middle & 40 & 0\\
+
+ &  & Middle High & 40 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Spiritist} &  & High & 20 & 0\\
+
+ &  & Low & 45 & 0\\
+
+ &  & Middle Low & 60 & 0\\
+
+ &  & Middle & 39 & 0\\
+
+ &  & Middle High & 37 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Ice Cream} &  & High & 26 & 0\\
+
+ &  & Low & 116 & 0\\
+
+ &  & Middle Low & 122 & 0\\
+
+ &  & Middle & 91 & 0\\
+
+ &  & Middle High & 84 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Pharmacies} &  & High & 25 & 0\\
+
+ &  & Low & 27 & 0\\
+
+ &  & Middle Low & 32 & 0\\
+
+ &  & Middle & 38 & 0\\
+
+ &  & Middle High & 16 & 0\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Super Markets} & \multirow{-35}{*}{\centering\arraybackslash 0} & High & 12 & 0\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Figure \ref{fig:plot-crime-quadrat} shows the results of conditional
 quadrat counts for Lethal and Intentional Violent Crime. The dotted line
@@ -691,7 +883,7 @@ indicates the global intensity, simply the total number of criminal
 events divided by the area of the region. It can be seen that the
 intensity of crime clearly increases with Socio-Economic Deprivation,
 and the intensity in areas with the highest levels of Socio-Economic
-Deprivation is 208.71\% higher than in places with the lowest levels of
+Deprivation is 216.2\% higher than in places with the lowest levels of
 Socio-Economic Deprivation. This is as expected, as research has
 consistently found correlations between Socio-Economic Deprivation and a
 variety of negative health outcomes, including homicide (Ichihara et al.
@@ -702,7 +894,7 @@ level of Socio-Economic Deprivation.
 
 \begin{figure}
 \centering
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/plot-crime-quadrat-1.pdf}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/plot-crime-quadrat-1.pdf}
 \caption{\label{fig:plot-crime-quadrat}Intensity of crime by level of
 Socio-Economic Deprivation; the dotted line indicates the global
 intensity of crime}
@@ -744,7 +936,7 @@ high Socio-Economic Deprivation.
 
 \begin{figure}
 \centering
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/plot-events-quadrat-1.pdf}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/plot-events-quadrat-1.pdf}
 \caption{\label{fig:plot-events-quadrat}Intensity of places of worship
 and commercial establishments by level of Socio-Economic Deprivation;
 the dotted lines indicates the respective global intensities}
@@ -758,13 +950,13 @@ the dotted lines indicates the respective global intensities}
 \toprule
 Event & Statistic & Degrees of Freedom & p-value\\
 \midrule
-Catholic & 6.913 & 4 & 0.2811\\
-Evangelical & 38.669 & 4 & $<0.001$\\
-Spiritist & 9.108 & 4 & 0.1169\\
-Ice Cream Shop & 15.108 & 4 & 0.009\\
-Pharmacy & 51.869 & 4 & $<0.001$\\
+Catholic & 7.074 & 4 & 0.264\\
+Evangelical & 32.976 & 4 & $<0.001$\\
+Spiritist & 7.561 & 4 & 0.2181\\
+Ice Cream Shop & 13.946 & 4 & 0.0149\\
+Pharmacy & 53.220 & 4 & $<0.001$\\
 \addlinespace
-Supermarket & 23.826 & 4 & $<0.001$\\
+Supermarket & 18.819 & 4 & 0.0017\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -842,7 +1034,7 @@ to Socio-Economic Deprivation. Next section explores this question.
 
 \begin{figure}
 \centering
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/figure-plot-relative-distribution-1.pdf}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/figure-plot-relative-distribution-1.pdf}
 \caption{\label{fig:plot-relative-distribution}Intensity of crime as a
 function of distance to a selected place of worship or commercial
 establishment; bands are 95\% confidence interval and the dotted line
@@ -877,12 +1069,12 @@ to a Spiritist church, which at short distances is not significantly
 different from the baseline intensity (see the confidence bands).
 
 The peak intensity as a function of distance to Evangelical churches is
-3.33 times the baseline intensity; for Catholic places of worship, the
+3.32 times the baseline intensity; for Catholic places of worship, the
 highest intensity is 2.12 times the baseline intensity; and the
 intensity reaches a peak of 2.67 times the baseline intensity when the
 covariate is distance to Spiritist churches. Turning now to inspect the
 three types of commercial establishments, we see that the highest
-intensities are 2.28, 2.46, and 2.09 times the intensity according to
+intensities are 2.28, 2.45, and 2.09 times the intensity according to
 Socio-Economic Deprivation for ice cream shops, pharmacies, and
 supermarkets, respectively.
 
@@ -891,17 +1083,17 @@ function of distance to Evangelical places of worship was 183.78\%
 higher than the intensity of Catholic places of worship \emph{without a
 baseline function}, once that we account for Socio-Economic Deprivation
 by means of a baseline function, the peak relative intensity as a
-function of distance to Evangelical churches declines to 176.53\% higher
+function of distance to Evangelical churches declines to 176.48\% higher
 than the intensity as a function of distance to Catholic places of
 worship at the same distance. Accounting for Socio-Economic Deprivation
 in this analysis of intensity has in general a moderating effect:
 whereas the peak intensity of crime was was 194.54\% higher when
 comparing Evangelical and Spiritist churches at the distance of the peak
-intensity of Evangelical churches, this difference declines to 186.45\%
+intensity of Evangelical churches, this difference declines to 186.43\%
 after accounting for Socio-Economic Deprivation. Similarly, this changes
-from 174.19\% to 168.33\% in the case of ice cream shops, from 151.52\%
-to 140.97\% in the case of pharmacies, and finally from 177.63\% to
-164.33\% in the case of supermarkets.
+from 174.19\% to 168.37\% in the case of ice cream shops, from 151.52\%
+to 140.98\% in the case of pharmacies, and finally from 177.63\% to
+164.31\% in the case of supermarkets.
 
 Again, it is interesting to note that while the intensity with respect
 to distance to Catholic and Spiritist places of worship, as well as ice
@@ -914,7 +1106,7 @@ implications of these findings.
 
 \begin{figure}
 \centering
-\includegraphics{Moral_Communities_and_Crime_v1_files/figure-latex/figure-plot-relative-distribution-with-baseline-1.pdf}
+\includegraphics{Moral_Communities_and_Crime_files/figure-latex/figure-plot-relative-distribution-with-baseline-1.pdf}
 \caption{\label{fig:plot-relative-distribution-with-baseline}Intensity
 of crime as a function of distance to a selected place of worship or
 commercial establishment after introducing Socio-Economic Deprivation as
@@ -999,8 +1191,8 @@ churches, which in some way are the mirror image of those for
 Evangelical churches. An extensive scan of the literature finds much
 less information about this religious tradition, in particular in the
 context of Brazil where it adapted in ways that made it very different
-from its original French predecessor (see Graca Arribas 2011). Could it
-be that Spiritism is seen by potential criminals as spiritually or
+from its original French predecessor (see Arribas 2011b). Could it be
+that Spiritism is seen by potential criminals as spiritually or
 materially risky, if supernatural retribution is feared? Again, we
 cannot do more than speculate about this at the moment, but this might
 be another worthwhile avenue for future investigation.
@@ -1129,7 +1321,7 @@ Abdullah, Snhs, F. A. Bohani, Z. A. Nazri, Y. Jeffry, M. A. Abdullah, M.
 N. Junoh, and Z. A. Kasim. 2018. ``Amenities Surrounding Commercial
 Serial Crime Prediction at Greater Valley and Kuala Lumpur Using K-Means
 Clustering.'' Journal Article. \emph{Jurnal Teknologi} 80 (4): 43--53.
-\href{\%3CGo\%20to\%20ISI\%3E://WOS:000437011000005}{\textless{}Go to ISI\textgreater{}://WOS:000437011000005}.
+\url{\%3CGo\%20to\%20ISI\%3E://WOS:000437011000005}.
 
 \leavevmode\hypertarget{ref-Allaire2018rticles}{}%
 Allaire, JJ, Yihui Xie, R Foundation, Hadley Wickham, Journal of
@@ -1137,9 +1329,24 @@ Statistical Software, Ramnath Vaidyanathan, Association for Computing
 Machinery, et al. 2018. \emph{Rticles: Article Formats for R Markdown}.
 \url{https://CRAN.R-project.org/package=rticles}.
 
+\leavevmode\hypertarget{ref-Appleyard1980livable}{}%
+Appleyard, D. 1980. ``Livable Streets - Protected Neighborhoods.''
+Journal Article. \emph{Annals of the American Academy of Political and
+Social Science} 451 (SEP): 106--17.
+\url{\%3CGo\%20to\%20ISI\%3E://A1980KK14700011}.
+
 \leavevmode\hypertarget{ref-Arnold2018}{}%
 Arnold, Jeffrey B. 2018. \emph{Ggthemes: Extra Themes, Scales and Geoms
 for 'Ggplot2'}. \url{https://CRAN.R-project.org/package=ggthemes}.
+
+\leavevmode\hypertarget{ref-Arribas2011doutrina}{}%
+Arribas, Celia da Graca. 2011a. ``A Doutrina Espirita Na Formacao Da
+Diversidade Religiosa Brasileira.'' \emph{Anais Do XXVI Simpósio
+Nacional de História - ANPUH, Sao Paulo}.
+
+\leavevmode\hypertarget{ref-Arribas2011espiritismo}{}%
+---------. 2011b. ``Espiritismo: Entre Crime E Religiao.''
+\emph{Mneme-Revista de Humanidades} 12 (29).
 
 \leavevmode\hypertarget{ref-Baddeley2015spatial}{}%
 Baddeley, Adrian, Ege Rubak, and Rolf Turner. 2015. \emph{Spatial Point
@@ -1245,8 +1452,7 @@ Feitosa, F. F., G. Camara, A. M. V. Monteiro, T. Koschitzki, and M. P.
 S. Silva. 2007. ``Global and Local Spatial Indices of Urban
 Segregation.'' Journal Article. \emph{International Journal of
 Geographical Information Science} 21 (3): 299--323.
-\href{ISI:000244944300004\%0AC:/Papers/International\%20Journal\%20of\%20Geographical\%20Information\%20Science/IJGIS\%20(2007)\%2021\%20(3)\%20299-323.pdf}{ISI:000244944300004
-C:/Papers/International Journal of Geographical Information Science/IJGIS (2007) 21 (3) 299-323.pdf}.
+\url{ISI:000244944300004\%0AC:/Papers/International\%20Journal\%20of\%20Geographical\%20Information\%20Science/IJGIS\%20(2007)\%2021\%20(3)\%20299-323.pdf}.
 
 \leavevmode\hypertarget{ref-Foster2010neighbourhood}{}%
 Foster, S., B. Giles-Corti, and M. Knuiman. 2010. ``Neighbourhood Design
@@ -1276,9 +1482,11 @@ Poverty in Brazil.'' Journal Article. \emph{Annals of the Association of
 American Geographers} 104 (6): 1239--55.
 \url{https://doi.org/10.1080/00045608.2014.944456}.
 
-\leavevmode\hypertarget{ref-daGraca2011espiritismo}{}%
-Graca Arribas, Celia da. 2011. ``Espiritismo: Entre Crime E Religiao.''
-\emph{Mneme-Revista de Humanidades} 12 (29).
+\leavevmode\hypertarget{ref-Gilbertson2012engineering}{}%
+Gilbertson, Alan, and Alan Hayes. 2012. ``Engineering to Reduce Crime
+and Disorder in Public Places.'' In \emph{Proceedings of the Institution
+of Civil Engineers-Municipal Engineer}, 165:175--83. 3. Thomas Telford
+Ltd.
 
 \leavevmode\hypertarget{ref-Groff2015informal}{}%
 Groff, E. R. 2015. ``Informal Social Control and Crime Events.'' Journal
@@ -1322,6 +1530,15 @@ Ferreira, C. Teixeira, M. Allik, et al. 2018. ``Area Deprivation
 Measures Used in Brazil: A Scoping Review.'' Journal Article.
 \emph{Revista de Saude Publica} 52 (83): 1--14.
 \url{https://doi.org/10.11606/s1518-8787.2018052000933}.
+
+\leavevmode\hypertarget{ref-Jacobs1961death}{}%
+Jacobs, Jane. 1961. \emph{The Death and Life of Great American Cities}.
+Book. New York: Vintage.
+
+\leavevmode\hypertarget{ref-Jacobs1968community}{}%
+---------. 1968. ``Community on the City Streets.'' Book Section. In
+\emph{The Search for Community in Modern America}, edited by D.
+Baltzell, 74--93. New York: Harper \& Row.
 
 \leavevmode\hypertarget{ref-Johnson2011more}{}%
 Johnson, Byron. 2011. \emph{More God, Less Crime: Why Faith Matters and
@@ -1372,6 +1589,12 @@ Menezes, T., R. Silveira-Neto, C. Monteiro, and J. L. Ratton. 2013.
 from Urban Neighborhoods.'' Journal Article. \emph{Economics Letters}
 120 (1): 97--99. \url{https://doi.org/10.1016/j.econlet.2013.03.040}.
 
+\leavevmode\hypertarget{ref-Mora2008marketing}{}%
+Mora, G. Cristina. 2008. ``Marketing the `Health and Wealth Gospel'
+Across National Borders; Evidence from Brazil and the United States.''
+\emph{Poetics} 36 (5): 404--20.
+\url{https://doi.org/https://doi.org/10.1016/j.poetic.2008.06.008}.
+
 \leavevmode\hypertarget{ref-Murray2013crime}{}%
 Murray, J., D. R. D. Cerqueira, and T. Kahn. 2013. ``Crime and Violence
 in Brazil: Systematic Review of Time Trends, Prevalence Rates and Risk
@@ -1413,7 +1636,7 @@ and Policy} 10 (3): 435--54.
 Regnerus, M. D. 2003. ``Moral Communities and Adolescent Delinquency:
 Religious Contexts and Community Social Control.'' Journal Article.
 \emph{Sociological Quarterly} 44 (4): 523--54.
-\href{\%3CGo\%20to\%20ISI\%3E://WOS:000188319800001}{\textless{}Go to ISI\textgreater{}://WOS:000188319800001}.
+\url{\%3CGo\%20to\%20ISI\%3E://WOS:000188319800001}.
 
 \leavevmode\hypertarget{ref-Reiss1951delinquency}{}%
 Reiss, Albert J. 1951. ``Delinquency as the Failure of Personal and
@@ -1439,6 +1662,10 @@ Personality} 43 (1): 136--55.
 Ross, Noam. 2018. \emph{Fasterize: Fast Polygon to Raster Conversion}.
 \url{https://CRAN.R-project.org/package=fasterize}.
 
+\leavevmode\hypertarget{ref-deSouza2019pluralidade}{}%
+Souza, André Ricardo de. 2019. ``Pluralidade Cristã E Algumas Questões
+Do Cenário Religioso Brasileiro.'' \emph{Revista USP}, no. 120: 13--22.
+
 \leavevmode\hypertarget{ref-Stark1996religion}{}%
 Stark, R. 1996. ``Religion as Context: Hellfire and Delinquency One More
 Time.'' Journal Article. \emph{Sociology of Religion} 57 (2): 163--73.
@@ -1456,6 +1683,19 @@ Tagashira, N., and A. Okabe. 2002. ``The Modifiable Areal Unit Problem
 in a Regression Model Whose Independent Variable Is a Distance from a
 Predetermined Point.'' Journal Article. \emph{Geographical Analysis} 34
 (1): 1--20. \url{ISI:000173383000001}.
+
+\leavevmode\hypertarget{ref-Taylor1988human}{}%
+Taylor, Ralph B. 1988. \emph{Human Territorial Functioning: An
+Empirical, Evolutionary Perspective on Individual and Small Group
+Territorial Cognitions, Behaviors, and Consequences}. Book. Cambridge
+University Press.
+
+\leavevmode\hypertarget{ref-Taylor1998crime}{}%
+Taylor, Ralph B. 1998. ``Crime and Small-Scale Places: What We Know,
+What We Can Prevent, and What Else We Need to Know.'' Book Section. In
+\emph{Crime and Place: Plenary Papers of the 1997 Conference on Criminal
+Justice Research and Evaluation}, edited by Ralph B. Taylor, 1--22.
+Washington, D.C.: National Institute of Justice.
 
 \leavevmode\hypertarget{ref-Topalli2013god}{}%
 Topalli, V., T. Brezina, and M. Bernhardt. 2013. ``With God on My Side:

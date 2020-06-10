@@ -111,7 +111,7 @@ events_recife_list <- split(events_recife.ppp)
 # PCA is implemented in R as `prcomp`:
 setores.pca <- setores.sf %>% 
   st_drop_geometry() %>%
-  dplyr::select(median_income, prop_unemployed, prop_single_mother, prop_young_single_mother, prop_poverty) %>%
+  dplyr::select(pop_density, median_income, prop_unemployed, prop_single_mother, prop_young_single_mother, prop_poverty) %>%
   prcomp(center = TRUE, scale = TRUE)
 
 # The loadings of the pca are as follows:
@@ -129,13 +129,13 @@ pr_var <- std_dev^2
 
 # Check variance of the components
 
-pr_var[1:5]
+pr_var[1:6]
 
 # And the proportion of the variance:
 
 pr_var/sum(pr_var)
 
-# Once that there is principal component (call it SED for socio-economic deprivation), it can be joined to the `sf` object before it can be rasterized and converted to an `im` object:
+# Once that there is a principal component (call it SED for socio-economic deprivation), it can be joined to the `sf` object before it can be rasterized and converted to an `im` object:
 
 setores.sf$SED <- setores.pca$x[,1]
 
@@ -148,33 +148,49 @@ setores.sf <- setores.sf %>% mutate(SED = (SED - min(SED) + 0.1)/(max(SED) + 0.1
 
 Violent crime is a widespread phenomenon with negative impacts on many spheres of life and society. Although the rate of homicides worldwide has grown at a slower rate than the population in the past few decades, the number of people killed in homicides still increased from 362,000 in 1990 to 464,000 in 2017 [@Unodc2019executive]. Furthermore, variations in the prevalence of violent crime tend to be extremely uneven. The Americas, with a population of approximately 793.8 million people in 2019 (or about 10.3% of the world population), accounted for approximately 173,000 homicides in 2017, or approximately 37.3% of all homicides in the world. Within the Americas, Brazil (along with Venezuela, Colombia, and Mexico) is one of the largest countries in the region with high homicide rates. And there are notable variations at the sub-national and intra-metropolitan levels as well. In fact, understanding the variations in the prevalence of violent crime is recognized as key to achieving policy goals:
 
->> High levels of homicidal violence are concentrated in geographic and demographic “pockets”, so
-achieving target 16.1 of the Sustainable Development Goals requires interventions within the specific
-regions, countries, communities and population groups that are most at risk [@Unodc2019executive, p. 35]
+>> High levels of homicidal violence are concentrated in geographic and demographic “pockets”, so achieving target 16.1 of the Sustainable Development Goals requires interventions within the specific regions, countries, communities and population groups that are most at risk [@Unodc2019executive, p. 35]
 
-This concern is not idle: the endemic malady of violent crime represents an important factor that threatens to derail sustainable development goals. Violent crime, furthermore, tends to be more acute in those regions most in need of development. On the one hand, violent crime represents an economic and social drag [@Becker2017analise]. The impacts are multifaceted, since they affect people's well-being, either through the loss of human life, mental health, and limitations in the right to public spaces [@Doran2011putting], or through disturbances in schooling and academic achievement [@Unodc2019development]. In turn, these negative effects combine to create the unfortunate conditions that tend to breed criminal behavior, thus creating a vicious cycle of economic disadvantage and violence [@Unodc2019development]. It is not surprising, given these peculiarities, that researchers have joined calls for increased attention to the study of the patterns of violent crime in Low and Middle Income Countries [LMIC; @Murray2013crime].
+This concern is not idle: violent crime tends to be more acute in those regions most in need of development. On the one hand, violent crime represents an economic and social drag [@Becker2017analise]. The impacts are multifaceted, since they affect people's well-being, either through the loss of human life, mental health, and limitations in the right to public spaces [@Doran2011putting], or through disturbances in schooling and academic achievement [@Unodc2019development]. In turn, these negative effects combine to create the unfortunate conditions that tend to breed criminal behavior, thus creating a vicious cycle of economic disadvantage and violence [@Unodc2019development]. It is not surprising, given these peculiarities, that researchers have joined calls for increased attention to the study of the patterns of violent crime in Low and Middle Income Countries [LMIC; @Murray2013crime].
 
-Added to the scenario, formal social control institutions in countries like Brazil leave something (or much) to be desired: while in practice they should inhibit criminal behavior, they suffer from deep deficiencies that end up reducing the deterrent power of the justice system. Serious institutional problems include the inefficiency of the police, the lack of national legislation, the glacial pace of judicial processes, and the weak situation of the prison system in the country [@Menezes2013spatial]. This makes it even more urgent to understand the role of _informal social controls_, i.e., the ability of community organizations such as schools, clubs, and neighborhood associations to suppress crime by strengthening the capabilities of neighbors to control inappropriate behavior [@Groff2015informal]. 
+Added to the scenario, formal social control institutions in countries like Brazil often leave something (or much) to be desired: while in practice they should inhibit criminal behavior, they suffer from deep deficiencies that end up eroding the deterrent power of the justice system. Serious institutional problems include the inefficiency of the police, the lack of national legislation, the glacial pace of judicial processes, and the weak situation of the prison system in the country [@Menezes2013spatial]. This makes it even more urgent to understand the role of _informal social controls_, i.e., the ability of community organizations such as schools, clubs, and neighborhood associations to suppress crime by strengthening the capabilities of neighbors to control inappropriate behavior [@Groff2015informal]. 
 
 In order to understand the factors that can potentially help to deter crime, beyond formal control, it is important to identify empirical regularities. Criminological factors include concrete elements (such as the presence of arms or drugs, or elements of the built environment), and also figurative factors, which include the social cost of deviant behavior. Accordingly, a number of studies have investigated various aspects of the environment and neighborhood design [e.g., @Foster2010neighbourhood; @He2017built; @Loukaitou2001measuring], whereas other studies have focused on exposure to environmental attributes that signal weakened norms, such as liquor and tobacco outlets [e.g., @Brower2007spatial; @Deryol2016crime; @Lipton2008spatial; @Quick2017influence]. 
 
 Yet another fruitful avenue for research, and one that has only recently begun to be explored, is the presence of environmental attributes that can help to reinforce moral norms, such as schools and churches [e.g., @Abdullah2018amenities; @Davignon2015christian; @Furr2010metric; @Traunmuller2011moral]. It is thus that in a recent paper, Warner and Konkel [-@Warner2019neighborhood] note that the role of places of worship, as distinct entities from the members of the congregations, have received less attention in empirical and theoretical research for their deterrence potential. The role of these institutions might be particularly important in places where formal state institutions lack the means or the will to enforce norms in a consistent way - as is the case in Brazil [@Garmany2014space].
 
-With the above considerations in mind, the objective of this paper is to investigate whether and how places of worship correlate spatially with criminal events, or in other words, to investigate whether their signals as moral communities have a discernible spatial dimension. The case study is the city of Recife in the state of Pernambuco, in Brazil's Northeast. Recife is a large and important metropolitan area in a historically poor region, and afflicted by high levels of violent crime, having the dubious honor of being one of five state capitals with the highest rates of homicide in the period under study [@Menezes2013spatial]. The empirical strategy is to use spatial analysis to explore the potential geographical relationships between violent criminal events, on the one hand, and places of worship and a selection of commercial establishments that serve as controls, on the other. Dissagregated data allows us to analyze the relevant point patterns at a very high level of resolution. 
+With the above considerations in mind, the objective of this paper is to investigate whether and how places of worship correlate spatially with criminal events, or in other words, to investigate whether their signals as moral communities have a discernible spatial dimension. Our argument is as follows:
+
+1. Since places of worship are associated with normative codes of behavior, can they by their presence contribute to create moral communities? The mechanisms for this are explained by Groff [@Groff2015informal] in terms of "Eyes on the Street" [see @Jacobs1961death; @Jacobs1968community; @Appleyard1980livable] and Human Territorial Functioning [@Taylor1988human; @Taylor1998crime].
+
+2. If so, what is the distance decay of said moral community effect? Is it uniform over a certain distance or does it vary?
+
+The case study is the city of Recife in the state of Pernambuco, in Brazil's Northeast. Recife is a large and important metropolitan area in a historically poor region, and afflicted by high levels of violent crime, having the dubious honor of being one of five state capitals with the highest rates of homicide in the period under study [@Menezes2013spatial]. The empirical strategy is to use spatial analysis to explore the potential geographical relationships between violent criminal events, on the one hand, and places of worship and a selection of commercial establishments that serve as controls, on the other. Dissagregated data allows us to analyze the relevant point patterns at a very high level of resolution. 
 
 After this introductory section, the rest of this paper is structured as follows: Section \ref{background} reviews some relevant theoretical perspectives on religion and crime; then Section \ref{methods} presents the empirical strategy used in the work. Section \ref{case} presents the context as well as the data used in the study; Section \ref{results} presents the analysis, whereas the results are discussed in Section \ref{discussion}. Finally, some concluding remarks are offered in Section \ref{conclusions}.
 
-# Background: Theoretical Perspectives on Religion and Crime {#background}
+# Background {#background}
+
+## Theoretical Perspectives on Religion and Crime
 
 Why do humans behave morally? For millennia, it has been the role of religion to provide the basic tenets of morally acceptable behavior: thou shalt not kill et al., and their equivalent in many world religions [e.g., @Donovan1986different]. Enforcement of such tenets implies different mechanisms, including _sin_, _haram_, _karma_, and _tapu_, with punishment delivered by hellfire and exile to _Jahannam_ or _Gehenna_, to mention just some choice places of torment. In addition to acting as _de facto_ social policy for much of history, many of these religious tenets still have the force of law in many cultures and regions - and even where they do not, they are held by some researchers and policy experts to be helpful complements to reduce crime in any case [e.g., @Durrant2017religion; @Johnson2011more]. The hypothesis that religion can act as a factor that deters and reduces criminal behavior, therefore, has prompted the scientific study of the effectiveness of religion on moral behavior [@Hoffmann2015religion].
 
 An early effort to theorize the effect of religion on criminal behavior was the _hellfire hypothesis_ of Hirschi and Stark [-@Hirschi1969hellfire]. The focus of this hypothesis is the threat of extra-temporal (and possibly eternal) punishment, and how this threat can deter believers from commandment-breaking (also see Pascal's wager). Accordingly, Hirsch and Stark [-@Hirschi1969hellfire] posit that negative correlations between crime and religion are a consequence of a sense of commitment with normative values, a commitment that is ritually reinforced in a regular fashion (e.g., the liturgical rite of peace in Catholic Mass). Rohrbaugh and Jessor [-@Rohrbaugh1975religiosity], for instance, note that by attributing to divinity (or some other supra-terrenal entity) the supreme force of punishment, religion helps to build a sense of obduracy, or "hardening" against temptation.
 
-Despite its intuitive appeal, research has not provided much direct evidence for the hypothesis of hellfire [@Hoffmann2015religion, p. 1]. In a bizarre twist, even mainstream doctrines (such as absolution) may in fact encourage beliefs that neutralize the fear of _terrenal_ punishment, and thus turn out to be criminogenic [e.g., @Topalli2013god]. More deviant cases can even recast criminal behavior as a form of spiritual insurgency [@Chesnut2017devoted]. Counterexamples like this notwithstanding, researchers remain open to the possibility that "religion may still serve as a social control mechanism by encouraging conventional beliefs, monitoring behaviors, enhancing family attachments, or providing conventional activities" [@Hoffmann2015religion, p. 1]. In this way, the hypothesis of _moral communities_ [@Stark1996religion] recognizes that social integration is essential for increasing social control, thus reducing the practice of behavior that is not in accordance with current norms. Rohrbaugh and Jessor [-@Rohrbaugh1975religiosity] also emphasize that religion acts as social control since it defines what is an appropriate attitude according to moral values, thus making moral communities a close relative of the concept of _informal social control_, defined as “the ability of social groups or institutions to make norms or rules effective” [@Reiss1951delinquency, p. 196; cited in @Groff2015informal, p. 91].
+Despite its intuitive appeal, research has not provided much direct evidence for the hypothesis of hellfire [@Hoffmann2015religion, p. 1]. In a bizarre twist, even mainstream doctrines (such as absolution) may in fact encourage beliefs that neutralize the fear of _terrenal_ punishment, and thus turn out to be criminogenic [e.g., @Topalli2013god]. More deviant cases can even recast criminal behavior as a form of spiritual insurgency [@Chesnut2017devoted]. Counterexamples like this notwithstanding, researchers remain open to the possibility that "religion may still serve as a social control mechanism by encouraging conventional beliefs, monitoring behaviors, enhancing family attachments, or providing conventional activities" [@Hoffmann2015religion, p. 1]. In this way, the hypothesis of _moral communities_ [@Stark1996religion] recognizes that social integration is essential for increasing social control, thus reducing the practice of behavior that is not in accordance with current norms. Rohrbaugh and Jessor [-@Rohrbaugh1975religiosity] also emphasize that religion acts as social control since it defines what is an appropriate attitude according to moral values, thus making moral communities a close relative of the concept of _informal social control_, defined as “the ability of social groups or institutions to make norms or rules effective”\footnote{The discussion about disorder is directly related to the idea of social control. According to this perspective, control mechanisms to contain deviant actions are considered indispensable [@Rodrigues2012medo]. This theory assumes that the deviant act is seen as normal in social organization, and coercive forces are needed to limit such impulses. This control can be exercised through formal institutions, as well as through informal mechanisms. It would be a set of norms as well as positive and negative sanctions, which are specified throughout the socialization process, which aims to establish values and build the individual's morals, disciplining society and subjecting individuals to standards and principles predefined. As the individual finds himself more and more inserted in the social context, less will be the chances of criminal behavior. From this perspective, the existence of bonds of solidarity and trust would be relevant for the effective exercise of supervision over crime in the neighborhood. Informal control is then linked to the ability of a neighborhood to establish communication and surveillance networks, interfering in cases of criminal actions and increasing security in the region.} [@Reiss1951delinquency, p. 196; cited in @Groff2015informal, p. 91].
 
-The hypothesis of moral communities has over the years been used to examine a variety of outcomes of interest. Recent examples include Stroope and Baker's [-@Stroope2018moral] exploration of religiosity and self-rated health; Davignon and Thomson [-@Davignon2015christian] with their research on institutional context and the religiosity of students; and the study of religion as a source of trust of Traunmuller [-@Traunmuller2011moral]. This is in addition, of course, to numerous studies on criminal behavior such as Eitle [-@Eitle2011religion], an author who explored the deterrence power of religion on gambling; Lee and Bartkowski's [-@Lee2004love] investigation of juvenile homicide in rural areas; and the research of Regnerus [-@Regnerus2003moral] on adolescent delinquency. The hypothesis of moral communities as a form of informal social control, on the other hand, has been less studied from a geographical perspective, and it is only recently that has attracted the attention of researchers. Groff [-@Groff2015informal], for instance, discusses informal social control as a phenomenon that can plausibly operate at different geographical scales, from the level of the home and family, through the street block and neighborhood, possibly to other scales such as the county. In this way, Nie and Yang [-@Nie2019smoking] remark on a recent paper on the lack of research conducted to study how the religious context of a geographical area (e.g., a county) may influence (youth smoking) behavior (p. 2). This point is echoed by Warner and Konkel [-@Warner2019neighborhood], who moreover recommend the use of even smaller units of analysis (e.g., Census Block Groups), in an effort to reduce aggregation bias [see @Hipp2007block], but more importantly because the processes defined by social disorganization theory are thought to occur at relatively small geographical scales.
+The hypothesis of moral communities has over the years been used to examine a variety of outcomes of interest. Recent examples include Stroope and Baker's [-@Stroope2018moral] exploration of religiosity and self-rated health; Davignon and Thomson [-@Davignon2015christian] with their research on institutional context and the religiosity of students; and the study of religion as a source of trust of Traunmuller [-@Traunmuller2011moral]. This is in addition, of course, to numerous studies on criminal behavior such as Eitle [-@Eitle2011religion], an author who explored the deterrence power of religion on gambling; Lee and Bartkowski's [-@Lee2004love] investigation of juvenile homicide in rural areas; and the research of Regnerus [-@Regnerus2003moral] on adolescent delinquency. The hypothesis of moral communities as a form of informal social control, on the other hand, has been less studied from a geographical perspective, and it is only recently that has attracted the attention of researchers. Groff [-@Groff2015informal], for instance, discusses informal social control as a phenomenon that can plausibly operate at different geographical scales, from the level of the home and family, through the street block and neighborhood, possibly to other scales such as the county. In this way, Nie and Yang [-@Nie2019smoking] remark on a recent paper on the lack of research conducted to study how the religious context of a geographical area (e.g., a county) may influence (youth smoking) behavior (p. 2). This point is echoed by Warner and Konkel [-@Warner2019neighborhood], who moreover recommend the use of even smaller units of analysis (e.g., Census Block Groups), in an effort to reduce aggregation bias [see @Hipp2007block], but more importantly because the processes defined by social disorganization theory\footnote{The social disorganization theory (Shaw e McKay, 1942)  presents the social structure as an indispensable factor for the elaboration of theoretical and methodological models related to crime in urban neighborhoods. According to Villareal e Silva [-@Villarreal2006social], “neighborhoods characterized by dense social networks will experience greater trust among residents and cooperation in the enforcement of social norms against crime. Disadvantaged neighborhoods are thought to have fewer social ties among residents and lower rates of organizational participation”. The argument is that community characteristics such as poverty, ethnic heterogeneity and residential mobility disrupt the social organization of urban neighborhoods in such a way as to reduce their capacity to exercise social control [@Rodrigues2012medo]. Thus, aspects such as residential instability or low socioeconomic status would contribute to the weakening of the community organization, increasing crime rates. This theory highlights the importance of the geography of crime and the characteristics of disorder in its analysis.} are thought to occur at relatively small geographical scales.
 
 The preceding review, as well as other research [-@Malleson2019identifying], makes clear the need for research at various geographical scales. From a theoretical perspective, the social mechanisms that underpin the hypothesis of moral communities and informal social control can happen at various geographical scales, some of which previous research has already addressed: the work of Nie and Yang [-@Nie2019smoking], for one, highlights the role of processes detectable at a relatively high level of aggregation, whereas Warner and Konkel [-@Warner2019neighborhood], looking specifically at the effect of places of worship, bring the study closer to the level of the neighborhood. In what follows, we propose to adopt a much more disaggregated approach by considering the intensity of criminal events with respect to places of worship. This requires micro-level data both of crimes and places of worship, and the use of appropriate spatial analytical tools for point patterns, as discussed next.
+
+## Religion in Brazil
+
+Brazil is a country with a Christian predominance. In the first national census in which religion was considered, in 1872, practically the entire population (99.72%) identified themselves as Catholic. In the 1940 census, when the religion question was researched again, Catholicism was still the religion with which the vast majority of the population identified: 95.2% of Brazilians declared themselves as Catholics that year. 
+
+The dominance of Catholicism in the religious life of Brazil is unsurprising given the colonial past of the country. However, the religious makeup of the population started was not completely homogeneous. Among other offerings in the market place of spiritual ideas, Spiritism stands out. The Spiritist Doctrine was founded in nineteenth-century France by Allan Kardec as a way of understanding the world and its relations with the "beyond": a curious mix of pseudo-scientific language, philosophy, and religion [@Arribas2011doutrina]. Spiritism arrived in Brazil in the middle of the previous century and since then it slowly spread in large and medium-sized cities. Today, Spiritism is the third largest religious segment in Brazil, after Catholicism and Evangelical Christianism, and shares with these religions the Christian principle of charity through pious assistance. 
+
+Another signal event in the developmento of religion in Brazil is the arrival of Pentecostal Protestant churches, such as the Christian Congregation of Brazil in 1910 and the Assembly of God in 1911. Initially, these religious denominations did not make important inroads in Brazilian society (as evidenced by the 1940 census). However, in the context of rapid industrialization and major urbanization, they contributed to the change in the religious landscape along with other religions [@deSouza2019pluralidade]: according to the 2010 census the configuration of the religious scene in Brazil had changed considerably from the previous century: 64.6% of the population identified as Catholic and 22.2% as Evangelical Christians. The acceleration of this demographic change was directly related to the inroads made by Evangelical churches: The Assembly of God, for instance, grew considerably to total more than 12.3 million adherents. This church is represented extensively in many regions of the country, following a system of loosely allied ministries. With a charismatic profile and the lack of a centralized authority, growth of this church has occurred mainly through subdivision into numerous small and autonomous churches. These churches have in common the Prosperity Gospel and an emphasis on economic entrepreneurship  [e.g., @Mora2008marketing]. They also do not shy away from partisan political action.
+
+In general, there have been two major changes in Brazil regarding religious issues: the slow decline of Catholicism and the rapid growth of Evangelical Christianism. These changes are evident in the daily life of the average Brazilian, either through the radio or through TV programs, which give more and more space to religious doctrines. At the same time, there has been an increase in cases of religious intolerance in Brazil, generating violence acts against temples, objects of worship, and people.
 
 # Empirical Strategy {#methods}
 
@@ -244,7 +260,7 @@ where $B(s)$ is a baseline function. It can be seen that $\rho(z)=1$ is the base
 
 # Case Study: Context and Data {#case}
 
-The study is of the city of Recife, the capital of the state of Pernambuco in the Northeast region of Brazil. With a population of 1,550,390 million inhabitants in 2010, Recife is one of the main Brazilian metropolises, exerting a great economic influence in neighboring regions. However, the city experiences a serious problem with violent crime, and has the dubious honor of being one of the five capital cities in Brazil with the highest homicide rates in the period under study [@Menezes2013spatial].
+The study is of the city of Recife, the capital of the state of Pernambuco in the Northeast region of Brazil. With a population of 1,550,390 million inhabitants in 2010, Recife is one of the main Brazilian metropolises, exerting a great economic influence in neighboring regions. However, the city experiences a serious problem with violent crime, and has the dubious honor of being one of the five capital cities in Brazil with the highest homicide rates in the period under study\footnote{The appendix included information that allows a more in-depth characterization of the city of Recife: population distribution, income, inequality, urban facilities (education and health) and location of residential areas.} [@Menezes2013spatial].
 
 In the current context, the term "violent crime" is an umbrella for several forms of infractions to the penal code. Following recommendations of the National Secretariat of Public Security of the Ministry of Justice of 2006, these are Violent Lethal and Intentional Crimes (VLIC; which includes intentional homicide), theft followed by death (robbery), and corporal injury followed by death. The data on LIVC were extracted from the Police Information System of the Secretariat of Social Defense of Pernambuco (INFOPOL / SDS-PE), which is the most reliable, detailed, and comprehensive information on violent deaths in the region. 
 
@@ -296,7 +312,7 @@ kable(descriptive_stats,
   pack_rows("Weapon Used", 15, 16)
 ```
 
-The data are organized at the individual level and it is possible to obtain information about the location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of LIVC in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms. Figure \ref{fig:plot-crime} shows the spatial distribution of the 1,657 LIVC crimes that occurred in the city of Recife between July, 2008 and June, 2010.
+The data are organized at the individual level and it is possible to obtain information about the crime event location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of LIVC in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms. Figure \ref{fig:plot-crime} shows the spatial distribution of the 1,657 LIVC crimes that occurred in the city of Recife between July, 2008 and June, 2010.
 
 ```{r fig-plot-crime, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-crime}Location of Lethal and Intentional Violent Crime in Recife, July, 2008 - June, 2009"}
 
@@ -310,9 +326,11 @@ ggplot(data = events_recife.sf %>% filter(Type == "Violent Crime")) +
 
 Information about places of interest was obtained from the National Register of Addresses for Statistical Purposes (CNEFE - Census 2010), which lists 78,056,411 urban and rural addresses, distributed among the 316,574 census tracts. This is the first database of its kind produced by IBGE, and the first version was produced at the time of the 2000 Census. The way addresses are described in the National Register is very rich, and it is possible to identify the names of the places of worship including their denomination. Georeferencing was used to geolocate each place of worship. In this way, a total of 1,719 places of worship were geolocated in the city of Recife.
 
-In addition to places of worship, the National Register of Addresses for Statistical Purposes was queried to extract facilities other than places of worship. As discussed above, the idea is to identify points of reference that can be used as controls, having a neutral morality profile. For the sake of the present study, we selected pharmacies, ice cream shops, and bakeries to construct our control group. These three types of establishments comply with the criteria of being morally neutral and having a spatial distribution commensurate with places of worship.
+In addition to places of worship, the National Register of Addresses for Statistical Purposes was queried to extract facilities other than places of worship. To study the spatial relationship between churches and crime, a control group was built and then a comparison of the empirical distribution was carried out. Gilberston and Hayes [-@Gilbertson2012engineering] highlight that different configurations of urban space affect how people perceive the environment around them. In this perspective, churches are continually affecting the impression that people have of a region. Thus, we assume that churches have unique characteristics that may or may not inhibit the occurrence of a criminal act: they are urban constructions that are not neutral in relation to crime. On the other hand, there are urban facilities that do not provide any specific reason to justify the fact that the crime occurs closer or further from these buildings. Thus, it can be thought that any urban construction belongs to one of the following distinct situations: neutral or non-neutral to crime. Pharmacies, ice cream parlors and bakeries will be used in the construction of the control group and will be considered neutral. The comparison between the distributions of non-neutral and crime-neutral establishments forms the empirical basis of the study. The choice of establishments that make up the control was based on two criteria: (a) being neutral to crime and (b) having a spatial distribution similar to non-neutral establishments. The strategy used is to compare similar establishments about their spatial distribution, but different in relation to their neutrality profile in relation to crime, seeking to simulate the existence of a case and a control group. The case will be composed of churches, while the control will be pharmacies, ice cream parlors and bakeries.
 
-Figure \ref{fig:plot-events} shows the spatial distribution of the places of worhsip and control establishments in the city of Recife. Note the similarity between the maps. As expected, there are differences in the number of points, but the locations of cases and controls are quite similar.
+As discussed above, the idea is to identify points of reference that can be used as controls, having a neutral morality profile. For the sake of the present study, we selected pharmacies, ice cream shops, and bakeries to construct our control group. These three types of establishments comply with the criteria of being morally neutral and having a spatial distribution commensurate with places of worship.
+
+Figure \ref{fig:plot-events} shows the spatial distribution of the places of worhsip and control establishments in the city of Recife. Note the similarity between the maps. As expected, there are differences in the number of points, but the locations of cases and controls are quite similar: the distribution of the churches, as well as of the commercial establishments follow the same pattern, being correlated with the spatial distribution of the population (see in the appendix). Since such urban constructions respond to society's demand, they tend to be located close to population agglomerations.
 
 ```{r fig-plot-events, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-events}Location of Places of Worship and Commercial Establishments in Recife"}
 
@@ -354,42 +372,49 @@ https://drive.google.com/open?id=1tuJM4Mhi0Ftq3ZEwjv6RP9vO3veGjIR_
 
 # Create a dataframe with the descriptive statistics of the socio-economic and demographic variables used for the creation of the Socio-Economic Deprivation index. The descriptive statistics are the min, 2nd quartile, median, mean, 3rd quartile, max, and include as well the loadings of the first principal component for discussion
 
-sed_descriptives <- data.frame(variable = c("Median Income", 
+sed_descriptives <- data.frame(variable = c("Population Density",
+                                            "Median Income", 
                     "Proportion Unemployed", 
                     "Proportion Poverty", 
                     "Proportion Single Mother", 
                     "Proportion Young Single Mother"),
-           min = c(min(setores.sf$median_income),
+           min = c(min(setores.sf$pop_density),
+                   min(setores.sf$median_income),
                    min(setores.sf$prop_unemployed),
                    min(setores.sf$prop_poverty),
                    min(setores.sf$prop_single_mother),
                    min(setores.sf$prop_young_single_mother)),
-           second_q = c(quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[2],
+           second_q = c(quantile(setores.sf$pop_density, c(0, 0.25, 0.5, 0.75, 1))[2],
+                        quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[2],
                         quantile(setores.sf$prop_unemployed, c(0, 0.25, 0.5, 0.75, 1))[2],
                         quantile(setores.sf$prop_poverty, c(0, 0.25, 0.5, 0.75, 1))[2],
                         quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[2],
                         quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[2]),
-           median = c(median(setores.sf$median_income),
+           median = c(median(setores.sf$pop_density),
+                      median(setores.sf$median_income),
                       median(setores.sf$prop_unemployed),
                       median(setores.sf$prop_poverty),
                       median(setores.sf$prop_single_mother),
                       median(setores.sf$prop_young_single_mother)),
-           mean = c(mean(setores.sf$median_income),
+           mean = c(mean(setores.sf$pop_density),
+                    mean(setores.sf$median_income),
                     mean(setores.sf$prop_unemployed),
                     mean(setores.sf$prop_poverty),
                     mean(setores.sf$prop_single_mother),
                     mean(setores.sf$prop_young_single_mother)),
-           third_q = c(quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[4],
+           third_q = c(quantile(setores.sf$pop_density, c(0, 0.25, 0.5, 0.75, 1))[4],
+             quantile(setores.sf$median_income, c(0, 0.25, 0.5, 0.75, 1))[4],
                        quantile(setores.sf$prop_unemployed, c(0, 0.25, 0.5, 0.75, 1))[4],
                        quantile(setores.sf$prop_poverty, c(0, 0.25, 0.5, 0.75, 1))[4],
                        quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4],
                        quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4]),
-           max = c(max(setores.sf$median_income),
+           max = c(max(setores.sf$pop_density),
+                   max(setores.sf$median_income),
                    max(setores.sf$prop_unemployed),
                    max(setores.sf$prop_poverty),
                    max(setores.sf$prop_single_mother),
                    max(setores.sf$prop_young_single_mother)),
-           pca_loadings = as.numeric(setores.pca$rotation[c(1, 2, 5, 3, 4), 1]))
+           pca_loadings = as.numeric(setores.pca$rotation[c(1, 2, 3, 6, 4, 5), 1]))
 ```
 
 ```{r fig-plot-sed, echo=FALSE, include = FALSE, fig.align = "left", fig.cap="\\label{fig:plot-sed}Socio-Economic Deprivation in Recife"}
@@ -428,8 +453,7 @@ kable(sed_descriptives,
       row.names = FALSE) %>%
   kable_styling(bootstrap_options = c("striped", "scaled_down")) %>%
   footnote(general = c("The variable for young single mothers is for women aged 15-25",
-                       "The first principal component accounts for 53.91% of the variance"))
-
+                       "The first principal component accounts for 44.9% of the variance"))
 ```
 
 Figure \ref{fig:plot-sed-as-quintiles} displays the geography of Socio-Economic Deprivation in Recife, after classifying _setores_ by quintiles, whereby the "High" class corresponds to _setores_ in the top 20% of the Socio-Economic Deprivation indicator, and the "Low" class corresponds to _setores_ in the bottom 20% of the Socio-Economic Deprivation indicator. The figure shows a veritable mosaic of affluence and deprivation, with high deprivation areas directly in contact, and in some cases almost completely surrounded, by low deprivation areas. This geographical pattern of inequality, on the other hand, seems to be characteristic of Brazilian metropolitan regions, where enclaves of wealth and _favelas_ (i.e., urban slums) can be found in close proximity [see for example @Feitosa2007global].
@@ -502,7 +526,7 @@ ggplot(data = sed5.sf) +
 
 ## Conditional Quadrat Analysis
 
-Once the indicator of Socio-Economic Deprivation has been obtained, as outlined above, it can be used for conditional quadrat analysis. As previously described, the quadrats are irregular areas that are defined based on a covariate, in this case the quintiles of the Socio-Economic Deprivation indicator. In essence, this entails counting the number of events at each level of the covariate, and then calculating an estimator of the intensity.
+Once the indicator of Socio-Economic Deprivation has been obtained, as outlined above, it can be used for conditional quadrat analysis. As previously described, the quadrats are irregular areas that are defined based on a covariate, in this case the quintiles of the Socio-Economic Deprivation indicator. In essence, this entails counting the number of events at each level of the covariate, and then calculating an estimator of the intensity. The global intensity of each type of event (i.e., places of worship and businesses), as well as quadrant counts and intensity at each level of SED can be consulted in Table \ref{tab:quadrat-count-results}. 
 
 ```{r quadrat-analysis, include=FALSE}
 
@@ -544,7 +568,7 @@ super_markets5 <- quadratcount(events_recife_list$Supermarket, tess = V)
 supermarkets5_intensity <- intensity(super_markets5)
 ```
 
-```{r instensity-dataframe, include=FALSE}
+```{r counts-intensity-dataframe, include=FALSE}
 
 # Collect in a data.frame for convenience of plotting:
 
@@ -562,6 +586,13 @@ intensity_all <- data.frame(SED = rep(c("Low",
                                          "Pharmacies",
                                          "Super Markets"), 
                                        each = 5),
+                            Quadrat_Count = c(crime5,
+                                          catholic5,
+                                          evangelic5,
+                                          spiritist5,
+                                          ice_cream5,
+                                          pharmacies5,
+                                          super_markets5),
                             Intensity = c(crime5_intensity,
                                           catholic5_intensity,
                                           evangelic5_intensity,
@@ -591,6 +622,24 @@ intensity_all <- data.frame(SED = rep(c("Low",
                                         "Pharmacies",
                                         "Super Markets")))
 ```
+
+```{r table-counts-intensity-summary, echo=FALSE}
+kable(intensity_all %>% dplyr::select(Type, Global_Intensity, SED, Quadrat_Count, Intensity),
+      "latex",
+      booktabs = TRUE,
+      digits = 3,
+      escape = FALSE,
+      align = c("l", "c", "c", "c"),
+      caption = "\\label{tab:quadrat-count-results}Conditional quadrat counts results",
+      col.names = linebreak(c("Event", 
+                              "Global Intensity", 
+                              "SED Quintile", 
+                              "Quadrat Count",
+                              "Intensity"))) %>%
+  kable_styling(bootstrap_options = c("striped", "scaled_down")) %>% 
+  collapse_rows(1:2, latex_hline = "none")
+```
+
 
 Figure \ref{fig:plot-crime-quadrat} shows the results of conditional quadrat counts for Lethal and Intentional Violent Crime. The dotted line indicates the global intensity, simply the total number of criminal events divided by the area of the region. It can be seen that the intensity of crime clearly increases with Socio-Economic Deprivation, and the intensity in areas with the highest levels of Socio-Economic Deprivation is `r round(crime5_intensity[5]/crime5_intensity[1] * 100, 2)`% higher than in places with the lowest levels of Socio-Economic Deprivation. This is as expected, as research has consistently found correlations between Socio-Economic Deprivation and a variety of negative health outcomes, including homicide [@Ichihara2018area]. A $\chi^2$ test of independence on the quadrat counts yields a value of $p\leq 0.0001$ (four degrees of freedom), which comfortably rejects the null hypothesis of homogeneity of intensity of crime by level of Socio-Economic Deprivation. 
 
@@ -1036,7 +1085,7 @@ Conservative Protestant and Evangelic traditions, unlike mainline Protestants an
 
 Our analysis suggests that the role of Evangelical churches may be more complex than thought: on the one hand, our results indicate that Lethal and Intentional Violent Crime tends to be more intense in the proximity of Evangelical places of worship, up to a distance of approximately 100 m, but then declines even below the global intensity and the background intensity at distances between 300 m and 100 m. It is at the moment unclear what could cause this, and candidate explanations could include the way police respond to crime incidents in different neighborhoods, the likelihood of residents reporting crime to the police, and the level of opportunity for crimes [@Warner2019neighborhood]. Could Evangelicals churches provide greater levels of opportunity for crime, if adherents to this tradition are seen as meek? And is it possible that at a different scale, unlike reports by other researchers, Evangelical churches are more effective at keeping social control? While these speculations cannot be answered in the context of the present study, we suggest that these might be fruitful areas for future research.
 
-Finally, we would like to remark on the results regarding Spiritist churches, which in some way are the mirror image of those for Evangelical churches. An extensive scan of the literature finds much less information about this religious tradition, in particular in the context of Brazil where it adapted in ways that made it very different from its original French predecessor [see @daGraca2011espiritismo]. Could it be that Spiritism is seen by potential criminals as spiritually or materially risky, if supernatural retribution is feared? Again, we cannot do more than speculate about this at the moment, but this might be another worthwhile avenue for future investigation.
+Finally, we would like to remark on the results regarding Spiritist churches, which in some way are the mirror image of those for Evangelical churches. An extensive scan of the literature finds much less information about this religious tradition, in particular in the context of Brazil where it adapted in ways that made it very different from its original French predecessor [see @Arribas2011espiritismo]. Could it be that Spiritism is seen by potential criminals as spiritually or materially risky, if supernatural retribution is feared? Again, we cannot do more than speculate about this at the moment, but this might be another worthwhile avenue for future investigation.
 
 # Conclusions {#conclusions}
 
