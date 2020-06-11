@@ -1,0 +1,139 @@
+---
+title: "Response to Reviewers"
+output: pdf_document
+---
+
+We would like to thank the editor and two anonymous reviewers for their thoughtful comments and suggestions to revise the paper. We believe that the paper has been substantially improved by their input. In this letter we respond to the feedback received, and describe the actions taken to revise the paper.
+
+\newpage
+
+#Reviewer 1
+
+This article uses spatial point pattern methods to explore the distribution of violent crime as it relates to the location of three types of churches and other land use types in Recife, Brazil. The authors suggest that the intensity of violent crimes is higher near to evangelical churches than other types of churches.
+
+>\textcolor{blue}{Thank you for reading the paper and for your thoughtful suggestions to improve it.}
+
+The article as currently written is lacking a thorough and logical argument as to why the location of churches can be hypothesized to influence violent crime at the point-level (i.e., where distance is the measure of interest rather than location within an area). 
+
+>\textcolor{blue}{Thank you for this comment. We believe this question has two parts: can we hypothesize that the location of churches influences violent crime? And if so, does this influence happen at the point level?}
+
+>\textcolor{blue}{We believe that the first question is critical: what are the theoretical arguments for the influence of places of worship on crime? We can sketch this argument in the following way:}
+
+>>\textcolor{blue}{1. Informal social controls can suppress crime by strengthening the capabilities of neighbors to control inappropriate behavior.}
+
+>>\textcolor{blue}{2. Several types of community organizations, including schools, clubs, and neighborhood associations, can strengthen the capabilities of communities to exert informal social control.}
+
+>>\textcolor{blue}{3. Of several types of community organizations, churches are among the most overtly moral, since they often have prescriptive codes of behavior.}
+
+>>\textcolor{blue}{4. Why would the location of places of worship matter? Groff (2015) reviews several theoretical perspectives that address the role of informal social control in micro-places: these include "eyes on the street" and human territorial functioning. By affecting informal surveillance, movement governing rules, direct intervention, and the social climate at places, places of worship are hypothesized to contribute to informal social controls.}
+
+>\textcolor{blue}{We believe that this argument is logical and sound, and churches, in fact, have been studied in the past for their potential to suppress crime (Abdullah, 2018; Davignon, 2015; Furr, 2010; Traunmuller, 2011). A more novel aspect is the study of places of worship, as distinct entities from the members of the congregations: as Warner and Konkel (2019) note, this is an aspect that has received less attention in empirical and theoretical research. }
+
+>\textcolor{blue}{The second question is related to the above: if places of worship somehow help to strengthen social control, does this happen at the level of points or for areas? In our view, Groff (2015) already explains why these investigations should matter at the micro-level. But there is also an analytical aspect to this question: what is an appropriate unit of support for the analysis? In this sense, we would note that aggregating point data to areas inevitably involves loss of information. Sometimes this situation is unavoidable (say, statistics are recorded for areas, so locational information is lost from the origin.) But when we have access to detailed geographical information, converting to area data is an unnecessary loss of information. The question that we are asking is actually quite geographical: if there is evidence of a moral community effect, what is its distance decay? This question is best answered by considering the distance from criminal events to places of worship, instead of simple propinquity of criminal events and places of worship in areas.}
+
+>\textcolor{blue}{We have edited the paper to increase its clarity.}
+
+The current framing of the article also does not convincingly situate 'moral communities' within a geographical framework and does not make clear the hypothesized mechanisms that link the presence/absence of a church at a specific location with criminal behavior and, more specifically, the presence/absence of churches of specific religions with violent crimes. The authors should make sure not to conflate the processes linking crime with population characteristics (percent of individuals who are religious in an area), with religion more broadly (hellfire hypothesis), and with the location of a church in geographic space. This theoretical work is necessary to justify why this study is relevant and make clear how it contributes to the existing literature. 
+
+>\textcolor{blue}{Thank you for this comment. As pointed out above, the theoretical work was discussed by Groff, among others. Although conceptually the study draws from much earlier research (e.g., Appleyard, Jacobs, Taylor), empirical work has lagged, as recently noted by Warner and Konkel (2019). This is where the current paper aims to make a contribution.}
+
+The introduction of the paper does a really good job setting out the importance of reducing violent crime for achieving policy goals, but it is not clear how this research will contribute to developing, implementing, or evaluating policy. For this journal, I think it is necessary for the research to contribute to policy; so, how can police, religious officials, and other policymakers use the results of this study?
+
+>\textcolor{blue}{The analysis of elements that can influence the occurrence of the criminal act is able to increase the range of tools that public authorities can use to face the problem, particularly in a reality as difficult as that of Brazil. The notion of informal social control allows new strategies to combat crime to be explored. In particular, we find that Catholic churches do not "project" any more moral community than pharmacies, which means that there is probably not much that can be done in terms of leveraging them for informal social control purposes. Spiritist churches have a lower relative risk at relatively short distances of less than approximately 50 m (which would be the side of a small block). Why is this? We cannot posit a causality relationship, but could this be due to superstitious beliefs associated by laypeople to this religion? And if so, could this be leveraged for policy purposes? Evangelical churches, on the other hand, have a higher relative risk than any other establishment or place of worship at distance between 20-100 m. A relevant question is whether this is crime by Evangelicals or crime towards Evangelicals. This is not something that the analysis can throw light on, but that deserves further investigation to determine whether it can lead to actionable policy recommendations.}
+
+I currently find the logic of the analysis and the results to be confusing and I think that adding the results of more exploratory work before showing results of very specific analyses (i.e., those with SES quintiles and different church types) would help to provide a convincing argument that the results of this research are solid. For example, the authors may first examine the intensity of crime as it relates to all churches (aggregated), then to adjust for ses with all churches, and then to adjust for land use. Then, after presenting the results of the initial analysis for the aggregated churches, the results of the specific church types can be presented.
+
+>\textcolor{blue}{We hope that the revisions elsewhere (e.g., an improved presentation of the argument behind the analysis) have resolved this issue.}
+
+The authors should add a review of social disorganization theory and informal social control as these concepts are mentioned a number of times but not discussed in any detail. The similarities and differences between these concepts and the geographically-situated moral community concept should also be discussed.
+
+>\textcolor{blue}{The referee's suggestion has been incorporated into the text. Two footnotes have been included that detail theories of social disorganization and the theory of social control. The focus was to present the main characteristics of these theoretical views and to relate them to the geographical aspect. In general, both views highlight the relationship between local characteristics (neighborhoods, for example), social networks and criminal behavior.}
+
+The authors should justify their choice of method over other approaches, such as regression models, which provide a framework for quantifying the relationship between crime and churches after accounting for SES factors, land use types, and population at risk. There are a number of regression models that allow  coefficients to vary over space, which would quantify how the impact of churches on crime changes by distance (see: generalized additive models, spatially-varying coefficients, geographically weighted regression). Without this type of analysis, or at least a more thorough discussion of why this point pattern method was chosen, I am not convinced that crime is, in fact, associated with evangelical churches at close distances and that this isn't due to other factors, like evangelical churches being located in high population density areas (and so crime is due to higher population density, not the presence of a church), for example.
+
+>\textcolor{blue}{Thank you for this comment. We agree, there are many methods that could be applied. In our analysis we use three tools:}
+
+>\textcolor{blue}{1. Quadrat counts, which are discrete estimates of the intensity of a point process in a region.}
+
+>\textcolor{blue}{1. The relative distribution, which is a smooth estimate of the intensity of a process as a function of distance to a signal event.}
+
+>\textcolor{blue}{2. The relative distribution function with a baseline function, which adjusts the relative distribution using other risk factors. In our case, those other factors are summarized by the SED score. The interpretation of the relative distribution with a baseline is as follows: values of rho greater than 1 indicate that the intensity of crime is higher over what the baseline explains, and values less than 1 indicate that the intensity of crime is lower than what the baseline explains.}
+
+>\textcolor{blue}{In the previous version of the paper, our SED score was calculated using several potential confounders of crime: median income, proportion of population unemployed, proportion of households with a single mother, proportion of households with a young single mother, proportion of population in poverty. In the current version of the paper, we also include population density in the calculation of the SED score (thank you for the suggestion). Accordingly, the relative distribution with a baseline function is the smooth estimate of the intensity of crime after controlling for potential confounders, including population density.}
+
+>\textcolor{blue}{We believe that this approach is informative, and since we are interested in the distribution of crime in the proximity of places of worship, it is also appropriate. Furthermore, by considering other underlying risk factors (in the form of the SED score), we believe that we have diligently covered most reasonable confounders. We have edited the text to explain this.}
+
+Please define the term 'neutral morality profile' and how it relates to the spatial distribution of crime around land uses. Please also clarify what 'having a spatial distribution commensurate with places of worship' means and provide evidence to support this claim.
+
+>\textcolor{blue}{Following the referee suggestion, a footnote was added to the data section explaining clearly the highlighted terms. The idea of building a control group is to compare similar establishments about their spatial distribution, but different in relation to their neutrality profile in relation to crime, seeking to simulate the existence of a case and a control group.}
+
+Did this study investigate the location of crime events, offender locations, or victim locations? I assume crime events, but it would be good to clarify nonetheless.
+
+>\textcolor{blue}{In the data section, we changed the description. In the third paragraph, we use the term crime event location, which is more precise.}
+
+For the intensity measures, what is the unit area for the results? Would it be possible to provide an intensity unit such as per mile^2 or per km^2, for example? I think that this would improve the interpretation of the results and Figures 6 and 7 in particular.
+
+>\textcolor{blue}{Thank you for this comment. The intensity is in events/square meter, except in the case of the relative distribution with a baseline function, which is dimensionless (see below).}
+
+When discussing the quantitative results throughout Sections 5.3 and 5.4, please add uncertainty intervals so that readers can interpret the degree to which two quantities are, in fact, different? For example, p.16-line 49: "reaching a peak of 2.4916 * 10e-5 (95% CI: 2.1 * 10e-5, 3.2 * 10e-5)."
+
+>\textcolor{blue}{Thank you for this comment. The intervals of confidence are now reported in the figures.}
+
+Please provide some additional text describing the equations in Section 3.2. It is not immediately clear to me how to interpret equations and how they are reflected in the results. For example, what is B(s), how is it calculated, and what does it mean for understanding the distribution of crime in relation to churches?
+
+>\textcolor{blue}{Both quadrats and the relative distribution function are estimators of intensity. In the case of quadrats, the estimator is the number of events in the quadrat divided by area of the quadrat (conditional quadrat counts use irregular quadrats that are defined based on some control variable, in our case SED). In the case of the relative distribution, the output is an estimate of intensity conditioned on distance from a signal event, i.e., a place of worship. The relative distribution can be adjusted by means of a baseline function B(s), which is also an estimate of intensity but conditioned on some control covariate (in our cases SED). Therefore, the interpretation of the relative distribution with a baseline function is as a ratio of the intensity with respect to distance to the baseline intensity according to the control covariate. If the ratio, which is dimensionless, is 1, then intensity as a function of distance is equal to the baseline intensity.}
+
+For readers (like me) who are unfamiliar with the geography of Recife, Brazil, it would be helpful if a detailed map was included in the paper that shows where the downtown is, major roads, different neighborhoods, etc. This could be included in the background of Figure 1 or in an Appendix. It would also be helpful if the authors provided some description of the patterns observed in Figure 1 and Figure 2 identifying where violent crimes (or churches, supermarkets, etc.) were clustered and where they weren't clustered.
+
+>\textcolor{blue}{We now include a figure with maps for socio-economic and demographic variables which help to provide context to SED. We also have included a brief explanation of the requested clustering pattern in the text and recreated the figures after adding some transparecy to compensate for overplotting. This should make it easier to appreciate the patterns.}
+
+How is the SES data, which I assume is distributed at the area-level, translated to points so it can be used in the point pattern analysis? Please describe how this was done and the limitations of doing so, if any. Related, why did the authors choose to break up SES into quintiles rather than keep it as a continuous measure or break up into other classifications?
+
+>\textcolor{blue}{Thank you for this comment. When using quadrats in the earlier part of the analysis, the region is partitioned using quintiles; this is a requirement, since quadrats function as "containers" and need to be partitioned in discrete segments. In Figure 4 each color is a "container". However, when calculating the distribution functions, the continuous value of the SED score is used. We have clarified this in the text.}
+
+What are the counts of the different types of churches, ice cream shops, pharmacies, and supermarkets? I am wondering if the frequency of each of these 'events' would influence the chi-square statistics and associated p-values shown in Table 3. Is this possible?
+
+>\textcolor{blue}{Thank you for this comment. The chi-square statistic is affected if there are small numbers if events in some quadrats, but that was not the case for any of our events. We have included a new table with the quadrat counts.}
+
+\newpage
+
+#Reviewer 2
+
+This was an interesting paper to review, challenging even.
+
+>\textcolor{blue}{Thank you for reading the paper and for your thoughtful suggestions to improve it.}
+
+We’ll start with a couple of minor issues 
+
+– in the quadrat analysis are the results conditioned on the quadrat size. If I understand correctly this might not be an issue with conditional quadrat counts, through the use of a covariate.  It does remind me of Openshaw early work on optimal zoning systems.  Perhaps a simple example to guide the reader might help.
+
+>\textcolor{blue}{The results are conditioned by the size of the quadrat, but in this case since the quadrats are defined based on a covariate, we have a conceptual reason to prefer them to other partitions (each quintile in the SED is one quadrat). We have explained in the text how the quadrats function as containers for counting events.}
+
+- the symbolism in Figure 1, 2, and 3 are rather large.  I’m at a loss to interpret Figure 3, because as the image is built up (I have a rather slow graphics card) I see symbols overlapping.
+
+>\textcolor{blue}{Thank you for this comment. We have recreated the figures with some transparency to compensate for overplotting.}
+
+There’s a cultural issue which I find challenging.  I think I know what Catholic and Evangelical churches may be, but this is first encounter with Spiritism. I assume that the first two are differentiated along some transubstantiation/consubstantiation divide, with the Catholics being in the former group. As for Spiritist churches I’m at a loss.  Do these follow the teaching of Allan Kardec; I presume it’s related to the Spiritualist churches found in the Anglophone countries, which go back to Swedenborg and Mesmer, and which seem to be originally motivated by trying to make contact with the dead. If so, then it’s very much a minority sect.  Perhaps the authors might like to expand on the details further for those readers who are not familiar with religious practices, and how they are undertaken in Brazil. Would I recognise the same in Cape Town, to take a city at random. Would this be a typical Spiritist church: https://goo.gl/maps/kwWe2B7didMk8vfDA
+
+>\textcolor{blue}{We have included in the text some additional information of the religions studied in the article.}
+
+Some description of the geography of Recife would also help. Where are residential areas, where are industrial zones, is there a university, and so on.
+
+>\textcolor{blue}{The appendix included information that allows a more in-depth characterization of the city of Recife: population distribution, income, inequality, urban facilities (education and health) and location of residential areas.}
+
+What’s the reason for the choice of controls – what if we take another three, such as take-away food outlets, garden centres, and clothing/footwear shops? Would we get similar of different results? You could use simulation to build a distribution of randomly chosen groups of different land uses. I’m not proposing that this should happen, but it’s a possibility.
+
+>\textcolor{blue}{The results for the various controls are qualitatively similar both for quadrat analysis and relative distribution. After choosing these three types of establishments semi-randomly and verifying their similarities, we think it unlikely that other types of common establishments would change the results. In this case simulation of a random variable is not useful, because it would detect clustering of all the events. Rather, what we are interested in is clustering of one type of event with respect to another.}
+
+I am reminded of Openshaw’s early work on cluster detection – work was based around trying to link clusters of leukaemia to electricity substations, and overhead transmission lines. Alan Craft was rumoured to have asked something along the lines of “how do we know it’s substations, or fish chip shops.  What if it’s telephone booths?”  Openshaw turned his approach on its head to ask where the clusters were occurring. This lead him to a nuclear waste reprocessing plant, and an urban domestic waste incineration plant. Does the possibility of turning the question to look at this from another point of view?
+
+>\textcolor{blue}{This is a very perceptive comment. In fact, the approach that Openshaw pioneered was later converted into several forms of spatial scan statistics. Its legacy is still felt here: we can explore co-location patterns by considering signal events that we are interested in for theoretical/conceptual reasons (i.e., places of worship).}
+
+I’m left wondering whether this paper tells me something about spatial relationships in Recife.  The author(s) assert that the research is exploratory.  But to what extent might they apply elsewhere? Would these relationships translate to Vienna, for example?
+
+>\textcolor{blue}{The specific results are applicable to Recife only. However, the general principle could be more general, and it aligns well with one to two ideas: the Violence of the Just, or the possibility that violence is a consequence of religious intolerance. Irrespective of which of these two propositions is true, the general principle could be in operation in areas where conservative Evangelicals are present (similar results, although at the aggregated level, have been reported by Desmond et al., 2010). For this reason, Vienna might be a stretch, but other cities in Latin America and North America not so much.}
+
+I think that ASAP readers might be find this paper rarified.  They certainly need help with some of the cultural issues.
+
+>\textcolor{blue}{We have made an effort to provide additional context, which we hope will make the paper more approachable to readers who are less familiar with the Latin American context.}
+
