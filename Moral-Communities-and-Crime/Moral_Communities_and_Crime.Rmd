@@ -164,7 +164,7 @@ With the above considerations in mind, the objective of this paper is to investi
 
 2. If so, what is the distance decay of said moral community effect? Is it uniform over a certain distance, such that it could be well approximated by areas, or does it vary?
 
-The case study is the city of Recife in the state of Pernambuco, in Brazil's Northeast. Recife is a large and important metropolitan area in a historically poor region, and afflicted by high levels of violent crime, having the dubious honor of being one of five state capitals with the highest rates of homicide in the period under study [@Menezes2013spatial]. The empirical strategy is to use spatial analysis to explore the potential geographical relationships between violent criminal events, on the one hand, and places of worship and a selection of commercial establishments that serve as controls, on the other.
+The empirical analysis uses geographically detailed data from the city of Recife in the state of Pernambuco, in Brazil's Northeast. Recife is a large and important metropolitan area in a historically poor region, and afflicted by high levels of violent crime, having the dubious honor of being one of five state capitals with the highest rates of homicide in the period under study [@Menezes2013spatial]. The empirical strategy is to use spatial analysis to explore the potential geographical relationships between violent criminal events, on the one hand, and places of worship and a selection of commercial establishments that serve as controls, on the other.
 
 Note that this is a reproducible research document. The analysis is implemented using the `R` statistical computing language, and documents to replicate the analysis, in addition to all data necessary, are available from a repository\footnote{\url{https://drive.google.com/open?id=1tuJM4Mhi0Ftq3ZEwjv6RP9vO3veGjIR_}}.
 
@@ -317,7 +317,7 @@ kable(descriptive_stats,
   pack_rows("Weapon Used", 15, 16)
 ```
 
-The data are organized at the individual level and it is possible to obtain information about the crime event location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of LIVC in the period analyzed were men, while approximately 98% of violent crimes were homicides. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms. Figure \ref{fig:plot-crime} shows the spatial distribution of the 1,657 LIVC crimes that occurred in the city of Recife between July, 2008 and June, 2010.
+The data are organized at the individual level and it is possible to obtain information about the crime event location, day of the week, day of the month, period of the day, as well as gender, age, and race of the victim. The database used in this study comprises the period from July 1, 2008 to June 30, 2010. Some descriptive statistics regarding this dataset are reported in Table 1, where it can be seen that overall, about 91% of the victims of LIVC in the period analyzed were men. In addition, most of the victims were black or brown, and the youth population between the ages of 18 and 30 is the most affected by violent crime. Lastly, it should be noted that about 88% of the criminal events under analysis involved firearms. Figure \ref{fig:plot-crime} shows the spatial distribution of the 1,657 LIVC crimes that occurred in the city of Recife between July, 2008 and June, 2010.
 
 ```{r fig-plot-crime, echo=FALSE, fig.align = "left", fig.cap="\\label{fig:plot-crime}Location of Lethal and Intentional Violent Crime in Recife, July, 2008 - June, 2009"}
 
@@ -409,12 +409,12 @@ sed_descriptives <- data.frame(variable = c("Median Income",
                                            quantile(setores.sf$prop_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4],
                                            quantile(setores.sf$prop_young_single_mother, c(0, 0.25, 0.5, 0.75, 1))[4],
                                            quantile(setores.sf$pop_density, c(0, 0.25, 0.5, 0.75, 1))[4]),
-                               max = c(max(max(setores.sf$median_income),
+                               max = c(max(setores.sf$median_income),
                                            max(setores.sf$prop_unemployed),
                                            max(setores.sf$prop_poverty),
                                            max(setores.sf$prop_single_mother),
                                            max(setores.sf$prop_young_single_mother),
-                                           setores.sf$pop_density)),
+                                           max(setores.sf$pop_density)),
                                pca_loadings = as.numeric(setores.pca$rotation[c(2, 3, 6, 4, 5, 1), 1]))
 ```
 
@@ -453,7 +453,7 @@ kable(sed_descriptives,
                        "The first principal component accounts for 44.9% of the variance"))
 ```
 
-As seen in the table, Recife is a city with large socio-economic and demographic disparities; for example, the _setor_ with the highest median income has a median income that is `r prettyNum(filter(sed_descriptives, variable == "Median Income")["max"]/filter(sed_descriptives, variable == "Median Income")["min"] * 100, digits = 2, big.mark = ",")`% higher than the median income in the _setor_ with the lowest median income. Whereas there are _setores_ where the proportion of population who are unemployed is zero, there are _setores_ where almost 60% of the population are unemployed. Likewise, there are _setores_ where almost 70% of the population lives in poverty. In addition to these economic indicators, two variables are used to represent family disruption, the proportion of families whose head is a single mother, and the proportion of families whose head is a _young_ single mother, that is, a woman between the ages of 15 and 25. As can be seen, there are _setores_ with approximately 70% of households led by single mothers, and of these, over 21% are led by younger women, indicating a high degree of family disruption. Unlike other places, where higher population density is associated with more poverty, the distribution of this variable in Recife is more mixed: middle income and higher income households favor high density development in many parts of the city. The spatial distribution of these variables can be seen in Figure \ref{fig:plot-sed-variables}.
+As seen in the table, Recife is a city with large socio-economic and demographic disparities; for example, the _setor_ with the highest median income has a median income that is `r prettyNum(filter(sed_descriptives, variable == "Median Income")["max"]/filter(sed_descriptives, variable == "Median Income")["min"] * 100, digits = 2, big.mark = ",")`% higher than the median income in the _setor_ with the lowest median income. Whereas there are _setores_ where the proportion of population who are unemployed is zero, there are _setores_ where almost 60% of the population are unemployed (which for some may mean they are part of the informal econom). Likewise, there are _setores_ where almost 70% of the population lives in poverty. In addition to these economic indicators, two variables are used to represent family disruption, the proportion of families whose head is a single mother, and the proportion of families whose head is a _young_ single mother, that is, a woman between the ages of 15 and 25. As can be seen, there are _setores_ with approximately 70% of households led by single mothers, and of these, over 21% are led by younger women, indicating a high degree of family disruption. Unlike other places, where higher population density is associated with more poverty, the distribution of this variable in Recife is more mixed: middle income and higher income households favor high density development in many parts of the city. The spatial distribution of these variables can be seen in Figure \ref{fig:plot-sed-variables}.
 
 ```{r fig-plot-sed-variables, echo=FALSE, fig.height= 9, fig.align = "left", fig.cap="\\label{fig:plot-sed-variables}Spatial distribution of socio-economic and demographic variables in Recife"}
 
@@ -594,7 +594,7 @@ ggplot(data = sed5.sf) +
 
 ## Conditional Quadrat Analysis
 
-Once the indicator of Socio-Economic Deprivation has been obtained, as outlined above, it can be used for conditional quadrat analysis. As previously described, the quadrats are irregular areas that are defined based on a covariate, in this case the quintiles of the Socio-Economic Deprivation indicator. Each color in Figure \ref{fig:plot-sed-as-quintiles} is a "container" for counting events. In essence, this entails counting the number of events at each level of the covariate, and then calculating an estimator of the intensity. The global intensity of each type of event (i.e., places of worship and businesses), as well as quadrant counts and intensity at each level of SED can be consulted in Table \ref{tab:quadrat-count-results}. 
+Once the indicator of Socio-Economic Deprivation has been obtained, as outlined above, it can be used for conditional quadrat analysis. As previously described, the quadrats are irregular areas that are defined based on a covariate, in this case the quintiles of the Socio-Economic Deprivation indicator. Each color in Figure \ref{fig:plot-sed-as-quintiles} is a "container" for counting events. In essence, this entails counting the number of events at each level of the covariate, and then calculating an estimator of the intensity. The global intensity of each type of event, as well as the quadrant counts and intensity at each level of SED can be consulted in Table \ref{tab:quadrat-count-results}. 
 
 ```{r quadrat-analysis, include=FALSE}
 
@@ -671,7 +671,7 @@ intensity_all <- data.frame(SED = rep(c("Low",
                             Global_Intensity = rep(c(summary_crime$intensity,
                                                      summary_catholic$intensity,
                                                      summary_evangelic$intensity,
-                                                     summary_spiritist$intensity,
+                                                     summary_spiritist$intensity + 1e-8, #small correction to distinguish from ice cream in table
                                                      summary_ice_cream$intensity,
                                                      summary_pharmacy$intensity,
                                                      summary_supermarket$intensity),
@@ -692,10 +692,13 @@ intensity_all <- data.frame(SED = rep(c("Low",
 ```
 
 ```{r table-counts-intensity-summary, echo=FALSE}
-kable(intensity_all %>% dplyr::select(Type, Global_Intensity, SED, Quadrat_Count, Intensity),
+kable(intensity_all %>% 
+        dplyr::select(Type, Global_Intensity, SED, Quadrat_Count, Intensity) %>% 
+        mutate(Global_Intensity = prettyNum(Global_Intensity, digits = 3),
+               Intensity = prettyNum(Intensity, digits = 3)),
       "latex",
       booktabs = TRUE,
-      digits = 3,
+      #digits = 3,
       escape = FALSE,
       align = c("l", "c", "c", "c"),
       caption = "\\label{tab:quadrat-count-results}Conditional quadrat counts results",
@@ -705,7 +708,7 @@ kable(intensity_all %>% dplyr::select(Type, Global_Intensity, SED, Quadrat_Count
                               "Quadrat Count",
                               "Intensity"))) %>%
   kable_styling(bootstrap_options = c("striped", "scaled_down")) %>% 
-  collapse_rows(1:2, latex_hline = "none")
+  collapse_rows(1:2, latex_hline = "major")
 ```
 
 

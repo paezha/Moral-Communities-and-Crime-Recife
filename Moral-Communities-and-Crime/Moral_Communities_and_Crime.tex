@@ -237,15 +237,16 @@ is as follows:
   approximated by areas, or does it vary?
 \end{enumerate}
 
-The case study is the city of Recife in the state of Pernambuco, in
-Brazil's Northeast. Recife is a large and important metropolitan area in
-a historically poor region, and afflicted by high levels of violent
-crime, having the dubious honor of being one of five state capitals with
-the highest rates of homicide in the period under study (Menezes et al.
-2013). The empirical strategy is to use spatial analysis to explore the
-potential geographical relationships between violent criminal events, on
-the one hand, and places of worship and a selection of commercial
-establishments that serve as controls, on the other.
+The empirical analysis uses geographically detailed data from the city
+of Recife in the state of Pernambuco, in Brazil's Northeast. Recife is a
+large and important metropolitan area in a historically poor region, and
+afflicted by high levels of violent crime, having the dubious honor of
+being one of five state capitals with the highest rates of homicide in
+the period under study (Menezes et al. 2013). The empirical strategy is
+to use spatial analysis to explore the potential geographical
+relationships between violent criminal events, on the one hand, and
+places of worship and a selection of commercial establishments that
+serve as controls, on the other.
 
 Note that this is a reproducible research document. The analysis is
 implemented using the \texttt{R} statistical computing language, and
@@ -645,14 +646,13 @@ of the month, period of the day, as well as gender, age, and race of the
 victim. The database used in this study comprises the period from July
 1, 2008 to June 30, 2010. Some descriptive statistics regarding this
 dataset are reported in Table 1, where it can be seen that overall,
-about 91\% of the victims of LIVC in the period analyzed were men, while
-approximately 98\% of violent crimes were homicides. In addition, most
-of the victims were black or brown, and the youth population between the
-ages of 18 and 30 is the most affected by violent crime. Lastly, it
-should be noted that about 88\% of the criminal events under analysis
-involved firearms. Figure \ref{fig:plot-crime} shows the spatial
-distribution of the 1,657 LIVC crimes that occurred in the city of
-Recife between July, 2008 and June, 2010.
+about 91\% of the victims of LIVC in the period analyzed were men. In
+addition, most of the victims were black or brown, and the youth
+population between the ages of 18 and 30 is the most affected by violent
+crime. Lastly, it should be noted that about 88\% of the criminal events
+under analysis involved firearms. Figure \ref{fig:plot-crime} shows the
+spatial distribution of the 1,657 LIVC crimes that occurred in the city
+of Recife between July, 2008 and June, 2010.
 
 \begin{figure}
 
@@ -747,13 +747,13 @@ at the level of \emph{setores}, a small Brazilian census geography.
 \toprule
 Variable & Min & 2nd Quartile & Median & Mean & 3rd Quartile & Max & \makecell[l]{PC Factor 1\\ Loadings}\\
 \midrule
-Median Income & 122.05 & 337.40 & 581.67 & 1031.09 & 1283.79 & 181642.5 & -0.42\\
-Proportion Unemployed & 0.00 & 0.05 & 0.10 & 0.10 & 0.14 & 181642.5 & 0.56\\
-Proportion Poverty & 0.00 & 0.05 & 0.11 & 0.12 & 0.17 & 181642.5 & 0.58\\
-Proportion Single Mother & 0.00 & 0.33 & 0.37 & 0.37 & 0.41 & 181642.5 & 0.17\\
-Proportion Young Single Mother & 0.00 & 0.01 & 0.02 & 0.02 & 0.02 & 181642.5 & 0.38\\
+Median Income & 122.05 & 337.40 & 581.67 & 1031.09 & 1283.79 & 7954.19 & -0.42\\
+Proportion Unemployed & 0.00 & 0.05 & 0.10 & 0.10 & 0.14 & 0.59 & 0.56\\
+Proportion Poverty & 0.00 & 0.05 & 0.11 & 0.12 & 0.17 & 0.63 & 0.58\\
+Proportion Single Mother & 0.00 & 0.33 & 0.37 & 0.37 & 0.41 & 0.70 & 0.17\\
+Proportion Young Single Mother & 0.00 & 0.01 & 0.02 & 0.02 & 0.02 & 0.21 & 0.38\\
 \addlinespace
-Population Density & 0.00 & 10564.16 & 16333.62 & 19230.23 & 25106.07 & 181642.5 & 0.03\\
+Population Density & 0.00 & 10564.16 & 16333.62 & 19230.23 & 25106.07 & 181642.55 & 0.03\\
 \bottomrule
 \multicolumn{8}{l}{\textit{Note: }}\\
 \multicolumn{8}{l}{The variable for young single mothers is for women aged 15-25}\\
@@ -763,24 +763,25 @@ Population Density & 0.00 & 10564.16 & 16333.62 & 19230.23 & 25106.07 & 181642.5
 
 As seen in the table, Recife is a city with large socio-economic and
 demographic disparities; for example, the \emph{setor} with the highest
-median income has a median income that is 148,826\% higher than the
-median income in the \emph{setor} with the lowest median income. Whereas
-there are \emph{setores} where the proportion of population who are
-unemployed is zero, there are \emph{setores} where almost 60\% of the
-population are unemployed. Likewise, there are \emph{setores} where
-almost 70\% of the population lives in poverty. In addition to these
-economic indicators, two variables are used to represent family
-disruption, the proportion of families whose head is a single mother,
-and the proportion of families whose head is a \emph{young} single
-mother, that is, a woman between the ages of 15 and 25. As can be seen,
-there are \emph{setores} with approximately 70\% of households led by
-single mothers, and of these, over 21\% are led by younger women,
-indicating a high degree of family disruption. Unlike other places,
-where higher population density is associated with more poverty, the
-distribution of this variable in Recife is more mixed: middle income and
-higher income households favor high density development in many parts of
-the city. The spatial distribution of these variables can be seen in
-Figure \ref{fig:plot-sed-variables}.
+median income has a median income that is 6,517\% higher than the median
+income in the \emph{setor} with the lowest median income. Whereas there
+are \emph{setores} where the proportion of population who are unemployed
+is zero, there are \emph{setores} where almost 60\% of the population
+are unemployed (which for some may mean they are part of the informal
+econom). Likewise, there are \emph{setores} where almost 70\% of the
+population lives in poverty. In addition to these economic indicators,
+two variables are used to represent family disruption, the proportion of
+families whose head is a single mother, and the proportion of families
+whose head is a \emph{young} single mother, that is, a woman between the
+ages of 15 and 25. As can be seen, there are \emph{setores} with
+approximately 70\% of households led by single mothers, and of these,
+over 21\% are led by younger women, indicating a high degree of family
+disruption. Unlike other places, where higher population density is
+associated with more poverty, the distribution of this variable in
+Recife is more mixed: middle income and higher income households favor
+high density development in many parts of the city. The spatial
+distribution of these variables can be seen in Figure
+\ref{fig:plot-sed-variables}.
 
 \begin{figure}
 
@@ -831,9 +832,9 @@ Deprivation indicator. Each color in Figure
 \ref{fig:plot-sed-as-quintiles} is a ``container'' for counting events.
 In essence, this entails counting the number of events at each level of
 the covariate, and then calculating an estimator of the intensity. The
-global intensity of each type of event (i.e., places of worship and
-businesses), as well as quadrant counts and intensity at each level of
-SED can be consulted in Table \ref{tab:quadrat-count-results}.
+global intensity of each type of event, as well as the quadrant counts
+and intensity at each level of SED can be consulted in Table
+\ref{tab:quadrat-count-results}.
 
 \begin{table}
 
@@ -843,75 +844,75 @@ SED can be consulted in Table \ref{tab:quadrat-count-results}.
 \toprule
 Event & Global Intensity & SED Quintile & Quadrat Count & Intensity\\
 \midrule
- &  & Low & 201 & 0\\
+ &  & Low & 201 & 4.6e-06\\
 
- &  & Middle Low & 295 & 0\\
+ &  & Middle Low & 295 & 6.75e-06\\
 
- &  & Middle & 364 & 0\\
+ &  & Middle & 364 & 8.33e-06\\
 
- &  & Middle High & 479 & 0\\
+ &  & Middle High & 479 & 8.65e-06\\
 
-\multirow{-5}{*}{\raggedright\arraybackslash Violent Crime} &  & High & 318 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Violent Crime} & \multirow{-5}{*}{\centering\arraybackslash 7.58e-06} & High & 318 & 9.94e-06\\
+\cmidrule{1-5}
+ &  & Low & 32 & 7.32e-07\\
 
- &  & Low & 32 & 0\\
+ &  & Middle Low & 26 & 5.95e-07\\
 
- &  & Middle Low & 26 & 0\\
+ &  & Middle & 33 & 7.55e-07\\
 
- &  & Middle & 33 & 0\\
+ &  & Middle High & 29 & 5.24e-07\\
 
- &  & Middle High & 29 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Catholic} & \multirow{-5}{*}{\centering\arraybackslash 5.99e-07} & High & 11 & 3.44e-07\\
+\cmidrule{1-5}
+ &  & Low & 209 & 4.78e-06\\
 
-\multirow{-5}{*}{\raggedright\arraybackslash Catholic} &  & High & 11 & 0\\
+ &  & Middle Low & 304 & 6.95e-06\\
 
- &  & Low & 209 & 0\\
+ &  & Middle & 334 & 7.65e-06\\
 
- &  & Middle Low & 304 & 0\\
+ &  & Middle High & 345 & 6.23e-06\\
 
- &  & Middle & 334 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Evangelical} & \multirow{-5}{*}{\centering\arraybackslash 6.3e-06} & High & 185 & 5.78e-06\\
+\cmidrule{1-5}
+ &  & Low & 37 & 8.46e-07\\
 
- &  & Middle High & 345 & 0\\
+ &  & Middle Low & 50 & 1.14e-06\\
 
-\multirow{-5}{*}{\raggedright\arraybackslash Evangelical} &  & High & 185 & 0\\
+ &  & Middle & 40 & 9.16e-07\\
 
- &  & Low & 37 & 0\\
+ &  & Middle High & 40 & 7.22e-07\\
 
- &  & Middle Low & 50 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Spiritist} & \multirow{-5}{*}{\centering\arraybackslash 8.65e-07} & High & 20 & 6.25e-07\\
+\cmidrule{1-5}
+ &  & Low & 45 & 1.03e-06\\
 
- &  & Middle & 40 & 0\\
+ &  & Middle Low & 60 & 1.37e-06\\
 
- &  & Middle High & 40 & 0\\
+ &  & Middle & 39 & 8.93e-07\\
 
-\multirow{-5}{*}{\raggedright\arraybackslash Spiritist} &  & High & 20 & 0\\
+ &  & Middle High & 37 & 6.68e-07\\
 
- &  & Low & 45 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Ice Cream} & \multirow{-5}{*}{\centering\arraybackslash 9.47e-07} & High & 26 & 8.12e-07\\
+\cmidrule{1-5}
+ &  & Low & 116 & 2.65e-06\\
 
- &  & Middle Low & 60 & 0\\
+ &  & Middle Low & 122 & 2.79e-06\\
 
- &  & Middle & 39 & 0\\
+ &  & Middle & 91 & 2.08e-06\\
 
- &  & Middle High & 37 & 0\\
+ &  & Middle High & 84 & 1.52e-06\\
 
-\multirow{-5}{*}{\raggedright\arraybackslash Ice Cream} &  & High & 26 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Pharmacies} & \multirow{-5}{*}{\centering\arraybackslash 2e-06} & High & 25 & 7.81e-07\\
+\cmidrule{1-5}
+ &  & Low & 27 & 6.17e-07\\
 
- &  & Low & 116 & 0\\
+ &  & Middle Low & 32 & 7.32e-07\\
 
- &  & Middle Low & 122 & 0\\
+ &  & Middle & 38 & 8.7e-07\\
 
- &  & Middle & 91 & 0\\
+ &  & Middle High & 16 & 2.89e-07\\
 
- &  & Middle High & 84 & 0\\
-
-\multirow{-5}{*}{\raggedright\arraybackslash Pharmacies} &  & High & 25 & 0\\
-
- &  & Low & 27 & 0\\
-
- &  & Middle Low & 32 & 0\\
-
- &  & Middle & 38 & 0\\
-
- &  & Middle High & 16 & 0\\
-
-\multirow{-5}{*}{\raggedright\arraybackslash Super Markets} & \multirow{-35}{*}{\centering\arraybackslash 0} & High & 12 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash Super Markets} & \multirow{-5}{*}{\centering\arraybackslash 5.72e-07} & High & 12 & 3.75e-07\\
 \bottomrule
 \end{tabular}
 \end{table}
