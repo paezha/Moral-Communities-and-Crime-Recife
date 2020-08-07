@@ -1,5 +1,5 @@
 ---
-title: Do moral communities have a spatial dimension? A spatial exploratory analysis of places of worship and violent crime in the city of Recife, Brazil
+title: Spatial clustering and violent crime near places of worship in Recife, Brazil. Do moral communities have a spatial dimension?
 subtitle: 
 titlerunning: Moral communities and crime
 authorrunning: 
