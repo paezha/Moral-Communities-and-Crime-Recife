@@ -1,7 +1,7 @@
 # Do moral communities have a spatial dimension? A spatial exploratory analysis of places of worship and violent crime in the city of Recife, Brazil
 
 Edivaldo Constantino das Neves Júnior, Breno Caldas de Araujo, Tatiane Almeida de Menezes,  
-Antônio Páez (2019) Do moral communities have a spatial dimension? A spatial exploratory analysis of places of worship and violent crime in the city of Recife, Brazil. Paper submitted to Applied Spatial Analysis and Policy.  
+Antônio Páez (2019) Do moral communities have a spatial dimension? A spatial exploratory analysis of places of worship and violent crime in the city of Recife, Brazil. Working paper.  
   
 ## Abstract  
   
